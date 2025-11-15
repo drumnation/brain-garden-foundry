@@ -1,0 +1,292 @@
+name: Deploy & Review
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # AI-Powered Code Review (Replaces CodeRabbit)
+  ai-review:
+    name: AI Code Review
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for better analysis
+
+      - name: Brain Garden AI Review
+        uses: brain-garden/ai-reviewer@v1
+        with:
+          agents: 'security,performance,architecture,testing'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          review-level: 'comprehensive'
+
+      - name: Post Review Summary
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const review = JSON.parse(fs.readFileSync('.ai-review/summary.json', 'utf8'));
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: review.summary
+            });
+
+  # Build & Test
+  build-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type Check
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Build Storybook
+        run: pnpm build-storybook
+
+      - name: Upload Storybook Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: storybook-static
+          path: storybook-static
+
+  # Deploy PR Preview
+  deploy-preview:
+    name: Deploy PR Preview
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    needs: [build-test]
+    runs-on: ubuntu-latest
+    environment:
+      name: preview-pr-${{ github.event.pull_request.number }}
+      url: https://pr-${{ github.event.pull_request.number }}.{{ PROJECT_DOMAIN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download Storybook
+        uses: actions/download-artifact@v3
+        with:
+          name: storybook-static
+          path: storybook-static
+
+      - name: Deploy to Preview
+        env:
+          APPWRITE_ENDPOINT: ${{ secrets.APPWRITE_ENDPOINT }}
+          APPWRITE_PROJECT_ID: ${{ secrets.APPWRITE_PROJECT_ID }}
+          APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
+          PREVIEW_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Deploy preview environment
+          pnpm deploy:sync --environment preview-$PREVIEW_NUMBER
+
+      - name: Comment PR with URLs
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.issue.number;
+            const projectDomain = '${{ secrets.PROJECT_DOMAIN }}';
+
+            const comment = `## 🚀 Preview Deployment Ready!
+
+            Your PR preview has been deployed:
+
+            - 🌐 **App**: https://pr-${prNumber}.${projectDomain}
+            - 📚 **Storybook**: https://pr-${prNumber}-storybook.${projectDomain}
+            - 🔌 **API**: https://pr-${prNumber}-api.${projectDomain}
+
+            ### Deployment Info
+            - **Environment**: preview-${prNumber}
+            - **Deployed at**: ${new Date().toISOString()}
+            - **Commit**: ${context.sha.substring(0, 7)}
+
+            This preview will be automatically cleaned up when the PR is closed.`;
+
+            await github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # Clean Up PR Preview
+  cleanup-preview:
+    name: Clean Up PR Preview
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Destroy Preview Environment
+        env:
+          APPWRITE_ENDPOINT: ${{ secrets.APPWRITE_ENDPOINT }}
+          APPWRITE_PROJECT_ID: ${{ secrets.APPWRITE_PROJECT_ID }}
+          APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
+          PREVIEW_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          pnpm deploy:destroy --environment preview-$PREVIEW_NUMBER --force
+
+  # Deploy to Production
+  deploy-production:
+    name: Deploy to Production
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [build-test]
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://{{ PROJECT_DOMAIN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download Storybook
+        uses: actions/download-artifact@v3
+        with:
+          name: storybook-static
+          path: storybook-static
+
+      - name: Run Migrations
+        env:
+          APPWRITE_ENDPOINT: ${{ secrets.APPWRITE_ENDPOINT }}
+          APPWRITE_PROJECT_ID: ${{ secrets.APPWRITE_PROJECT_ID }}
+          APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
+        run: |
+          pnpm deploy:sync --migrations --environment production
+
+      - name: Deploy to Production
+        env:
+          APPWRITE_ENDPOINT: ${{ secrets.APPWRITE_ENDPOINT }}
+          APPWRITE_PROJECT_ID: ${{ secrets.APPWRITE_PROJECT_ID }}
+          APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
+        run: |
+          # Deploy production
+          pnpm deploy:sync --environment production
+
+      - name: Notify Deployment
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const emoji = status === 'success' ? '✅' : '❌';
+            const message = status === 'success'
+              ? 'Production deployment successful!'
+              : 'Production deployment failed!';
+
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              state: status === 'success' ? 'success' : 'failure',
+              description: message,
+              environment_url: 'https://${{ secrets.PROJECT_DOMAIN }}'
+            });
+
+  # E2E Tests on Production
+  e2e-tests:
+    name: E2E Tests
+    if: github.ref == 'refs/heads/main'
+    needs: [deploy-production]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright
+        run: pnpm playwright install chromium
+
+      - name: Run E2E Tests
+        env:
+          PRODUCTION_URL: https://${{ secrets.PROJECT_DOMAIN }}
+          APPWRITE_ENDPOINT: ${{ secrets.APPWRITE_ENDPOINT }}
+        run: |
+          pnpm test:e2e:browser
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-test-results
+          path: test-results/
+
+# Deployment Status Badge
+# Add to README.md:
+# [![Deploy](https://github.com/YOUR_ORG/YOUR_REPO/actions/workflows/deploy.yml/badge.svg)](https://github.com/YOUR_ORG/YOUR_REPO/actions/workflows/deploy.yml)

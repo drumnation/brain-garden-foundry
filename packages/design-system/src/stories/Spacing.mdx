@@ -1,0 +1,147 @@
+import { Meta } from '@storybook/blocks';
+import { spacing, componentSpacing } from '../tokens/spacing';
+
+<Meta title="Design System/Spacing" />
+
+# Spacing System
+
+Our 8px grid system provides consistent spacing across the application.
+
+## Base Spacing Scale
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem' }}>
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ width: spacing.xs, height: '40px', backgroundColor: '#228be6' }} />
+      <span><strong>XS:</strong> {spacing.xs} (8px)</span>
+    </div>
+  </div>
+
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ width: spacing.sm, height: '40px', backgroundColor: '#228be6' }} />
+      <span><strong>SM:</strong> {spacing.sm} (12px)</span>
+    </div>
+  </div>
+
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ width: spacing.md, height: '40px', backgroundColor: '#228be6' }} />
+      <span><strong>MD:</strong> {spacing.md} (16px)</span>
+    </div>
+  </div>
+
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ width: spacing.lg, height: '40px', backgroundColor: '#228be6' }} />
+      <span><strong>LG:</strong> {spacing.lg} (24px)</span>
+    </div>
+  </div>
+
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ width: spacing.xl, height: '40px', backgroundColor: '#228be6' }} />
+      <span><strong>XL:</strong> {spacing.xl} (32px)</span>
+    </div>
+  </div>
+
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ width: spacing['2xl'], height: '40px', backgroundColor: '#228be6' }} />
+      <span><strong>2XL:</strong> {spacing['2xl']} (48px)</span>
+    </div>
+  </div>
+</div>
+
+## Component Spacing
+
+Semantic spacing for specific component use cases:
+
+<div style={{ marginTop: '2rem' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <thead>
+      <tr style={{ borderBottom: '2px solid #dee2e6' }}>
+        <th style={{ textAlign: 'left', padding: '8px' }}>Token</th>
+        <th style={{ textAlign: 'left', padding: '8px' }}>Value</th>
+        <th style={{ textAlign: 'left', padding: '8px' }}>Use Case</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style={{ borderBottom: '1px solid #dee2e6' }}>
+        <td style={{ padding: '8px' }}><code>componentPadding.sm</code></td>
+        <td style={{ padding: '8px' }}>{componentSpacing.componentPadding.sm}</td>
+        <td style={{ padding: '8px' }}>Small buttons, compact cards</td>
+      </tr>
+      <tr style={{ borderBottom: '1px solid #dee2e6' }}>
+        <td style={{ padding: '8px' }}><code>componentPadding.md</code></td>
+        <td style={{ padding: '8px' }}>{componentSpacing.componentPadding.md}</td>
+        <td style={{ padding: '8px' }}>Default buttons, cards</td>
+      </tr>
+      <tr style={{ borderBottom: '1px solid #dee2e6' }}>
+        <td style={{ padding: '8px' }}><code>componentPadding.lg</code></td>
+        <td style={{ padding: '8px' }}>{componentSpacing.componentPadding.lg}</td>
+        <td style={{ padding: '8px' }}>Large buttons, prominent cards</td>
+      </tr>
+      <tr style={{ borderBottom: '1px solid #dee2e6' }}>
+        <td style={{ padding: '8px' }}><code>componentGap.sm</code></td>
+        <td style={{ padding: '8px' }}>{componentSpacing.componentGap.sm}</td>
+        <td style={{ padding: '8px' }}>Tight spacing between related items</td>
+      </tr>
+      <tr style={{ borderBottom: '1px solid #dee2e6' }}>
+        <td style={{ padding: '8px' }}><code>componentGap.md</code></td>
+        <td style={{ padding: '8px' }}>{componentSpacing.componentGap.md}</td>
+        <td style={{ padding: '8px' }}>Default spacing in stacks/groups</td>
+      </tr>
+      <tr style={{ borderBottom: '1px solid #dee2e6' }}>
+        <td style={{ padding: '8px' }}><code>componentGap.lg</code></td>
+        <td style={{ padding: '8px' }}>{componentSpacing.componentGap.lg}</td>
+        <td style={{ padding: '8px' }}>Spacing between distinct sections</td>
+      </tr>
+      <tr style={{ borderBottom: '1px solid #dee2e6' }}>
+        <td style={{ padding: '8px' }}><code>sectionSpacing.sm</code></td>
+        <td style={{ padding: '8px' }}>{componentSpacing.sectionSpacing.sm}</td>
+        <td style={{ padding: '8px' }}>Small section margins</td>
+      </tr>
+      <tr style={{ borderBottom: '1px solid #dee2e6' }}>
+        <td style={{ padding: '8px' }}><code>sectionSpacing.md</code></td>
+        <td style={{ padding: '8px' }}>{componentSpacing.sectionSpacing.md}</td>
+        <td style={{ padding: '8px' }}>Default section margins</td>
+      </tr>
+      <tr>
+        <td style={{ padding: '8px' }}><code>sectionSpacing.lg</code></td>
+        <td style={{ padding: '8px' }}>{componentSpacing.sectionSpacing.lg}</td>
+        <td style={{ padding: '8px' }}>Large section margins</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## Usage
+
+```tsx
+import { spacing, componentSpacing } from '@bg-kit/design-system/tokens';
+
+// Base spacing
+<Stack gap={spacing.md}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+</Stack>
+
+// Component spacing
+<Card padding={componentSpacing.componentPadding.lg}>
+  <Stack gap={componentSpacing.componentGap.md}>
+    <Title>Card Title</Title>
+    <Text>Card content</Text>
+  </Stack>
+</Card>
+```
+
+## 8px Grid System
+
+All spacing values are multiples of 8px, creating a harmonious vertical rhythm:
+
+- 8px base unit for tight spacing
+- 16px (2×) for default spacing
+- 24px (3×) for comfortable spacing
+- 32px (4×) for generous spacing
+- 48px (6×) for section separation

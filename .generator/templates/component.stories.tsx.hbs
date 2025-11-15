@@ -1,0 +1,106 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { {{pascalCase name}} } from './{{pascalCase name}}';
+import { IconRocket } from '@tabler/icons-react';
+
+const meta = {
+  title: 'UI Components/{{pascalCase name}}',
+  component: {{pascalCase name}},
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'success', 'warning', 'error', 'info'],
+      description: 'Color variant for the component',
+    },
+    title: {
+      control: 'text',
+      description: 'Primary title text',
+    },
+    description: {
+      control: 'text',
+      description: 'Optional description text',
+    },
+    actionLabel: {
+      control: 'text',
+      description: 'Label for the action button',
+    },
+  },
+} satisfies Meta<typeof {{pascalCase name}}>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Primary: Story = {
+  args: {
+    title: 'Example Title',
+    description: 'This is an example description demonstrating the component.',
+    variant: 'primary',
+    actionLabel: 'Learn More',
+    onAction: () => alert('Action clicked!'),
+  },
+};
+
+export const WithIcon: Story = {
+  args: {
+    title: 'With Icon',
+    description: 'Example with an icon element.',
+    variant: 'primary',
+    icon: <IconRocket size={32} />,
+    actionLabel: 'Get Started',
+    onAction: () => alert('Action clicked!'),
+  },
+};
+
+export const WithoutAction: Story = {
+  args: {
+    title: 'No Action Button',
+    description: 'This variant has no action button.',
+    variant: 'info',
+  },
+};
+
+export const AllVariants: Story = {
+  render: () => (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', width: '800px' }}>
+      <{{pascalCase name}}
+        title="Primary Variant"
+        description="Default primary color variant."
+        variant="primary"
+      />
+      <{{pascalCase name}}
+        title="Success Variant"
+        description="Success color variant for positive actions."
+        variant="success"
+      />
+      <{{pascalCase name}}
+        title="Warning Variant"
+        description="Warning color variant for caution."
+        variant="warning"
+      />
+      <{{pascalCase name}}
+        title="Error Variant"
+        description="Error color variant for critical actions."
+        variant="error"
+      />
+      <{{pascalCase name}}
+        title="Info Variant"
+        description="Info color variant for informational content."
+        variant="info"
+      />
+    </div>
+  ),
+};
+
+export const Interactive: Story = {
+  args: {
+    title: 'Interactive Example',
+    description: 'Try changing the controls to see different variants.',
+    variant: 'primary',
+    actionLabel: 'Click Me',
+    onAction: () => alert('Button clicked!'),
+    icon: <IconRocket size={32} />,
+  },
+};

@@ -1,0 +1,23 @@
+{
+  "agentId": "window-6",
+  "projectId": "brain-garden-monorepo-template",
+  "projectPath": "/Users/dmieloch/Dev/created/brain-garden-monorepo-template",
+  "projectName": "brain-garden-monorepo-template",
+  "model": "sonnet-4",
+  "provider": "anthropic",
+  "status": "active",
+  "capabilities": ["read", "write", "edit", "bash", "grep", "glob"],
+  "currentWork": {
+    "description": "Starting up",
+    "filesInUse": [],
+    "phase": "initialization"
+  },
+  "resources": {
+    "tokensUsed": 0,
+    "contextRemaining": 200000,
+    "uptime": 0
+  },
+  "lastHeartbeat": "2025-11-15T08:14:27Z",
+  "inboxPath": "inbox-6/",
+  "metadata": {}
+}

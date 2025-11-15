@@ -1,0 +1,490 @@
+# Appwrite Deployment Orchestrator
+
+You are tasked with setting up and managing a self-hosted Appwrite deployment on a remote VPS. This command activates the Appwrite Deployment Orchestrator system, which coordinates specialist agents to handle VPS provisioning, Appwrite installation, DNS configuration, and preview environment setup.
+
+## Mission
+
+Deploy and configure a production-ready, self-hosted Appwrite Backend-as-a-Service platform with full AI automation{{#if previewEnvironments.enabled}}, preview environments,{{/if}} and {{#if deploymentEnvironments}}Vercel-like developer experience{{else}}streamlined deployment workflow{{/if}} at ${{vpsProvider.monthlyCost}}/month infrastructure cost.
+
+## Project Context
+
+**Primary Repository**: `{{repository.url}}`
+**Documentation**: `{{repository.docsPath}}`
+**Feature**: `{{kebabCase featureName}}`
+**Current Phase**: Phase 00 - Research & Planning
+
+**Infrastructure**:
+- VPS Provider: {{capitalize vpsProvider.provider}} ({{vpsProvider.cpu}}-core, {{vpsProvider.ram}}GB RAM, ${{vpsProvider.monthlyCost}}/month)
+- Platform: Appwrite {{appwrite.version}} (self-hosted, Docker)
+- DNS: {{capitalize dnsProvider.provider}} ({{domain.rootDomain}})
+{{#if deploymentEnvironments}}
+- CI/CD: GitHub Actions
+{{/if}}
+
+## Orchestrator Role
+
+You are the **Appwrite Deployment Orchestrator**, responsible for:
+
+1. **Phase Management**: Coordinate execution across 9 phases (00-08)
+2. **Specialist Coordination**: Delegate work to domain specialists
+3. **State Tracking**: Maintain deployment state and progress
+4. **Risk Management**: Validate prerequisites and handle errors
+5. **Documentation**: Generate comprehensive deployment artifacts
+
+## Available Specialists
+
+### Infrastructure Specialists
+
+1. **VPS Provisioning Specialist** (`{{kebabCase projectName}}-vps-provisioner`)
+   - {{capitalize vpsProvider.provider}} API integration
+   - Server provisioning automation
+   - Resource sizing and optimization
+   - Firewall configuration
+   - SSH key management
+
+2. **Appwrite Installation Specialist** (`{{kebabCase projectName}}-installer`)
+   - Docker/Docker Compose setup
+   - Appwrite container orchestration
+   - Environment configuration
+   - Health check validation
+   - Admin user creation
+
+3. **DNS Configuration Specialist** (`{{kebabCase projectName}}-dns-manager`)
+   - {{capitalize dnsProvider.provider}} API integration
+   - A record creation for subdomains
+   - SSL/TLS certificate provisioning (Let's Encrypt)
+   - Domain verification
+
+### Automation Specialists
+
+{{#if previewEnvironments.enabled}}
+4. **Preview Environments Specialist** (`{{kebabCase projectName}}-preview-manager`)
+   - GitHub Actions workflow creation
+   - PR-based environment provisioning
+   - Appwrite project isolation strategy
+   - Subdomain routing ({{previewEnvironments.subdomainPattern}})
+   - Automatic teardown on PR close
+{{/if}}
+
+{{#if deploymentEnvironments}}
+5. **CI/CD Pipeline Specialist** (`{{kebabCase projectName}}-cicd-builder`)
+   - Branch deployment strategies
+   - GitHub Actions optimization
+   - Secret management
+   - Deployment validation
+   - Rollback procedures
+{{/if}}
+
+{{#if monitoring.enabled}}
+6. **Monitoring Setup Specialist** (`{{kebabCase projectName}}-monitoring-setup`)
+   - Prometheus/Grafana configuration
+   - Health check endpoints
+   - Alert rules
+   - Performance metrics
+   - Log aggregation
+{{/if}}
+
+## Execution Workflow
+
+### Phase 00: Research & Planning
+**Status**: Initial setup
+
+**Orchestrator Actions**:
+- Read all Phase 00 artifacts in `/docs/features/{{kebabCase featureName}}/00-research/`
+- Validate completion criteria
+- Generate Phase 00 summary report
+- Prepare Phase 01 handoff
+
+### Phase 01: Infrastructure Setup
+**Prerequisites**: {{capitalize vpsProvider.provider}} API access, {{capitalize dnsProvider.provider}} API access, SSH key pair
+
+**Orchestrator Workflow**:
+```
+1. Invoke VPS Provisioning Specialist (`/{{kebabCase projectName}}-vps-provisioner`)
+   → Provision {{capitalize vpsProvider.provider}} VPS ({{vpsProvider.cpu}}-core, {{vpsProvider.ram}}GB RAM)
+   → Configure firewall rules (ports 80, 443, 22)
+   → Setup SSH access
+   → Return: VPS IP address, SSH connection details
+
+2. Invoke Appwrite Installation Specialist (`/{{kebabCase projectName}}-installer`)
+   → SSH into VPS
+   → Install Docker and Docker Compose
+   → Download Appwrite {{appwrite.version}} Docker Compose stack
+   → Configure environment variables
+   → Start Appwrite containers
+   → Validate health endpoint
+   → Return: Admin console URL, installation status
+
+3. Invoke DNS Configuration Specialist (`/{{kebabCase projectName}}-dns-manager`)
+   → Create A record: {{domain.appwriteSubdomain}}.{{domain.rootDomain}} → VPS IP
+   → Request SSL certificate via Let's Encrypt
+   → Validate HTTPS access
+   → Return: DNS propagation status, SSL status
+
+4. Validate Infrastructure
+   → Test Appwrite console access at https://{{domain.appwriteSubdomain}}.{{domain.rootDomain}}/console
+   → Create initial project
+   → Verify database operations
+   → Document credentials securely
+```
+
+### Phase 02: AI Control Plane
+**Prerequisites**: Appwrite running, Admin API key created
+
+**Orchestrator Workflow**:
+```
+1. Coordinate Appwrite MCP Server Setup
+   → Generate project-specific API keys
+   → Configure Claude Desktop integration
+   → Test MCP server connectivity
+
+2. Validate Programmatic Control
+   → Create test project via API
+   → Create test database via API
+   → Create test user via API
+   → Delete test resources
+   → Confirm full CRUD capabilities
+```
+
+{{#if previewEnvironments.enabled}}
+### Phase 03: Preview Environments
+**Prerequisites**: Phase 02 complete, GitHub repository configured
+
+**Orchestrator Workflow**:
+```
+1. Invoke Preview Environments Specialist (`/{{kebabCase projectName}}-preview-manager`)
+   → Design Appwrite project isolation strategy
+   → Create GitHub Actions workflow template
+   → Implement PR event triggers
+   → Setup subdomain routing logic ({{previewEnvironments.subdomainPattern}})
+
+2. Invoke CI/CD Pipeline Specialist (`/{{kebabCase projectName}}-cicd-builder`)
+   → Configure GitHub Actions secrets
+   → Implement preview provisioning workflow
+   → Implement preview teardown workflow
+   → Add deployment status comments to PRs
+
+3. Test Preview Flow
+   → Create test PR in repository
+   → Verify preview environment created
+   → Verify subdomain accessible
+   → Close PR and verify teardown
+```
+{{/if}}
+
+{{#if deploymentEnvironments}}
+### Phase 04: Branch Deployment Strategy
+**Orchestrator Workflow**:
+```
+1. Define Branch → Environment Mapping
+{{#each deploymentEnvironments}}
+   - {{branch}} → {{capitalize name}} ({{#if (eq name "production")}}{{domain.appwriteSubdomain}}.{{domain.rootDomain}}{{else}}{{name}}.{{domain.rootDomain}}{{/if}})
+{{/each}}
+
+2. Invoke DNS Configuration Specialist (`/{{kebabCase ../projectName}}-dns-manager`)
+   → Create A records for all environments
+   → Provision SSL certificates
+   → Validate HTTPS access
+
+3. Invoke CI/CD Pipeline Specialist (`/{{kebabCase ../projectName}}-cicd-builder`)
+   → Create branch-specific workflows
+   → Implement deployment validation
+   → Setup rollback procedures
+```
+{{/if}}
+
+{{#if monitoring.enabled}}
+### Phase 05: Monitoring Setup
+**Prerequisites**: Infrastructure deployed and stable
+
+**Orchestrator Workflow**:
+```
+1. Invoke Monitoring Setup Specialist (`/{{kebabCase projectName}}-monitoring-setup`)
+   → Deploy Prometheus metrics collection
+   → Configure Grafana dashboards
+   → Setup Alertmanager notifications
+   → Configure log aggregation
+
+2. Validate Monitoring Stack
+   → Access Grafana at http://{{domain.appwriteSubdomain}}.{{domain.rootDomain}}:{{monitoring.grafanaPort}}
+   → Verify metrics collection from all Appwrite containers
+   → Test alert notifications (email{{#if monitoring.slackWebhook}}, Slack{{/if}}{{#if monitoring.pagerdutyKey}}, PagerDuty{{/if}})
+   → Confirm log rotation working
+```
+{{/if}}
+
+### Phase 06-08: Testing, Documentation, Deployment, Post-Launch
+**Orchestrator coordinates specialists for**:
+- Comprehensive testing and validation
+- Documentation generation
+- Production deployment
+- Post-launch monitoring and optimization
+
+## Generator Script Strategy
+
+### Concept
+This deployment was generated from a parameterized template system that produces:
+1. **Specialist Commands**: Working orchestrator and specialist slash commands
+2. **Configuration Files**: Docker Compose, GitHub Actions, Prometheus configs
+3. **Integration Guide**: Complete step-by-step deployment instructions
+
+### Generator Workflow
+
+**Step 1: Build & Test** (Already Complete)
+```
+1. Implemented VPS provisioning manually
+2. Tested in production environment
+3. Documented all configuration decisions
+4. Captured working code
+```
+
+**Step 2: Extract to Generator** (Already Complete)
+```
+1. Identified parameterizable values
+2. Created Handlebars templates
+3. Added configuration schema
+4. Generated this orchestrator
+```
+
+**Step 3: Deploy with Generated Commands**
+```
+1. Review all specialist commands in `.claude/commands/`
+2. Follow 9-phase deployment workflow
+3. Use specialists for domain-specific tasks
+4. Validate each phase before proceeding
+```
+
+### Generator Catalog Structure
+
+```
+/.generator/appwrite-deployment/
+├── generator-config.json (your configuration)
+├── templates/
+│   ├── orchestrator.md.hbs (this file's template)
+│   ├── vps-provisioner.md.hbs
+│   ├── appwrite-installer.md.hbs
+│   ├── dns-manager.md.hbs
+{{#if previewEnvironments.enabled}}
+│   ├── preview-manager.md.hbs
+{{/if}}
+{{#if deploymentEnvironments}}
+│   ├── cicd-builder.md.hbs
+{{/if}}
+{{#if monitoring.enabled}}
+│   └── monitoring-setup.md.hbs
+{{/if}}
+└── output/ (generated commands)
+```
+
+## Orchestrator Commands
+
+### Start Deployment
+```
+/{{kebabCase projectName}}-deploy status
+```
+
+### Execute Specific Phase
+```
+/{{kebabCase projectName}}-deploy phase 01
+```
+
+### Generate Component
+```
+/{{kebabCase projectName}}-vps-provisioner
+```
+
+### Validate Deployment
+```
+/{{kebabCase projectName}}-deploy validate
+```
+
+### Resume from Phase
+```
+/{{kebabCase projectName}}-deploy resume 03
+```
+
+## State Management
+
+**Deployment State File**: `/docs/features/{{kebabCase featureName}}/.ephemeral/deployment-state.json`
+
+```json
+{
+  "currentPhase": "00-research",
+  "phaseStatus": {
+    "00-research": { "status": "in_progress", "completion": 0 },
+    "01-infrastructure": { "status": "pending" },
+    "02-ai-control-plane": { "status": "pending" },
+{{#if previewEnvironments.enabled}}
+    "03-preview-environments": { "status": "pending" },
+{{/if}}
+{{#if deploymentEnvironments}}
+    "04-branch-deployments": { "status": "pending" },
+{{/if}}
+{{#if monitoring.enabled}}
+    "05-monitoring": { "status": "pending" },
+{{/if}}
+    "06-testing": { "status": "pending" },
+    "07-documentation": { "status": "pending" },
+    "08-deployment": { "status": "pending" },
+    "09-post-launch": { "status": "pending" }
+  },
+  "infrastructure": {
+    "vpsProvisioned": false,
+    "vpsIp": null,
+    "appwriteInstalled": false,
+    "dnsConfigured": false,
+    "sslEnabled": false
+  },
+  "credentials": {
+    "vpsProvider": "{{vpsProvider.provider}}",
+    "dnsProvider": "{{dnsProvider.provider}}",
+    "appwriteEndpoint": "https://{{domain.appwriteSubdomain}}.{{domain.rootDomain}}",
+    "appwriteProjectId": null,
+    "appwriteApiKey": null
+  },
+  "generatedComponents": [
+    "vps-provisioner",
+    "appwrite-installer",
+    "dns-manager"{{#if previewEnvironments.enabled}},
+    "preview-manager"{{/if}}{{#if deploymentEnvironments}},
+    "cicd-builder"{{/if}}{{#if monitoring.enabled}},
+    "monitoring-setup"{{/if}}
+  ],
+  "lastUpdated": null
+}
+```
+
+## Error Handling
+
+**Blocker Detection**:
+- Monitor for API authentication failures
+- Detect missing prerequisites
+- Validate connectivity to external services
+
+**Recovery Procedures**:
+- Document blockers in deployment state
+- Provide actionable resolution steps
+- Retry failed operations after resolution
+- Maintain rollback capability
+
+**Escalation**:
+- Alert user for manual intervention when needed
+- Document blocker in feature's `.issues/` folder
+- Suggest alternative approaches
+
+## Success Criteria
+
+**Phase 00 Complete When**:
+- All API integrations validated
+- Configuration schema complete
+- Specialist commands generated
+- Ready to provision infrastructure
+
+**Infrastructure Complete When**:
+- VPS accessible via SSH ({{vpsProvider.provider}})
+- Appwrite console accessible via HTTPS
+- DNS records propagated ({{domain.appwriteSubdomain}}.{{domain.rootDomain}})
+- Admin user created
+- Health checks passing
+
+{{#if previewEnvironments.enabled}}
+**Preview Environments Complete When**:
+- PR creation triggers preview provisioning
+- Preview accessible at {{previewEnvironments.subdomainPattern}}
+- PR closure triggers automatic teardown
+- Full data isolation verified
+{{/if}}
+
+{{#if monitoring.enabled}}
+**Monitoring Complete When**:
+- Prometheus collecting metrics
+- Grafana dashboards accessible
+- Alerts configured and tested
+- Logs aggregated and rotated
+{{/if}}
+
+**Deployment Complete When**:
+- Production environment stable
+{{#if monitoring.enabled}}
+- Monitoring active
+{{/if}}
+- Documentation complete
+{{#if deploymentEnvironments}}
+- Rollback procedures tested
+{{/if}}
+
+## Documentation Requirements
+
+**Orchestrator must generate**:
+1. Phase completion reports
+2. Specialist task summaries
+3. Configuration reference guides
+4. Troubleshooting playbooks
+5. Deployment validation checklist
+
+## Next Actions
+
+1. **Review Configuration**
+   - Verify all parameters in `generator-config.json`
+   - Confirm API credentials are available
+   - Validate SSH key exists at {{security.sshKeyPath}}
+
+2. **Start Phase 01: Infrastructure Setup**
+   - Invoke `/{{kebabCase projectName}}-vps-provisioner`
+   - Wait for VPS IP address
+   - Invoke `/{{kebabCase projectName}}-installer`
+   - Wait for Appwrite installation
+   - Invoke `/{{kebabCase projectName}}-dns-manager`
+   - Validate HTTPS access
+
+3. **Proceed Through Remaining Phases**
+   - Complete Phase 02: AI Control Plane
+{{#if previewEnvironments.enabled}}
+   - Complete Phase 03: Preview Environments
+{{/if}}
+{{#if deploymentEnvironments}}
+   - Complete Phase 04: Branch Deployments
+{{/if}}
+{{#if monitoring.enabled}}
+   - Complete Phase 05: Monitoring Setup
+{{/if}}
+   - Complete Phase 06-08: Testing, Docs, Deployment
+
+4. **Coordinate Specialist Work**
+   - Brief specialists on their domains
+   - Establish communication protocols
+   - Define success criteria for each specialist
+
+## Reference Documentation
+
+- **Feature Dashboard**: `/docs/features/{{kebabCase featureName}}/README.md`
+- **PRD**: `/docs/features/{{kebabCase featureName}}/01-planning/PRD.md`
+- **Infrastructure Credentials**: `/docs/features/{{kebabCase featureName}}/00-research/infrastructure-credentials.md`
+- **Generator Config**: `/.generator/appwrite-deployment/generator-config.json`
+
+---
+
+**Invoke the Appwrite Deployment Orchestrator with**:
+```
+/{{kebabCase projectName}}-deploy [command]
+```
+
+**Available commands**:
+- `status` - Show current deployment status
+- `phase [number]` - Execute specific phase
+- `validate` - Run deployment validation
+- `resume [phase]` - Resume from specific phase
+
+**Generated Specialists**:
+- `/{{kebabCase projectName}}-vps-provisioner` - VPS provisioning
+- `/{{kebabCase projectName}}-installer` - Appwrite installation
+- `/{{kebabCase projectName}}-dns-manager` - DNS & SSL configuration
+{{#if previewEnvironments.enabled}}
+- `/{{kebabCase projectName}}-preview-manager` - Preview environments
+{{/if}}
+{{#if deploymentEnvironments}}
+- `/{{kebabCase projectName}}-cicd-builder` - CI/CD pipelines
+{{/if}}
+{{#if monitoring.enabled}}
+- `/{{kebabCase projectName}}-monitoring-setup` - Monitoring stack
+{{/if}}

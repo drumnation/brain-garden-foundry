@@ -1,0 +1,96 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/blocks';
+import { colors, colorRoles } from '../tokens/colors';
+
+<Meta title="Design System/Colors" />
+
+# Color System
+
+Our semantic color system provides consistent colors for UI states and roles.
+
+## Semantic Colors
+
+<ColorPalette>
+  <ColorItem
+    title="Success"
+    subtitle="Positive actions and success states"
+    colors={{
+      'Main': colors.success.main,
+      'Light': colors.success.light,
+      'Dark': colors.success.dark,
+      'Contrast': colors.success.contrast,
+    }}
+  />
+  <ColorItem
+    title="Warning"
+    subtitle="Warning states and caution"
+    colors={{
+      'Main': colors.warning.main,
+      'Light': colors.warning.light,
+      'Dark': colors.warning.dark,
+      'Contrast': colors.warning.contrast,
+    }}
+  />
+  <ColorItem
+    title="Error"
+    subtitle="Error states and destructive actions"
+    colors={{
+      'Main': colors.error.main,
+      'Light': colors.error.light,
+      'Dark': colors.error.dark,
+      'Contrast': colors.error.contrast,
+    }}
+  />
+  <ColorItem
+    title="Info"
+    subtitle="Informational states"
+    colors={{
+      'Main': colors.info.main,
+      'Light': colors.info.light,
+      'Dark': colors.info.dark,
+      'Contrast': colors.info.contrast,
+    }}
+  />
+  <ColorItem
+    title="Neutral"
+    subtitle="Neutral states and disabled elements"
+    colors={{
+      'Main': colors.neutral.main,
+      'Light': colors.neutral.light,
+      'Dark': colors.neutral.dark,
+      'Contrast': colors.neutral.contrast,
+    }}
+  />
+</ColorPalette>
+
+## Color Roles
+
+Functional color assignments for common UI elements:
+
+- **Primary**: `{colorRoles.primary}` - Primary brand color
+- **Secondary**: `{colorRoles.secondary}` - Secondary brand color
+- **Text**: `{colorRoles.text}` - Body text color
+- **Background**: `{colorRoles.background}` - Page background
+- **Border**: `{colorRoles.border}` - Default border color
+- **Disabled**: `{colorRoles.disabled}` - Disabled state color
+
+## Usage
+
+```tsx
+import { colors } from '@bg-kit/design-system/tokens';
+
+// Using semantic colors
+<Button style={{ backgroundColor: colors.success.main }}>
+  Success Button
+</Button>
+
+<Alert style={{ color: colors.error.main }}>
+  Error message
+</Alert>
+```
+
+## Accessibility
+
+All color combinations meet WCAG 2.1 AA contrast requirements:
+- Main + Contrast: At least 4.5:1 contrast ratio
+- Light variants: For backgrounds
+- Dark variants: For emphasis

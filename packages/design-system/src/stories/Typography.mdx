@@ -1,0 +1,117 @@
+import { Meta, Typeset } from '@storybook/blocks';
+import { typography, textStyles } from '../tokens/typography';
+
+<Meta title="Design System/Typography" />
+
+# Typography
+
+Our typography system provides consistent, accessible text styles across the application.
+
+## Font Family
+
+**Primary**: {typography.fontFamily.primary}
+
+**Monospace**: {typography.fontFamily.monospace}
+
+## Type Scale
+
+<Typeset
+  fontSizes={[
+    typography.fontSize.xs,
+    typography.fontSize.sm,
+    typography.fontSize.md,
+    typography.fontSize.lg,
+    typography.fontSize.xl,
+    typography.fontSize['2xl'],
+    typography.fontSize['3xl'],
+  ]}
+  fontWeight={typography.fontWeight.regular}
+  sampleText="The quick brown fox jumps over the lazy dog"
+  fontFamily={typography.fontFamily.primary}
+/>
+
+## Text Styles
+
+### Headings
+
+<div style={{ marginBottom: '2rem' }}>
+  <h1 style={textStyles.h1}>Heading 1 - Page Title</h1>
+  <p style={{ color: '#666', fontSize: '14px' }}>
+    Font size: {textStyles.h1.fontSize}, Weight: {textStyles.h1.fontWeight}, Line height: {textStyles.h1.lineHeight}
+  </p>
+</div>
+
+<div style={{ marginBottom: '2rem' }}>
+  <h2 style={textStyles.h2}>Heading 2 - Section Header</h2>
+  <p style={{ color: '#666', fontSize: '14px' }}>
+    Font size: {textStyles.h2.fontSize}, Weight: {textStyles.h2.fontWeight}, Line height: {textStyles.h2.lineHeight}
+  </p>
+</div>
+
+<div style={{ marginBottom: '2rem' }}>
+  <h3 style={textStyles.h3}>Heading 3 - Subsection Header</h3>
+  <p style={{ color: '#666', fontSize: '14px' }}>
+    Font size: {textStyles.h3.fontSize}, Weight: {textStyles.h3.fontWeight}, Line height: {textStyles.h3.lineHeight}
+  </p>
+</div>
+
+### Body Text
+
+<div style={{ marginBottom: '2rem' }}>
+  <p style={textStyles.body}>
+    This is body text. The quick brown fox jumps over the lazy dog. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  </p>
+  <p style={{ color: '#666', fontSize: '14px' }}>
+    Font size: {textStyles.body.fontSize}, Weight: {textStyles.body.fontWeight}, Line height: {textStyles.body.lineHeight}
+  </p>
+</div>
+
+### Small Text
+
+<div style={{ marginBottom: '2rem' }}>
+  <p style={textStyles.small}>
+    This is small text for secondary information or disclaimers.
+  </p>
+  <p style={{ color: '#666', fontSize: '14px' }}>
+    Font size: {textStyles.small.fontSize}, Weight: {textStyles.small.fontWeight}, Line height: {textStyles.small.lineHeight}
+  </p>
+</div>
+
+### Labels & Captions
+
+<div style={{ marginBottom: '2rem' }}>
+  <label style={textStyles.label}>Form Label</label>
+  <p style={{ color: '#666', fontSize: '14px', marginTop: '0.5rem' }}>
+    Font size: {textStyles.label.fontSize}, Weight: {textStyles.label.fontWeight}
+  </p>
+</div>
+
+<div style={{ marginBottom: '2rem' }}>
+  <p style={textStyles.caption}>This is caption text for image descriptions or metadata</p>
+  <p style={{ color: '#666', fontSize: '14px' }}>
+    Font size: {textStyles.caption.fontSize}, Weight: {textStyles.caption.fontWeight}
+  </p>
+</div>
+
+## Font Weights
+
+- **Regular (400)**: {typography.fontWeight.regular}
+- **Medium (500)**: {typography.fontWeight.medium}
+- **Semibold (600)**: {typography.fontWeight.semibold}
+- **Bold (700)**: {typography.fontWeight.bold}
+
+## Line Heights
+
+- **Tight**: {typography.lineHeight.tight} - For headings
+- **Normal**: {typography.lineHeight.normal} - For body text
+- **Relaxed**: {typography.lineHeight.relaxed} - For readability
+
+## Usage
+
+```tsx
+import { textStyles } from '@bg-kit/design-system/tokens';
+
+<h1 style={textStyles.h1}>Page Title</h1>
+<p style={textStyles.body}>Body content</p>
+<label style={textStyles.label}>Input Label</label>
+```

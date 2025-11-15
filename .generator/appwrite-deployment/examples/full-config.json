@@ -1,0 +1,129 @@
+{
+  "$schema": "../generator-config.json",
+  "projectName": "cannabis-codex",
+
+  "domain": {
+    "rootDomain": "singularity-labs.org",
+    "appwriteSubdomain": "appwrite",
+    "previewSubdomainPattern": "pr-{number}"
+  },
+
+  "vpsProvider": {
+    "provider": "vultr",
+    "apiKey": "$VULTR_API_KEY",
+    "region": "ewr",
+    "plan": "vc2-4c-8gb",
+    "os": "Ubuntu 22.04 LTS",
+    "enableBackups": true,
+    "enableIPv6": true
+  },
+
+  "dnsProvider": {
+    "provider": "cloudflare",
+    "apiToken": "$CLOUDFLARE_API_TOKEN",
+    "zoneId": "1234567890abcdef1234567890abcdef",
+    "ttl": 1,
+    "proxied": false
+  },
+
+  "appwrite": {
+    "version": "1.5.7",
+    "adminEmail": "admin@singularity-labs.org",
+    "adminPassword": "$APPWRITE_ADMIN_PASSWORD",
+    "features": {
+      "enableFunctions": true,
+      "enableMessaging": true,
+      "enableStorage": true
+    }
+  },
+
+  "deploymentEnvironments": [
+    {
+      "name": "production",
+      "branch": "main",
+      "requiresApproval": true,
+      "projectId": "production"
+    },
+    {
+      "name": "staging",
+      "branch": "staging",
+      "requiresApproval": false,
+      "projectId": "staging"
+    },
+    {
+      "name": "qa",
+      "branch": "qa",
+      "requiresApproval": false,
+      "projectId": "qa"
+    },
+    {
+      "name": "development",
+      "branch": "dev",
+      "requiresApproval": false,
+      "projectId": "development"
+    }
+  ],
+
+  "previewEnvironments": {
+    "enabled": true,
+    "autoProvision": true,
+    "autoTeardown": true,
+    "commentOnPR": true
+  },
+
+  "monitoring": {
+    "enabled": true,
+    "prometheus": {
+      "port": 9090,
+      "retentionDays": 15,
+      "scrapeInterval": "15s"
+    },
+    "grafana": {
+      "port": 3000,
+      "adminPassword": "$GRAFANA_ADMIN_PASSWORD"
+    },
+    "alerting": {
+      "email": "alerts@singularity-labs.org",
+      "slackWebhook": "$SLACK_WEBHOOK_URL",
+      "pagerdutyKey": "$PAGERDUTY_SERVICE_KEY",
+      "thresholds": {
+        "cpuUsagePercent": 80,
+        "memoryUsagePercent": 85,
+        "diskUsagePercent": 90,
+        "responseTimeMs": 5000
+      }
+    },
+    "logging": {
+      "retentionDays": 7,
+      "maxLogSizeMB": 100
+    }
+  },
+
+  "security": {
+    "sshKeyPath": "~/.ssh/appwrite_deploy_key",
+    "firewallRules": [
+      {
+        "port": 80,
+        "protocol": "tcp",
+        "source": "0.0.0.0/0"
+      },
+      {
+        "port": 443,
+        "protocol": "tcp",
+        "source": "0.0.0.0/0"
+      },
+      {
+        "port": 22,
+        "protocol": "tcp",
+        "source": "0.0.0.0/0"
+      }
+    ],
+    "enableSSL": true,
+    "sslEmail": "admin@singularity-labs.org"
+  },
+
+  "github": {
+    "repository": "singularity-labs/cannabis-codex",
+    "secretsPrefix": "APPWRITE_"
+  }
+}

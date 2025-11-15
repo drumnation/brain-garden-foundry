@@ -1,0 +1,99 @@
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { ThemeProvider } from '@bg-kit/design-system';
+import { {{pascalCase name}} } from './{{pascalCase name}}';
+
+describe('{{pascalCase name}}', () => {
+  it('should render with required props', () => {
+    render(
+      <ThemeProvider>
+        <{{pascalCase name}} title="Test Title" />
+      </ThemeProvider>
+    );
+
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  it('should render description when provided', () => {
+    render(
+      <ThemeProvider>
+        <{{pascalCase name}} title="Test" description="Test description" />
+      </ThemeProvider>
+    );
+
+    expect(screen.getByText('Test description')).toBeInTheDocument();
+  });
+
+  it('should render all color variants', () => {
+    const variants = ['primary', 'success', 'warning', 'error', 'info'] as const;
+
+    variants.forEach(variant => {
+      const { unmount } = render(
+        <ThemeProvider>
+          <{{pascalCase name}} title={`${variant} variant`} variant={variant} />
+        </ThemeProvider>
+      );
+
+      expect(screen.getByText(`${variant} variant`)).toBeInTheDocument();
+      unmount();
+    });
+  });
+
+  it('should render action button when provided', () => {
+    const handleAction = vi.fn();
+
+    render(
+      <ThemeProvider>
+        <{{pascalCase name}}
+          title="Test"
+          actionLabel="Click Me"
+          onAction={handleAction}
+        />
+      </ThemeProvider>
+    );
+
+    const button = screen.getByRole('button', { name: 'Click Me' });
+    expect(button).toBeInTheDocument();
+  });
+
+  it('should call onAction when button clicked', () => {
+    const handleAction = vi.fn();
+
+    render(
+      <ThemeProvider>
+        <{{pascalCase name}}
+          title="Test"
+          actionLabel="Click Me"
+          onAction={handleAction}
+        />
+      </ThemeProvider>
+    );
+
+    const button = screen.getByRole('button', { name: 'Click Me' });
+    button.click();
+
+    expect(handleAction).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not render button when actionLabel not provided', () => {
+    render(
+      <ThemeProvider>
+        <{{pascalCase name}} title="Test" />
+      </ThemeProvider>
+    );
+
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('should render icon when provided', () => {
+    const TestIcon = () => <svg data-testid="test-icon">Icon</svg>;
+
+    render(
+      <ThemeProvider>
+        <{{pascalCase name}} title="Test" icon={<TestIcon />} />
+      </ThemeProvider>
+    );
+
+    expect(screen.getByTestId('test-icon')).toBeInTheDocument();
+  });
+});

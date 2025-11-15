@@ -1,0 +1,622 @@
+{
+  "name": "appwrite-deployment-orchestrator",
+  "version": "1.0.0",
+  "description": "Complete Appwrite deployment orchestrator with VPS provisioning, installation, DNS, preview environments, CI/CD, and monitoring",
+  "category": "infrastructure",
+  "tags": ["appwrite", "deployment", "infrastructure", "monitoring", "ci-cd"],
+
+  "generatorType": "orchestrator-with-specialists",
+  "outputType": "claude-commands",
+
+  "schema": {
+    "type": "object",
+    "required": [
+      "projectName",
+      "domain",
+      "vpsProvider",
+      "dnsProvider",
+      "deploymentEnvironments"
+    ],
+    "properties": {
+      "projectName": {
+        "type": "string",
+        "description": "Name of the project (used for labeling, no spaces)",
+        "pattern": "^[a-z0-9-]+$",
+        "examples": ["cannabis-codex", "pm-agent", "brain-garden"]
+      },
+
+      "domain": {
+        "type": "object",
+        "required": ["rootDomain", "appwriteSubdomain"],
+        "properties": {
+          "rootDomain": {
+            "type": "string",
+            "description": "Root domain for the deployment",
+            "examples": ["singularity-labs.org", "example.com"]
+          },
+          "appwriteSubdomain": {
+            "type": "string",
+            "description": "Subdomain for Appwrite instance",
+            "default": "appwrite",
+            "examples": ["appwrite", "api", "backend"]
+          },
+          "previewSubdomainPattern": {
+            "type": "string",
+            "description": "Pattern for preview environment subdomains",
+            "default": "pr-{number}",
+            "examples": ["pr-{number}", "preview-{number}", "staging-{number}"]
+          }
+        }
+      },
+
+      "vpsProvider": {
+        "type": "object",
+        "required": ["provider", "apiKey", "region", "plan"],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["vultr", "digitalocean", "linode", "hetzner"],
+            "description": "VPS provider to use"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "API key for VPS provider (use environment variable)",
+            "examples": ["$VULTR_API_KEY", "$DO_API_KEY"]
+          },
+          "region": {
+            "type": "string",
+            "description": "Data center region",
+            "examples": ["ewr", "nyc3", "fra1"]
+          },
+          "plan": {
+            "type": "string",
+            "description": "VPS plan identifier",
+            "examples": ["vc2-4c-8gb", "s-4vcpu-8gb", "cx31"]
+          },
+          "os": {
+            "type": "string",
+            "description": "Operating system",
+            "default": "Ubuntu 22.04 LTS",
+            "examples": ["Ubuntu 22.04 LTS", "Ubuntu 20.04 LTS"]
+          },
+          "enableBackups": {
+            "type": "boolean",
+            "description": "Enable automatic backups",
+            "default": true
+          },
+          "enableIPv6": {
+            "type": "boolean",
+            "description": "Enable IPv6",
+            "default": true
+          }
+        }
+      },
+
+      "dnsProvider": {
+        "type": "object",
+        "required": ["provider", "apiToken", "zoneId"],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": ["cloudflare", "route53", "digitalocean"],
+            "description": "DNS provider to use"
+          },
+          "apiToken": {
+            "type": "string",
+            "description": "API token for DNS provider (use environment variable)",
+            "examples": ["$CLOUDFLARE_API_TOKEN", "$AWS_ACCESS_KEY_ID"]
+          },
+          "zoneId": {
+            "type": "string",
+            "description": "DNS zone ID for the root domain",
+            "examples": ["1234567890abcdef1234567890abcdef"]
+          },
+          "ttl": {
+            "type": "number",
+            "description": "DNS record TTL in seconds",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 86400
+          },
+          "proxied": {
+            "type": "boolean",
+            "description": "Enable DNS proxy (Cloudflare only)",
+            "default": false
+          }
+        }
+      },
+
+      "appwrite": {
+        "type": "object",
+        "required": ["version"],
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "Appwrite version to install",
+            "default": "1.5.7",
+            "examples": ["1.5.7", "1.5.6", "latest"]
+          },
+          "adminEmail": {
+            "type": "string",
+            "format": "email",
+            "description": "Admin user email",
+            "examples": ["admin@singularity-labs.org"]
+          },
+          "adminPassword": {
+            "type": "string",
+            "description": "Admin user password (use environment variable)",
+            "examples": ["$APPWRITE_ADMIN_PASSWORD"]
+          },
+          "features": {
+            "type": "object",
+            "properties": {
+              "enableFunctions": {
+                "type": "boolean",
+                "description": "Enable Appwrite Functions",
+                "default": true
+              },
+              "enableMessaging": {
+                "type": "boolean",
+                "description": "Enable Messaging service",
+                "default": true
+              },
+              "enableStorage": {
+                "type": "boolean",
+                "description": "Enable Storage service",
+                "default": true
+              }
+            }
+          }
+        }
+      },
+
+      "deploymentEnvironments": {
+        "type": "array",
+        "description": "Deployment environments to configure",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": ["name", "branch"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "enum": ["production", "staging", "qa", "development"],
+              "description": "Environment name"
+            },
+            "branch": {
+              "type": "string",
+              "description": "Git branch mapped to this environment",
+              "examples": ["main", "staging", "qa", "dev"]
+            },
+            "requiresApproval": {
+              "type": "boolean",
+              "description": "Require manual approval for deployments",
+              "default": false
+            },
+            "projectId": {
+              "type": "string",
+              "description": "Appwrite project ID for this environment",
+              "examples": ["production", "staging", "qa", "development"]
+            }
+          }
+        },
+        "default": [
+          {
+            "name": "production",
+            "branch": "main",
+            "requiresApproval": true,
+            "projectId": "production"
+          },
+          {
+            "name": "staging",
+            "branch": "staging",
+            "requiresApproval": false,
+            "projectId": "staging"
+          }
+        ]
+      },
+
+      "previewEnvironments": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable preview environments for PRs",
+            "default": true
+          },
+          "autoProvision": {
+            "type": "boolean",
+            "description": "Automatically provision on PR open",
+            "default": true
+          },
+          "autoTeardown": {
+            "type": "boolean",
+            "description": "Automatically teardown on PR close",
+            "default": true
+          },
+          "commentOnPR": {
+            "type": "boolean",
+            "description": "Post preview URL as PR comment",
+            "default": true
+          }
+        }
+      },
+
+      "monitoring": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable monitoring stack",
+            "default": true
+          },
+          "prometheus": {
+            "type": "object",
+            "properties": {
+              "port": {
+                "type": "number",
+                "default": 9090
+              },
+              "retentionDays": {
+                "type": "number",
+                "default": 15,
+                "minimum": 1,
+                "maximum": 365
+              },
+              "scrapeInterval": {
+                "type": "string",
+                "default": "15s",
+                "examples": ["15s", "30s", "1m"]
+              }
+            }
+          },
+          "grafana": {
+            "type": "object",
+            "properties": {
+              "port": {
+                "type": "number",
+                "default": 3000
+              },
+              "adminPassword": {
+                "type": "string",
+                "description": "Grafana admin password (use environment variable)",
+                "examples": ["$GRAFANA_ADMIN_PASSWORD"]
+              }
+            }
+          },
+          "alerting": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Email for critical alerts",
+                "examples": ["alerts@singularity-labs.org"]
+              },
+              "slackWebhook": {
+                "type": "string",
+                "description": "Slack webhook URL (optional)",
+                "examples": ["$SLACK_WEBHOOK_URL"]
+              },
+              "pagerdutyKey": {
+                "type": "string",
+                "description": "PagerDuty service key (optional)",
+                "examples": ["$PAGERDUTY_SERVICE_KEY"]
+              },
+              "thresholds": {
+                "type": "object",
+                "properties": {
+                  "cpuUsagePercent": {
+                    "type": "number",
+                    "default": 80,
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "memoryUsagePercent": {
+                    "type": "number",
+                    "default": 85,
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "diskUsagePercent": {
+                    "type": "number",
+                    "default": 90,
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "responseTimeMs": {
+                    "type": "number",
+                    "default": 5000,
+                    "minimum": 100
+                  }
+                }
+              }
+            }
+          },
+          "logging": {
+            "type": "object",
+            "properties": {
+              "retentionDays": {
+                "type": "number",
+                "default": 7,
+                "minimum": 1,
+                "maximum": 90
+              },
+              "maxLogSizeMB": {
+                "type": "number",
+                "default": 100,
+                "minimum": 10
+              }
+            }
+          }
+        }
+      },
+
+      "security": {
+        "type": "object",
+        "properties": {
+          "sshKeyPath": {
+            "type": "string",
+            "description": "Path to SSH private key for VPS access",
+            "examples": ["~/.ssh/id_ed25519", "~/.ssh/appwrite_deploy_key"]
+          },
+          "firewallRules": {
+            "type": "array",
+            "description": "Custom firewall rules",
+            "items": {
+              "type": "object",
+              "properties": {
+                "port": {
+                  "type": "number"
+                },
+                "protocol": {
+                  "type": "string",
+                  "enum": ["tcp", "udp"]
+                },
+                "source": {
+                  "type": "string",
+                  "description": "Source IP or CIDR",
+                  "examples": ["0.0.0.0/0", "192.168.1.0/24"]
+                }
+              }
+            },
+            "default": [
+              {"port": 80, "protocol": "tcp", "source": "0.0.0.0/0"},
+              {"port": 443, "protocol": "tcp", "source": "0.0.0.0/0"},
+              {"port": 22, "protocol": "tcp", "source": "0.0.0.0/0"}
+            ]
+          },
+          "enableSSL": {
+            "type": "boolean",
+            "description": "Enable SSL/TLS with Let's Encrypt",
+            "default": true
+          },
+          "sslEmail": {
+            "type": "string",
+            "format": "email",
+            "description": "Email for Let's Encrypt certificate notifications",
+            "examples": ["admin@singularity-labs.org"]
+          }
+        }
+      },
+
+      "github": {
+        "type": "object",
+        "description": "GitHub configuration for CI/CD",
+        "properties": {
+          "repository": {
+            "type": "string",
+            "description": "GitHub repository (owner/repo)",
+            "examples": ["singularity-labs/cannabis-codex"]
+          },
+          "secretsPrefix": {
+            "type": "string",
+            "description": "Prefix for GitHub secrets",
+            "default": "APPWRITE_",
+            "examples": ["APPWRITE_", "API_", "BACKEND_"]
+          }
+        }
+      }
+    }
+  },
+
+  "templates": [
+    {
+      "source": "templates/orchestrator.md.hbs",
+      "destination": ".claude/commands/{{kebabCase projectName}}-deploy.md",
+      "description": "Main orchestrator slash command"
+    },
+    {
+      "source": "templates/vps-provisioner.md.hbs",
+      "destination": ".claude/commands/{{kebabCase projectName}}-vps-provisioner.md",
+      "description": "VPS provisioning specialist"
+    },
+    {
+      "source": "templates/appwrite-installer.md.hbs",
+      "destination": ".claude/commands/{{kebabCase projectName}}-appwrite-installer.md",
+      "description": "Appwrite installation specialist"
+    },
+    {
+      "source": "templates/dns-manager.md.hbs",
+      "destination": ".claude/commands/{{kebabCase projectName}}-dns-manager.md",
+      "description": "DNS configuration specialist"
+    },
+    {
+      "source": "templates/preview-manager.md.hbs",
+      "destination": ".claude/commands/{{kebabCase projectName}}-preview-manager.md",
+      "description": "Preview environments specialist"
+    },
+    {
+      "source": "templates/cicd-builder.md.hbs",
+      "destination": ".claude/commands/{{kebabCase projectName}}-cicd-builder.md",
+      "description": "CI/CD pipeline specialist"
+    },
+    {
+      "source": "templates/monitoring-setup.md.hbs",
+      "destination": ".claude/commands/{{kebabCase projectName}}-monitoring-setup.md",
+      "description": "Monitoring setup specialist"
+    },
+    {
+      "source": "templates/github-workflows/deploy.yml.hbs",
+      "destination": ".github/workflows/{{kebabCase projectName}}-deploy.yml",
+      "description": "GitHub Actions deployment workflow"
+    },
+    {
+      "source": "templates/github-workflows/preview.yml.hbs",
+      "destination": ".github/workflows/{{kebabCase projectName}}-preview.yml",
+      "description": "GitHub Actions preview environment workflow"
+    },
+    {
+      "source": "templates/arbor-integration-plan.md.hbs",
+      "destination": "docs/generators/appwrite-deployment-integration-plan.md",
+      "description": "Arbor integration execution plan"
+    }
+  ],
+
+  "prompts": [
+    {
+      "type": "input",
+      "name": "projectName",
+      "message": "What is your project name? (lowercase, no spaces)"
+    },
+    {
+      "type": "input",
+      "name": "domain.rootDomain",
+      "message": "What is your root domain? (e.g., example.com)"
+    },
+    {
+      "type": "input",
+      "name": "domain.appwriteSubdomain",
+      "message": "What subdomain for Appwrite?",
+      "default": "appwrite"
+    },
+    {
+      "type": "list",
+      "name": "vpsProvider.provider",
+      "message": "Which VPS provider?",
+      "choices": ["vultr", "digitalocean", "linode", "hetzner"]
+    },
+    {
+      "type": "input",
+      "name": "vpsProvider.region",
+      "message": "Which region? (e.g., ewr, nyc3, fra1)"
+    },
+    {
+      "type": "input",
+      "name": "vpsProvider.plan",
+      "message": "Which VPS plan? (e.g., vc2-4c-8gb)",
+      "default": "vc2-4c-8gb"
+    },
+    {
+      "type": "list",
+      "name": "dnsProvider.provider",
+      "message": "Which DNS provider?",
+      "choices": ["cloudflare", "route53", "digitalocean"]
+    },
+    {
+      "type": "input",
+      "name": "dnsProvider.zoneId",
+      "message": "DNS Zone ID?"
+    },
+    {
+      "type": "input",
+      "name": "appwrite.version",
+      "message": "Appwrite version?",
+      "default": "1.5.7"
+    },
+    {
+      "type": "input",
+      "name": "appwrite.adminEmail",
+      "message": "Admin email?"
+    },
+    {
+      "type": "checkbox",
+      "name": "deploymentEnvironments",
+      "message": "Which deployment environments?",
+      "choices": [
+        {"name": "Production (main branch)", "value": {"name": "production", "branch": "main", "requiresApproval": true, "projectId": "production"}, "checked": true},
+        {"name": "Staging (staging branch)", "value": {"name": "staging", "branch": "staging", "requiresApproval": false, "projectId": "staging"}, "checked": true},
+        {"name": "QA (qa branch)", "value": {"name": "qa", "branch": "qa", "requiresApproval": false, "projectId": "qa"}, "checked": false},
+        {"name": "Development (dev branch)", "value": {"name": "development", "branch": "dev", "requiresApproval": false, "projectId": "development"}, "checked": false}
+      ]
+    },
+    {
+      "type": "confirm",
+      "name": "previewEnvironments.enabled",
+      "message": "Enable preview environments for PRs?",
+      "default": true
+    },
+    {
+      "type": "confirm",
+      "name": "monitoring.enabled",
+      "message": "Enable monitoring stack (Prometheus + Grafana)?",
+      "default": true
+    },
+    {
+      "type": "input",
+      "name": "monitoring.alerting.email",
+      "message": "Email for critical alerts?",
+      "when": "monitoring.enabled"
+    },
+    {
+      "type": "input",
+      "name": "github.repository",
+      "message": "GitHub repository (owner/repo)?"
+    }
+  ],
+
+  "dependencies": {
+    "runtime": [],
+    "devDependencies": []
+  },
+
+  "postGeneration": {
+    "instructions": [
+      "1. Review generated files in .claude/commands/ and .github/workflows/",
+      "2. Set required GitHub secrets:",
+      "   - VULTR_API_KEY (or provider-specific key)",
+      "   - CLOUDFLARE_API_TOKEN (or provider-specific token)",
+      "   - APPWRITE_ADMIN_PASSWORD",
+      "   - GRAFANA_ADMIN_PASSWORD",
+      "   - SMTP credentials (for alerts)",
+      "3. Update .env files with generated secrets",
+      "4. Review Arbor integration plan in docs/generators/",
+      "5. Run orchestrator: /{{kebabCase projectName}}-deploy",
+      "6. Follow Phase 00-08 execution plan",
+      "7. Validate deployment with monitoring dashboards"
+    ],
+    "arborIntegration": {
+      "enabled": true,
+      "planPath": "docs/generators/appwrite-deployment-integration-plan.md",
+      "phases": [
+        "00-research",
+        "01-infrastructure",
+        "02-installation",
+        "03-dns-ssl",
+        "04-preview-environments",
+        "05-ci-cd",
+        "06-monitoring",
+        "07-validation",
+        "08-documentation"
+      ]
+    }
+  },
+
+  "metadata": {
+    "author": "Brain Garden Generator System",
+    "createdAt": "2025-01-15",
+    "updatedAt": "2025-01-15",
+    "license": "MIT",
+    "documentation": "README.md",
+    "estimatedGenerationTime": "< 30 seconds",
+    "estimatedDeploymentTime": "45-60 minutes",
+    "complexity": "advanced",
+    "prerequisites": [
+      "VPS provider API access",
+      "DNS provider API access",
+      "GitHub repository with Actions enabled",
+      "SSH key pair generated",
+      "Email account for alerts (SMTP)"
+    ]
+  }
+}

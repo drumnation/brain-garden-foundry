@@ -1,0 +1,9 @@
+{
+  "01-scaffold": 2,
+  "02-generation": 81,
+  "03-dependencies": 6,
+  "04-build": 2,
+  "05-dev-server": 0,
+  "06-verification": 3,
+  "total": 94
+}

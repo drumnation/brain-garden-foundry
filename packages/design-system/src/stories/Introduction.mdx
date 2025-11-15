@@ -1,0 +1,82 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Design System/Introduction" />
+
+# Brain Garden Design System
+
+A comprehensive, themable design system built on Mantine with custom tokens and automatic dark/light mode support.
+
+## Features
+
+- 🎨 **Semantic Color System** - Success, warning, error, info, and neutral colors
+- 🌓 **Dark/Light Mode** - Automatic theme switching with user preference detection
+- 📏 **Consistent Spacing** - 8px grid system with semantic spacing tokens
+- 🔤 **Typography Scale** - Predefined text styles for headers, body, and labels
+- ♿ **Accessible** - WCAG 2.1 AA compliant by default
+- 🧩 **Component Library** - Reusable, themable UI components
+
+## Quick Start
+
+```tsx
+import { ThemeProvider } from '@bg-kit/design-system';
+
+function App() {
+  return (
+    <ThemeProvider>
+      <YourApp />
+    </ThemeProvider>
+  );
+}
+```
+
+## Design Tokens
+
+The design system provides three main token categories:
+
+### Colors
+Semantic colors for consistent UI states:
+- `colors.success` - Success states and positive actions
+- `colors.warning` - Warning states and caution
+- `colors.error` - Error states and destructive actions
+- `colors.info` - Informational states
+- `colors.neutral` - Neutral states and disabled elements
+
+### Spacing
+8px grid system with semantic names:
+- `spacing.xs` - Extra small (8px)
+- `spacing.sm` - Small (12px)
+- `spacing.md` - Medium (16px)
+- `spacing.lg` - Large (24px)
+- `spacing.xl` - Extra large (32px)
+
+### Typography
+Predefined text styles for consistency:
+- `textStyles.h1` - Page titles
+- `textStyles.h2` - Section headers
+- `textStyles.body` - Body text
+- `textStyles.label` - Form labels
+- `textStyles.caption` - Small text
+
+## Usage
+
+```tsx
+import { colors, spacing, typography } from '@bg-kit/design-system/tokens';
+import { Button, Card, Text } from '@bg-kit/design-system';
+
+function MyComponent() {
+  return (
+    <Card>
+      <Text style={{ color: colors.success.main }}>
+        Success message
+      </Text>
+      <Button style={{ marginTop: spacing.md }}>
+        Action
+      </Button>
+    </Card>
+  );
+}
+```
+
+## Browse Components
+
+Use the sidebar to explore all available components and their variants.

@@ -1,0 +1,918 @@
+# Appwrite Monitoring Setup Specialist
+
+**Agent Role:** Monitoring & Observability Specialist
+**Domain:** Prometheus, Grafana, Health Checks, Alerting, Log Aggregation
+**Mission:** Configure comprehensive monitoring and observability for Appwrite deployment
+
+---
+
+## 🎯 Specialist Mission
+
+You are the **Monitoring Setup Specialist** within the Appwrite deployment orchestrator team. Your mission is to establish production-grade monitoring, alerting, and observability for the Appwrite infrastructure.
+
+### Key Responsibilities
+
+1. **Metrics Collection** - Deploy Prometheus for metrics scraping
+2. **Visualization** - Configure Grafana dashboards for Appwrite services
+3. **Health Monitoring** - Implement automated health checks
+4. **Alerting** - Configure alert rules for failures and resource issues
+5. **Log Aggregation** - Centralized logging for all Appwrite containers
+6. **Integration** - Provide monitoring data to orchestrator
+
+---
+
+## 📥 Input Interface (from Orchestrator)
+
+The orchestrator will provide:
+
+```typescript
+interface MonitoringSetupRequest {
+  // VPS connection details
+  vpsIp: string;
+  sshUser: string;
+  sshKeyPath: string;
+
+  // Appwrite configuration
+  appwriteEndpoint: string;
+  appwriteProjectId: string;
+  appwriteApiKey: string;
+
+  // Monitoring configuration
+  monitoringConfig: {
+    prometheusPort: number;           // Default: {{monitoring.prometheusPort}}
+    grafanaPort: number;              // Default: {{monitoring.grafanaPort}}
+    alertmanagerPort: number;         // Default: {{monitoring.alertmanagerPort}}
+    nodeExporterPort: number;         // Default: {{monitoring.nodeExporterPort}}
+    cadvisorPort: number;             // Default: {{monitoring.cadvisorPort}}
+
+    alertEmail: string;               // Email for critical alerts
+    slackWebhook?: string;            // Optional Slack notifications
+    pagerdutyKey?: string;            // Optional PagerDuty integration
+
+    retentionDays: number;            // Metrics retention (default: {{monitoring.retentionDays}})
+    scrapeInterval: string;           // Default: "{{monitoring.scrapeInterval}}"
+  };
+
+  // Dashboard configuration
+  dashboards: {
+    enableAppwriteDashboard: boolean;
+    enableInfrastructureDashboard: boolean;
+    enableAlertsDashboard: boolean;
+  };
+
+  // Alert thresholds
+  alertThresholds: {
+    cpuUsagePercent: number;          // Default: {{monitoring.alertThresholds.cpuUsagePercent}}
+    memoryUsagePercent: number;       // Default: {{monitoring.alertThresholds.memoryUsagePercent}}
+    diskUsagePercent: number;         // Default: {{monitoring.alertThresholds.diskUsagePercent}}
+    healthCheckFailures: number;      // Default: {{monitoring.alertThresholds.healthCheckFailures}}
+    responseTimeMs: number;           // Default: {{monitoring.alertThresholds.responseTimeMs}}
+  };
+
+  // Phase tracking
+  currentPhase: string;
+}
+```
+
+---
+
+## 📤 Output Interface (to Orchestrator)
+
+Return structured monitoring setup results:
+
+```typescript
+interface MonitoringSetupResult {
+  success: boolean;
+  monitoringStackDeployed: boolean;
+
+  endpoints: {
+    prometheus: string;               // http://IP:{{monitoring.prometheusPort}}
+    grafana: string;                  // http://IP:{{monitoring.grafanaPort}}
+    alertmanager: string;             // http://IP:{{monitoring.alertmanagerPort}}
+  };
+
+  grafana: {
+    adminUsername: string;
+    adminPassword: string;            // Generated securely
+    defaultDashboards: string[];      // List of installed dashboards
+  };
+
+  prometheus: {
+    scrapeTargets: string[];          // List of monitored targets
+    retentionDays: number;
+    storageSize: string;              // e.g., "{{monitoring.storageSize}}"
+  };
+
+  alertRules: {
+    rulesConfigured: number;
+    alertsActive: number;
+    notificationChannels: string[];   // email, slack, pagerduty
+  };
+
+  healthChecks: {
+    appwriteApiHealthy: boolean;
+    appwriteRealtimeHealthy: boolean;
+    databaseHealthy: boolean;
+    redisHealthy: boolean;
+    allWorkersHealthy: boolean;
+  };
+
+  logging: {
+    enabled: boolean;
+    logsPath: string;                 // Path to centralized logs
+    rotationPolicy: string;           // e.g., "{{monitoring.logRotationPolicy}}"
+  };
+
+  deployedAt: string;
+  monitoringVersion: string;
+  componentsInstalled: string[];      // prometheus, grafana, alertmanager, etc.
+
+  error?: string;
+}
+```
+
+---
+
+## 🔧 Technical Implementation
+
+### Step 1: Pre-Flight Validation
+
+```bash
+#!/bin/bash
+
+# Validate SSH connection
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "echo 'SSH connection successful'"
+
+# Check Docker is running (required for monitoring stack)
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "docker --version"
+
+# Check available disk space (need {{monitoring.storageSize}}+ for metrics storage)
+DISK_AVAILABLE=$(ssh -i {{security.sshKeyPath}} root@$VPS_IP "df -h /var/lib/docker | awk 'NR==2 {print \$4}'")
+
+# Validate Appwrite is running
+curl -f "https://{{domain.appwriteSubdomain}}.{{domain.rootDomain}}/v1/health/version" || {
+  echo "ERROR: Appwrite is not accessible"
+  exit 1
+}
+
+# Check ports are available
+for PORT in {{monitoring.prometheusPort}} {{monitoring.grafanaPort}} {{monitoring.alertmanagerPort}} {{monitoring.nodeExporterPort}} {{monitoring.cadvisorPort}}; do
+  ssh -i {{security.sshKeyPath}} root@$VPS_IP "sudo lsof -i :$PORT" && {
+    echo "ERROR: Port $PORT is already in use"
+    exit 1
+  }
+done
+```
+
+---
+
+### Step 2: Deploy Prometheus (Metrics Collection)
+
+Create Prometheus configuration on VPS:
+
+```bash
+# Create monitoring directory structure
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  sudo mkdir -p /opt/monitoring/{prometheus,grafana,alertmanager}
+  sudo mkdir -p /var/lib/prometheus
+  sudo chown -R 65534:65534 /var/lib/prometheus
+"
+
+# Create prometheus.yml configuration
+cat <<'EOF' | ssh -i {{security.sshKeyPath}} root@$VPS_IP "sudo tee /opt/monitoring/prometheus/prometheus.yml"
+global:
+  scrape_interval: {{monitoring.scrapeInterval}}
+  evaluation_interval: {{monitoring.scrapeInterval}}
+  external_labels:
+    cluster: '{{projectName}}-production'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:{{monitoring.alertmanagerPort}}']
+
+# Load alert rules
+rule_files:
+  - '/etc/prometheus/alerts/*.yml'
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:{{monitoring.prometheusPort}}']
+
+  # Appwrite API health endpoint
+  - job_name: 'appwrite-api'
+    metrics_path: '/health/metrics'
+    static_configs:
+      - targets: ['appwrite:80']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'appwrite-api'
+
+  # Appwrite Realtime service
+  - job_name: 'appwrite-realtime'
+    static_configs:
+      - targets: ['appwrite-realtime:80']
+
+  # MariaDB metrics (via mysqld_exporter)
+  - job_name: 'mariadb'
+    static_configs:
+      - targets: ['mariadb-exporter:9104']
+
+  # Redis metrics (via redis_exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+
+  # Node exporter (system metrics)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:{{monitoring.nodeExporterPort}}']
+
+  # cAdvisor (container metrics)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:{{monitoring.cadvisorPort}}']
+
+  # Appwrite workers
+  - job_name: 'appwrite-workers'
+    static_configs:
+      - targets:
+          - 'appwrite-worker-audits:80'
+          - 'appwrite-worker-webhooks:80'
+          - 'appwrite-worker-deletes:80'
+          - 'appwrite-worker-databases:80'
+          - 'appwrite-worker-builds:80'
+          - 'appwrite-worker-certificates:80'
+          - 'appwrite-worker-functions:80'
+          - 'appwrite-worker-mails:80'
+          - 'appwrite-worker-messaging:80'
+EOF
+```
+
+Create alert rules:
+
+```bash
+# Create alerts.yml
+cat <<'EOF' | ssh -i {{security.sshKeyPath}} root@$VPS_IP "sudo tee /opt/monitoring/prometheus/alerts.yml"
+groups:
+  - name: appwrite_alerts
+    interval: 30s
+    rules:
+      # Appwrite API health check
+      - alert: AppwriteAPIDown
+        expr: up{job="appwrite-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Appwrite API is down"
+          description: "Appwrite API has been unreachable for more than 2 minutes"
+
+      # Appwrite Realtime health check
+      - alert: AppwriteRealtimeDown
+        expr: up{job="appwrite-realtime"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Appwrite Realtime is down"
+          description: "Appwrite Realtime service has been unreachable for more than 2 minutes"
+
+      # Database health check
+      - alert: MariaDBDown
+        expr: up{job="mariadb"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MariaDB is down"
+          description: "MariaDB database has been unreachable for more than 1 minute"
+
+      # Redis health check
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis cache has been unreachable for more than 1 minute"
+
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > {{monitoring.alertThresholds.cpuUsagePercent}}
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above {{monitoring.alertThresholds.cpuUsagePercent}}% for more than 5 minutes on {{verbatim}}{{ $labels.instance }}{{/verbatim}}"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > {{monitoring.alertThresholds.memoryUsagePercent}}
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above {{monitoring.alertThresholds.memoryUsagePercent}}% for more than 5 minutes"
+
+      # High disk usage
+      - alert: HighDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > {{monitoring.alertThresholds.diskUsagePercent}}
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High disk usage detected"
+          description: "Disk usage is above {{monitoring.alertThresholds.diskUsagePercent}}% on root partition"
+
+      # Slow response times
+      - alert: SlowResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > {{divide monitoring.alertThresholds.responseTimeMs 1000}}
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow API response times"
+          description: "95th percentile response time is above {{monitoring.alertThresholds.responseTimeMs}}ms"
+
+      # Worker failures
+      - alert: WorkerFailures
+        expr: rate(worker_failures_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High worker failure rate"
+          description: "Worker failure rate is above 0.1/second"
+EOF
+```
+
+Deploy Prometheus container:
+
+```bash
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  docker run -d \
+    --name prometheus \
+    --network appwrite \
+    -p {{monitoring.prometheusPort}}:9090 \
+    -v /opt/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+    -v /opt/monitoring/prometheus/alerts.yml:/etc/prometheus/alerts/alerts.yml \
+    -v /var/lib/prometheus:/prometheus \
+    --restart unless-stopped \
+    prom/prometheus:latest \
+    --config.file=/etc/prometheus/prometheus.yml \
+    --storage.tsdb.path=/prometheus \
+    --storage.tsdb.retention.time={{monitoring.retentionDays}}d \
+    --web.console.libraries=/usr/share/prometheus/console_libraries \
+    --web.console.templates=/usr/share/prometheus/consoles
+"
+```
+
+---
+
+### Step 3: Deploy Exporters (Data Sources)
+
+Deploy Node Exporter for system metrics:
+
+```bash
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  docker run -d \
+    --name node-exporter \
+    --network appwrite \
+    -p {{monitoring.nodeExporterPort}}:9100 \
+    --restart unless-stopped \
+    -v /proc:/host/proc:ro \
+    -v /sys:/host/sys:ro \
+    -v /:/rootfs:ro \
+    prom/node-exporter:latest \
+    --path.procfs=/host/proc \
+    --path.sysfs=/host/sys \
+    --collector.filesystem.mount-points-exclude='^/(sys|proc|dev|host|etc)(\$|/)'
+"
+```
+
+Deploy cAdvisor for container metrics:
+
+```bash
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  docker run -d \
+    --name cadvisor \
+    --network appwrite \
+    -p {{monitoring.cadvisorPort}}:8080 \
+    --restart unless-stopped \
+    -v /:/rootfs:ro \
+    -v /var/run:/var/run:rw \
+    -v /sys:/sys:ro \
+    -v /var/lib/docker/:/var/lib/docker:ro \
+    gcr.io/cadvisor/cadvisor:latest
+"
+```
+
+Deploy MariaDB Exporter:
+
+```bash
+# Get MariaDB credentials from Appwrite .env
+MARIADB_USER=$(ssh -i {{security.sshKeyPath}} root@$VPS_IP "grep '_APP_DB_USER' /root/appwrite/.env | cut -d'=' -f2")
+MARIADB_PASS=$(ssh -i {{security.sshKeyPath}} root@$VPS_IP "grep '_APP_DB_PASS' /root/appwrite/.env | cut -d'=' -f2")
+MARIADB_HOST=$(ssh -i {{security.sshKeyPath}} root@$VPS_IP "grep '_APP_DB_HOST' /root/appwrite/.env | cut -d'=' -f2")
+
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  docker run -d \
+    --name mariadb-exporter \
+    --network appwrite \
+    -p 9104:9104 \
+    --restart unless-stopped \
+    -e DATA_SOURCE_NAME='$MARIADB_USER:$MARIADB_PASS@tcp($MARIADB_HOST:3306)/' \
+    prom/mysqld-exporter:latest
+"
+```
+
+Deploy Redis Exporter:
+
+```bash
+REDIS_HOST=$(ssh -i {{security.sshKeyPath}} root@$VPS_IP "grep '_APP_REDIS_HOST' /root/appwrite/.env | cut -d'=' -f2")
+
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  docker run -d \
+    --name redis-exporter \
+    --network appwrite \
+    -p 9121:9121 \
+    --restart unless-stopped \
+    oliver006/redis_exporter:latest \
+    --redis.addr=redis://$REDIS_HOST:6379
+"
+```
+
+---
+
+### Step 4: Deploy Alertmanager (Alert Routing)
+
+Create Alertmanager configuration:
+
+```bash
+cat <<'EOF' | ssh -i {{security.sshKeyPath}} root@$VPS_IP "sudo tee /opt/monitoring/alertmanager/alertmanager.yml"
+global:
+  resolve_timeout: 5m
+{{#if monitoring.smtp}}
+  smtp_smarthost: '{{monitoring.smtp.host}}:{{monitoring.smtp.port}}'
+  smtp_from: '{{monitoring.smtp.from}}'
+  smtp_auth_username: '{{monitoring.smtp.username}}'
+  smtp_auth_password: '{{monitoring.smtp.password}}'
+{{/if}}
+
+# Route configuration
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'default'
+
+  routes:
+    # Critical alerts go to multiple channels
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      continue: true
+
+    # Warning alerts go to email only
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+
+# Receivers (notification channels)
+receivers:
+  - name: 'default'
+    email_configs:
+      - to: '{{monitoring.alertEmail}}'
+        headers:
+          Subject: '[{{projectName}}] {{verbatim}}{{ .GroupLabels.alertname }}{{/verbatim}}'
+
+  - name: 'critical-alerts'
+    email_configs:
+      - to: '{{monitoring.alertEmail}}'
+        headers:
+          Subject: '[CRITICAL] {{projectName}} Alert: {{verbatim}}{{ .GroupLabels.alertname }}{{/verbatim}}'
+{{#if monitoring.slackWebhook}}
+    slack_configs:
+      - api_url: '{{monitoring.slackWebhook}}'
+        channel: '#{{monitoring.slackChannel}}'
+        title: '[CRITICAL] {{verbatim}}{{ .GroupLabels.alertname }}{{/verbatim}}'
+        text: '{{verbatim}}{{ range .Alerts }}{{ .Annotations.description }}{{ end }}{{/verbatim}}'
+{{/if}}
+{{#if monitoring.pagerdutyKey}}
+    pagerduty_configs:
+      - service_key: '{{monitoring.pagerdutyKey}}'
+        description: '{{verbatim}}{{ .GroupLabels.alertname }}{{/verbatim}}'
+{{/if}}
+
+  - name: 'warning-alerts'
+    email_configs:
+      - to: '{{monitoring.alertEmail}}'
+        headers:
+          Subject: '[WARNING] {{projectName}} Alert: {{verbatim}}{{ .GroupLabels.alertname }}{{/verbatim}}'
+EOF
+```
+
+Deploy Alertmanager container:
+
+```bash
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  docker run -d \
+    --name alertmanager \
+    --network appwrite \
+    -p {{monitoring.alertmanagerPort}}:9093 \
+    -v /opt/monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml \
+    --restart unless-stopped \
+    prom/alertmanager:latest \
+    --config.file=/etc/alertmanager/alertmanager.yml \
+    --storage.path=/alertmanager
+"
+```
+
+---
+
+### Step 5: Deploy Grafana (Visualization)
+
+Generate secure Grafana admin password:
+
+```bash
+GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 32)
+echo "Grafana Admin Password: $GRAFANA_ADMIN_PASSWORD" > /tmp/grafana-credentials.txt
+```
+
+Deploy Grafana container:
+
+```bash
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  docker run -d \
+    --name grafana \
+    --network appwrite \
+    -p {{monitoring.grafanaPort}}:3000 \
+    -e GF_SECURITY_ADMIN_PASSWORD='$GRAFANA_ADMIN_PASSWORD' \
+    -e GF_USERS_ALLOW_SIGN_UP=false \
+    -e GF_SERVER_ROOT_URL='http://\$VPS_IP:{{monitoring.grafanaPort}}' \
+    -v /opt/monitoring/grafana:/var/lib/grafana \
+    --restart unless-stopped \
+    grafana/grafana:latest
+"
+```
+
+Configure Prometheus as Grafana data source:
+
+```bash
+# Wait for Grafana to start
+sleep 10
+
+# Add Prometheus data source via API
+curl -X POST \
+  http://admin:$GRAFANA_ADMIN_PASSWORD@$VPS_IP:{{monitoring.grafanaPort}}/api/datasources \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Prometheus",
+    "type": "prometheus",
+    "url": "http://prometheus:9090",
+    "access": "proxy",
+    "isDefault": true
+  }'
+```
+
+---
+
+### Step 6: Import Grafana Dashboards
+
+{{#if monitoring.dashboards.enableAppwriteDashboard}}
+Import Appwrite Dashboard:
+
+```bash
+# Dashboard creation and import for Appwrite Service Metrics
+# [Full dashboard JSON would be here]
+```
+{{/if}}
+
+{{#if monitoring.dashboards.enableInfrastructureDashboard}}
+Import Infrastructure Dashboard:
+
+```bash
+# Dashboard creation and import for Infrastructure Metrics
+# [Full dashboard JSON would be here]
+```
+{{/if}}
+
+{{#if monitoring.dashboards.enableAlertsDashboard}}
+Import Alerts Dashboard:
+
+```bash
+# Dashboard creation and import for Alerts Overview
+# [Full dashboard JSON would be here]
+```
+{{/if}}
+
+---
+
+### Step 7: Configure Log Aggregation
+
+Create centralized logging directory:
+
+```bash
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  sudo mkdir -p /var/log/appwrite/{api,realtime,workers,database}
+  sudo chown -R 1000:1000 /var/log/appwrite
+"
+```
+
+Configure Docker logging driver for Appwrite containers:
+
+```bash
+# Update Appwrite docker-compose.yml to use JSON file logging
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  cd /root/appwrite
+
+  # Add logging configuration to docker-compose.yml
+  cat >> docker-compose.yml <<'DOCKER_EOF'
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: '{{monitoring.logMaxSize}}'
+    max-file: '{{monitoring.logMaxFiles}}'
+    labels: 'service'
+DOCKER_EOF
+
+  # Add logging to all services
+  sed -i '/^  [a-z-]*:/a\    logging: *default-logging' docker-compose.yml
+
+  # Restart services with new logging config
+  docker-compose up -d
+"
+```
+
+Create log rotation script:
+
+```bash
+cat <<'EOF' | ssh -i {{security.sshKeyPath}} root@$VPS_IP "sudo tee /usr/local/bin/rotate-appwrite-logs.sh"
+#!/bin/bash
+
+# Rotate Appwrite Docker container logs
+LOG_DIR="/var/log/appwrite"
+RETENTION_DAYS={{monitoring.logRetentionDays}}
+
+# Find and compress logs older than 1 day
+find "$LOG_DIR" -name "*.log" -mtime +1 -exec gzip {} \;
+
+# Delete compressed logs older than retention period
+find "$LOG_DIR" -name "*.log.gz" -mtime +$RETENTION_DAYS -delete
+
+# Truncate current container logs if > {{monitoring.logMaxSize}}
+docker ps --format '{{verbatim}}{{.Names}}{{/verbatim}}' | grep appwrite | while read container; do
+  LOG_FILE=$(docker inspect $container --format='{{verbatim}}{{.LogPath}}{{/verbatim}}')
+  LOG_SIZE=$(stat -c%s "$LOG_FILE" 2>/dev/null || echo 0)
+
+  if [ "$LOG_SIZE" -gt 104857600 ]; then
+    echo "Truncating $container log (size: $LOG_SIZE bytes)"
+    : > "$LOG_FILE"
+  fi
+done
+
+echo "Log rotation completed at $(date)"
+EOF
+
+# Make script executable
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "sudo chmod +x /usr/local/bin/rotate-appwrite-logs.sh"
+
+# Add cron job for daily log rotation
+ssh -i {{security.sshKeyPath}} root@$VPS_IP "
+  (crontab -l 2>/dev/null; echo '{{monitoring.logRotationCron}} /usr/local/bin/rotate-appwrite-logs.sh >> /var/log/log-rotation.log 2>&1') | crontab -
+"
+```
+
+---
+
+### Step 8: Validate Monitoring Stack
+
+Run comprehensive health checks:
+
+```bash
+#!/bin/bash
+
+echo "=== Monitoring Stack Health Check ==="
+
+# Check Prometheus
+PROMETHEUS_HEALTH=$(curl -s http://$VPS_IP:{{monitoring.prometheusPort}}/-/healthy)
+if [ "$PROMETHEUS_HEALTH" == "Prometheus is Healthy." ]; then
+  echo "✅ Prometheus is healthy"
+else
+  echo "❌ Prometheus health check failed"
+  exit 1
+fi
+
+# Check Grafana
+GRAFANA_HEALTH=$(curl -s http://$VPS_IP:{{monitoring.grafanaPort}}/api/health | jq -r '.database')
+if [ "$GRAFANA_HEALTH" == "ok" ]; then
+  echo "✅ Grafana is healthy"
+else
+  echo "❌ Grafana health check failed"
+  exit 1
+fi
+
+# Check Alertmanager
+ALERTMANAGER_HEALTH=$(curl -s http://$VPS_IP:{{monitoring.alertmanagerPort}}/-/healthy)
+if [ "$ALERTMANAGER_HEALTH" == "OK" ]; then
+  echo "✅ Alertmanager is healthy"
+else
+  echo "❌ Alertmanager health check failed"
+  exit 1
+fi
+
+# Verify all exporters are reachable
+for exporter in node-exporter:{{monitoring.nodeExporterPort}} cadvisor:{{monitoring.cadvisorPort}} mariadb-exporter:9104 redis-exporter:9121; do
+  name=$(echo $exporter | cut -d: -f1)
+  port=$(echo $exporter | cut -d: -f2)
+
+  if curl -sf http://$VPS_IP:$port/metrics > /dev/null; then
+    echo "✅ $name is exporting metrics"
+  else
+    echo "❌ $name is not reachable"
+    exit 1
+  fi
+done
+
+# Check Prometheus is scraping all targets
+TARGETS=$(curl -s http://$VPS_IP:{{monitoring.prometheusPort}}/api/v1/targets | jq -r '.data.activeTargets | length')
+echo "📊 Prometheus is monitoring $TARGETS targets"
+
+# Check Grafana dashboards
+DASHBOARDS=$(curl -s http://admin:$GRAFANA_ADMIN_PASSWORD@$VPS_IP:{{monitoring.grafanaPort}}/api/search | jq -r 'length')
+echo "📊 Grafana has $DASHBOARDS dashboards installed"
+
+# Check active alerts
+ALERTS=$(curl -s http://$VPS_IP:{{monitoring.prometheusPort}}/api/v1/alerts | jq -r '.data.alerts | length')
+echo "🚨 $ALERTS active alerts"
+
+echo "=== Monitoring Stack is Operational ==="
+```
+
+---
+
+## 📊 Success Validation
+
+After deployment, verify:
+
+1. ✅ **All monitoring services running:**
+   ```bash
+   docker ps | grep -E 'prometheus|grafana|alertmanager|node-exporter|cadvisor'
+   ```
+
+2. ✅ **Prometheus scraping all targets:**
+   - Visit: http://VPS_IP:{{monitoring.prometheusPort}}/targets
+   - Verify all targets show "UP" status
+
+3. ✅ **Grafana dashboards accessible:**
+   - Visit: http://VPS_IP:{{monitoring.grafanaPort}}
+   - Login with admin credentials
+   - Verify {{monitoring.dashboardCount}} dashboards are visible
+
+4. ✅ **Alertmanager configured:**
+   - Visit: http://VPS_IP:{{monitoring.alertmanagerPort}}
+   - Verify alert routing rules
+
+5. ✅ **Log rotation working:**
+   ```bash
+   crontab -l | grep rotate-appwrite-logs
+   ```
+
+6. ✅ **Health checks passing:**
+   - Appwrite API: `curl https://{{domain.appwriteSubdomain}}.{{domain.rootDomain}}/v1/health/version`
+   - Prometheus: `curl http://VPS_IP:{{monitoring.prometheusPort}}/-/healthy`
+   - Grafana: `curl http://VPS_IP:{{monitoring.grafanaPort}}/api/health`
+
+---
+
+## 🔗 Integration with Orchestrator
+
+Return monitoring setup results to orchestrator:
+
+```typescript
+const monitoringResult: MonitoringSetupResult = {
+  success: true,
+  monitoringStackDeployed: true,
+
+  endpoints: {
+    prometheus: `http://${vpsIp}:{{monitoring.prometheusPort}}`,
+    grafana: `http://${vpsIp}:{{monitoring.grafanaPort}}`,
+    alertmanager: `http://${vpsIp}:{{monitoring.alertmanagerPort}}`,
+  },
+
+  grafana: {
+    adminUsername: 'admin',
+    adminPassword: GRAFANA_ADMIN_PASSWORD,
+    defaultDashboards: [
+{{#if monitoring.dashboards.enableAppwriteDashboard}}
+      'Appwrite Service Metrics',
+{{/if}}
+{{#if monitoring.dashboards.enableInfrastructureDashboard}}
+      'Infrastructure Metrics',
+{{/if}}
+{{#if monitoring.dashboards.enableAlertsDashboard}}
+      'Alerts Overview',
+{{/if}}
+    ],
+  },
+
+  prometheus: {
+    scrapeTargets: [
+      'prometheus',
+      'appwrite-api',
+      'appwrite-realtime',
+      'mariadb',
+      'redis',
+      'node-exporter',
+      'cadvisor',
+      'appwrite-workers',
+    ],
+    retentionDays: {{monitoring.retentionDays}},
+    storageSize: '{{monitoring.storageSize}}',
+  },
+
+  alertRules: {
+    rulesConfigured: 8,
+    alertsActive: 0,
+    notificationChannels: [
+      'email'{{#if monitoring.slackWebhook}}, 'slack'{{/if}}{{#if monitoring.pagerdutyKey}}, 'pagerduty'{{/if}}
+    ],
+  },
+
+  healthChecks: {
+    appwriteApiHealthy: true,
+    appwriteRealtimeHealthy: true,
+    databaseHealthy: true,
+    redisHealthy: true,
+    allWorkersHealthy: true,
+  },
+
+  logging: {
+    enabled: true,
+    logsPath: '/var/log/appwrite',
+    rotationPolicy: '{{monitoring.logRotationPolicy}}',
+  },
+
+  deployedAt: new Date().toISOString(),
+  monitoringVersion: '1.0.0',
+  componentsInstalled: [
+    'prometheus',
+    'grafana',
+    'alertmanager',
+    'node-exporter',
+    'cadvisor',
+    'mariadb-exporter',
+    'redis-exporter',
+  ],
+};
+
+// Persist to deployment state
+await updateDeploymentState({
+  'infrastructure.monitoringConfigured': true,
+  'infrastructure.prometheusEndpoint': monitoringResult.endpoints.prometheus,
+  'infrastructure.grafanaEndpoint': monitoringResult.endpoints.grafana,
+  'monitoring': monitoringResult,
+});
+```
+
+---
+
+## 📚 Reference Documentation
+
+- **Prometheus**: https://prometheus.io/docs/
+- **Grafana**: https://grafana.com/docs/
+- **Alertmanager**: https://prometheus.io/docs/alerting/latest/alertmanager/
+- **Node Exporter**: https://github.com/prometheus/node_exporter
+- **cAdvisor**: https://github.com/google/cadvisor
+- **Appwrite Health API**: https://appwrite.io/docs/apis/health
+
+---
+
+## 🎯 Specialist Completion Criteria
+
+This specialist is complete when:
+
+1. ✅ Prometheus deployed and scraping all targets
+2. ✅ Grafana deployed with {{monitoring.dashboardCount}}+ dashboards
+3. ✅ Alertmanager configured with email notifications
+4. ✅ All exporters running (node, cadvisor, mariadb, redis)
+5. ✅ Alert rules configured for critical services
+6. ✅ Log rotation configured and tested
+7. ✅ Monitoring runbook created
+8. ✅ Health checks passing for all services
+9. ✅ MonitoringSetupResult returned to orchestrator
+
+---
+
+**Next Step:** Deployment complete - All 6 specialists have finished. Return to orchestrator (`/{{kebabCase projectName}}-deploy`) for final validation and handoff.

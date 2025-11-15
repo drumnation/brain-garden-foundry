@@ -1,0 +1,58 @@
+{
+  "name": "@bg-kit/ui-components",
+  "version": "0.1.0",
+  "description": "Themed UI components built with the Brain Garden design system",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "clean": "rimraf node_modules .turbo",
+    "format": "prettier --check \"**/*.{ts,tsx,md}\"",
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@bg-kit/core-responsive": "workspace:*",
+    "@bg-kit/design-system": "workspace:*",
+    "@mantine/core": "^7.15.1",
+    "@mantine/hooks": "^7.15.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@kit/eslint-config": "workspace:*",
+    "@kit/prettier-config": "workspace:*",
+    "@kit/testing": "workspace:*",
+    "@kit/tsconfig": "workspace:*",
+    "@storybook/react": "^10.0.7",
+    "@tabler/icons-react": "^3.35.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.1.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^5.1.1",
+    "jsdom": "^27.2.0",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@kit/eslint-config/react"
+    ]
+  },
+  "prettier": "@kit/prettier-config"
+}
