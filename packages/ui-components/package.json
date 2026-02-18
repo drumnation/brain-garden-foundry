@@ -15,8 +15,8 @@
   ],
   "scripts": {
     "clean": "rimraf node_modules .turbo",
-    "format": "prettier --check \"**/*.{ts,tsx,md}\"",
-    "lint": "eslint . --ext .ts,.tsx",
+    "format": "biome format . --check",
+    "lint": "biome lint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -30,8 +30,6 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
     "@kit/testing": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@storybook/react": "^10.0.7",
@@ -47,12 +45,5 @@
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@kit/eslint-config/react"
-    ]
-  },
-  "prettier": "@kit/prettier-config"
+  }
 }
