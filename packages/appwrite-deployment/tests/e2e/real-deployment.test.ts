@@ -179,7 +179,7 @@ describe('Deployment CLI Integration', () => {
       expect(stdout).toContain('provision');
       expect(stdout).toContain('deploy');
       expect(stdout).toContain('test');
-    } catch (error: any) {
+    } catch (_error: any) {
       // CLI might not be built yet, that's OK for now
       console.log('CLI not yet built, skipping CLI test');
     }

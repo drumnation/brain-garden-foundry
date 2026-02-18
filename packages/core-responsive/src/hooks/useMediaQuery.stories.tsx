@@ -1,5 +1,4 @@
 import type {Meta, StoryObj} from '@storybook/react';
-import {useState} from 'react';
 import {useMediaQuery} from './useMediaQuery';
 
 const UseMediaQueryDemo = ({query}: {query: string}) => {

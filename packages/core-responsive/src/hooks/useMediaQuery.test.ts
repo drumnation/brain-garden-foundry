@@ -19,14 +19,14 @@ describe('useMediaQuery', () => {
               if (!listeners.has(query)) {
                 listeners.set(query, new Set());
               }
-              listeners.get(query)!.add(handler);
+              listeners.get(query)?.add(handler);
             }
           },
         ),
         removeEventListener: vi.fn(
           (event: string, handler: (e: MediaQueryListEvent) => void) => {
             if (event === 'change' && listeners.has(query)) {
-              listeners.get(query)!.delete(handler);
+              listeners.get(query)?.delete(handler);
             }
           },
         ),

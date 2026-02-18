@@ -1,6 +1,4 @@
 import type {AppwriteClient} from '@brain-garden/core-appwrite';
-import {AppwriteError} from '@brain-garden/core-appwrite';
-import {ID} from 'appwrite';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {makeAuthService} from './auth.service.js';
 

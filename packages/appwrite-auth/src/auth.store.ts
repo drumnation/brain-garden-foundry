@@ -153,7 +153,7 @@ export const createAuthStore = (authService: AuthService) => {
                 isLoading: false,
                 error: null,
               });
-            } catch (error) {
+            } catch (_error) {
               set({
                 user: null,
                 session: null,

@@ -4,7 +4,7 @@
  * Following functional DI pattern
  */
 
-import type {Project, ProjectRepo} from '@pm-agent/core-db';
+import type {ProjectRepo} from '@pm-agent/core-db';
 import {existsSync} from 'fs';
 import {readdir, stat} from 'fs/promises';
 import ignore from 'ignore';
@@ -131,7 +131,7 @@ export const makeScannerService = (deps: {
               if (log.latest) {
                 lastModified = new Date(log.latest.date);
               }
-            } catch (error) {
+            } catch (_error) {
               // Git operations failed
             }
           }
@@ -141,7 +141,7 @@ export const makeScannerService = (deps: {
             try {
               const stats = await stat(dirPath);
               lastModified = stats.mtime;
-            } catch (error) {
+            } catch (_error) {
               // Stat failed
             }
           }

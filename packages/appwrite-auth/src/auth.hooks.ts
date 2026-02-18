@@ -1,6 +1,5 @@
 import {useEffect} from 'react';
 import {useStore} from 'zustand';
-import type {AuthState} from './auth.store.js';
 import {getAuthStore} from './auth.store.js';
 
 /**

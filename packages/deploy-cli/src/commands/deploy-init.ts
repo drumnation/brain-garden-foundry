@@ -2,7 +2,7 @@ import {execSync} from 'node:child_process';
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {Client, Databases, ID, Projects, Storage} from 'appwrite';
+import {ID} from 'appwrite';
 import chalk from 'chalk';
 import ora from 'ora';
 import prompts from 'prompts';

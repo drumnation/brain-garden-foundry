@@ -61,7 +61,7 @@ export function ThemeProvider({
   themeOverrides,
 }: ThemeProviderProps) {
   // Persist color scheme preference in localStorage
-  const [colorScheme, setColorScheme] = useLocalStorage<MantineColorScheme>({
+  const [colorScheme, _setColorScheme] = useLocalStorage<MantineColorScheme>({
     key: 'bg-color-scheme',
     defaultValue: defaultColorScheme,
     getInitialValueInEffect: true,

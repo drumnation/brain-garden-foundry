@@ -104,155 +104,111 @@ export const makeAuthService = (deps: {
       // Validate input
       validateEmail(email);
       validatePassword(password);
+      // Create account
+      const user = (await account.create(
+        ID.unique(),
+        email,
+        password,
+        name,
+      )) as User;
 
-      try {
-        // Create account
-        const user = (await account.create(
-          ID.unique(),
-          email,
-          password,
-          name,
-        )) as User;
+      // Create session immediately after signup
+      const session = (await account.createEmailPasswordSession(
+        email,
+        password,
+      )) as Session;
 
-        // Create session immediately after signup
-        const session = (await account.createEmailPasswordSession(
-          email,
-          password,
-        )) as Session;
-
-        return {user, session};
-      } catch (error) {
-        throw error;
-      }
+      return {user, session};
     },
 
     signIn: async ({email, password}) => {
-      try {
-        // Create session
-        const session = (await account.createEmailPasswordSession(
-          email,
-          password,
-        )) as Session;
+      // Create session
+      const session = (await account.createEmailPasswordSession(
+        email,
+        password,
+      )) as Session;
 
-        // Get user details
-        const user = (await account.get()) as User;
+      // Get user details
+      const user = (await account.get()) as User;
 
-        return {user, session};
-      } catch (error) {
-        throw error;
-      }
+      return {user, session};
     },
 
     signOut: async (params = {}) => {
-      try {
-        if (params.all) {
-          // Delete all sessions
-          await account.deleteSessions();
-        } else {
-          // Delete current session
-          await account.deleteSession('current');
-        }
-
-        // Clear JWT from client
-        appwriteClient.clearAuth();
-      } catch (error) {
-        throw error;
+      if (params.all) {
+        // Delete all sessions
+        await account.deleteSessions();
+      } else {
+        // Delete current session
+        await account.deleteSession('current');
       }
+
+      // Clear JWT from client
+      appwriteClient.clearAuth();
     },
 
     getCurrentUser: async () => {
       try {
         const user = (await account.get()) as User;
         return user;
-      } catch (error) {
+      } catch (_error) {
         // Return null if not authenticated
         return null;
       }
     },
 
     updateProfile: async ({name, email, password}) => {
-      try {
-        let user: User;
+      let user: User;
 
-        if (name !== undefined) {
-          user = (await account.updateName(name)) as User;
-        }
-
-        if (email !== undefined) {
-          if (!password) {
-            throw new AppwriteError(
-              'Password required to update email',
-              400,
-              'validation_error',
-            );
-          }
-          validateEmail(email);
-          user = (await account.updateEmail(email, password)) as User;
-        }
-
-        // Get updated user
-        user = (await account.get()) as User;
-        return user;
-      } catch (error) {
-        throw error;
+      if (name !== undefined) {
+        user = (await account.updateName(name)) as User;
       }
+
+      if (email !== undefined) {
+        if (!password) {
+          throw new AppwriteError(
+            'Password required to update email',
+            400,
+            'validation_error',
+          );
+        }
+        validateEmail(email);
+        user = (await account.updateEmail(email, password)) as User;
+      }
+
+      // Get updated user
+      user = (await account.get()) as User;
+      return user;
     },
 
     updatePassword: async ({oldPassword, newPassword}) => {
       validatePassword(newPassword);
-
-      try {
-        await account.updatePassword(newPassword, oldPassword);
-      } catch (error) {
-        throw error;
-      }
+      await account.updatePassword(newPassword, oldPassword);
     },
 
     resetPassword: async ({email, url}) => {
       validateEmail(email);
-
-      try {
-        await account.createRecovery(email, url);
-      } catch (error) {
-        throw error;
-      }
+      await account.createRecovery(email, url);
     },
 
     completePasswordReset: async ({userId, secret, password}) => {
       validatePassword(password);
-
-      try {
-        await account.updateRecovery(userId, secret, password);
-      } catch (error) {
-        throw error;
-      }
+      await account.updateRecovery(userId, secret, password);
     },
 
     sendEmailVerification: async (url: string) => {
-      try {
-        await account.createVerification(url);
-      } catch (error) {
-        throw error;
-      }
+      await account.createVerification(url);
     },
 
     completeEmailVerification: async ({userId, secret}) => {
-      try {
-        await account.updateVerification(userId, secret);
-      } catch (error) {
-        throw error;
-      }
+      await account.updateVerification(userId, secret);
     },
 
     createJWT: async () => {
-      try {
-        const {jwt} = await account.createJWT();
-        // Set the JWT on the client
-        appwriteClient.setJWT(jwt);
-        return jwt;
-      } catch (error) {
-        throw error;
-      }
+      const {jwt} = await account.createJWT();
+      // Set the JWT on the client
+      appwriteClient.setJWT(jwt);
+      return jwt;
     },
   };
 };

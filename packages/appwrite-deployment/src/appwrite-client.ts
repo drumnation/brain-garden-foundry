@@ -18,11 +18,8 @@ export interface AppwriteDeploymentConfig {
 
 export class AppwriteDeploymentClient {
   private client: Client;
-  private account: Account;
   private databases: Databases;
   private storage: Storage;
-  private teams: Teams;
-  private functions: Functions;
 
   constructor(config: AppwriteDeploymentConfig) {
     // Use real production endpoints

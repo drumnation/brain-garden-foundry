@@ -1,10 +1,9 @@
 import {createHash} from 'node:crypto';
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
-import {Client, Databases, ID} from 'appwrite';
+import {Databases, ID} from 'appwrite';
 import chalk from 'chalk';
 import type {
-  Migration,
   MigrationConfig,
   MigrationHistory,
   MigrationResult,
@@ -162,7 +161,7 @@ export class MigrationRunner {
     try {
       const files = await fs.readdir(this.config.migrationsDir);
       return files.filter((file) => file.match(/^\d{3}-.*\.ts$/)).sort();
-    } catch (error) {
+    } catch (_error) {
       // Directory might not exist yet
       return [];
     }
@@ -191,7 +190,7 @@ export class MigrationRunner {
     try {
       // Try to get the collection
       await this.databases.getCollection(databaseId, this.historyCollection);
-    } catch (error) {
+    } catch (_error) {
       // Collection doesn't exist, create it
       await this.databases.createCollection(
         databaseId,
@@ -261,7 +260,7 @@ export class MigrationRunner {
         appliedAt: doc.appliedAt,
         checksum: doc.checksum,
       }));
-    } catch (error) {
+    } catch (_error) {
       // Collection might not exist yet
       return [];
     }

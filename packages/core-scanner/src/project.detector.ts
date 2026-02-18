@@ -123,7 +123,7 @@ export const detectProjectSignals = async (
       } else {
         signals.projectType = 'library';
       }
-    } catch (error) {
+    } catch (_error) {
       // Failed to parse package.json
     }
   }
@@ -186,7 +186,7 @@ export const getProjectDescription = async (
             return line.slice(0, 200); // Limit to 200 chars
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Failed to read README
       }
     }
@@ -222,7 +222,7 @@ export const getDirectorySize = async (dirPath: string): Promise<number> => {
       } else {
         totalSize += stats.size;
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore permission errors
     }
   }

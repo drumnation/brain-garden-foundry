@@ -109,5 +109,5 @@ export const Show = ({
     return true;
   };
 
-  return shouldShow() ? <>{children}</> : <>{fallback}</>;
+  return shouldShow() ? children : fallback;
 };
