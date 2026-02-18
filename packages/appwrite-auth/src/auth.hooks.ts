@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { useStore } from 'zustand';
-import type { AuthState } from './auth.store.js';
-import { getAuthStore } from './auth.store.js';
+import {useEffect} from 'react';
+import {useStore} from 'zustand';
+import type {AuthState} from './auth.store.js';
+import {getAuthStore} from './auth.store.js';
 
 /**
  * Hook to access the auth store
@@ -79,7 +79,7 @@ export const useRequireAuth = (redirectTo = '/login') => {
     }
   }, [isAuthenticated, isLoading, redirectTo]);
 
-  return { isAuthenticated, isLoading };
+  return {isAuthenticated, isLoading};
 };
 
 /**
@@ -99,7 +99,7 @@ export const useRequireGuest = (redirectTo = '/') => {
     }
   }, [isAuthenticated, isLoading, redirectTo]);
 
-  return { isAuthenticated, isLoading };
+  return {isAuthenticated, isLoading};
 };
 
 /**
@@ -113,7 +113,7 @@ export const useAuthActions = () => {
     signUp: async (email: string, password: string, name?: string) => {
       try {
         await state.signUp(email, password, name);
-        return { success: true, error: null };
+        return {success: true, error: null};
       } catch (error) {
         return {
           success: false,
@@ -125,7 +125,7 @@ export const useAuthActions = () => {
     signIn: async (email: string, password: string) => {
       try {
         await state.signIn(email, password);
-        return { success: true, error: null };
+        return {success: true, error: null};
       } catch (error) {
         return {
           success: false,
@@ -137,7 +137,7 @@ export const useAuthActions = () => {
     signOut: async (all = false) => {
       try {
         await state.signOut(all);
-        return { success: true, error: null };
+        return {success: true, error: null};
       } catch (error) {
         return {
           success: false,
@@ -149,7 +149,7 @@ export const useAuthActions = () => {
     updateProfile: async (name?: string, email?: string, password?: string) => {
       try {
         await state.updateProfile(name, email, password);
-        return { success: true, error: null };
+        return {success: true, error: null};
       } catch (error) {
         return {
           success: false,
@@ -161,11 +161,12 @@ export const useAuthActions = () => {
     updatePassword: async (oldPassword: string, newPassword: string) => {
       try {
         await state.updatePassword(oldPassword, newPassword);
-        return { success: true, error: null };
+        return {success: true, error: null};
       } catch (error) {
         return {
           success: false,
-          error: error instanceof Error ? error.message : 'Password update failed',
+          error:
+            error instanceof Error ? error.message : 'Password update failed',
         };
       }
     },
@@ -173,23 +174,29 @@ export const useAuthActions = () => {
     resetPassword: async (email: string, url: string) => {
       try {
         await state.resetPassword(email, url);
-        return { success: true, error: null };
+        return {success: true, error: null};
       } catch (error) {
         return {
           success: false,
-          error: error instanceof Error ? error.message : 'Password reset failed',
+          error:
+            error instanceof Error ? error.message : 'Password reset failed',
         };
       }
     },
 
-    completePasswordReset: async (userId: string, secret: string, password: string) => {
+    completePasswordReset: async (
+      userId: string,
+      secret: string,
+      password: string,
+    ) => {
       try {
         await state.completePasswordReset(userId, secret, password);
-        return { success: true, error: null };
+        return {success: true, error: null};
       } catch (error) {
         return {
           success: false,
-          error: error instanceof Error ? error.message : 'Password reset failed',
+          error:
+            error instanceof Error ? error.message : 'Password reset failed',
         };
       }
     },
@@ -197,7 +204,7 @@ export const useAuthActions = () => {
     sendEmailVerification: async (url: string) => {
       try {
         await state.sendEmailVerification(url);
-        return { success: true, error: null };
+        return {success: true, error: null};
       } catch (error) {
         return {
           success: false,
@@ -209,7 +216,7 @@ export const useAuthActions = () => {
     completeEmailVerification: async (userId: string, secret: string) => {
       try {
         await state.completeEmailVerification(userId, secret);
-        return { success: true, error: null };
+        return {success: true, error: null};
       } catch (error) {
         return {
           success: false,

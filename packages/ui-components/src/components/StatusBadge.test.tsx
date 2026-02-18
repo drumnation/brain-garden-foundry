@@ -1,52 +1,52 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import { ThemeProvider } from '@bg-kit/design-system';
-import { StatusBadge } from './StatusBadge';
+import {ThemeProvider} from '@bg-kit/design-system';
+import {render, screen} from '@testing-library/react';
+import {describe, expect, it} from 'vitest';
+import {StatusBadge} from './StatusBadge';
 
 describe('StatusBadge', () => {
   it('should render with text', () => {
     render(
       <ThemeProvider>
         <StatusBadge status="success">Active</StatusBadge>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByText('Active')).toBeInTheDocument();
   });
 
   it('should render all status variants', () => {
-    const { rerender } = render(
+    const {rerender} = render(
       <ThemeProvider>
         <StatusBadge status="success">Success</StatusBadge>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByText('Success')).toBeInTheDocument();
 
     rerender(
       <ThemeProvider>
         <StatusBadge status="warning">Warning</StatusBadge>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByText('Warning')).toBeInTheDocument();
 
     rerender(
       <ThemeProvider>
         <StatusBadge status="error">Error</StatusBadge>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByText('Error')).toBeInTheDocument();
 
     rerender(
       <ThemeProvider>
         <StatusBadge status="info">Info</StatusBadge>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByText('Info')).toBeInTheDocument();
 
     rerender(
       <ThemeProvider>
         <StatusBadge status="neutral">Neutral</StatusBadge>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByText('Neutral')).toBeInTheDocument();
   });
@@ -59,7 +59,7 @@ describe('StatusBadge', () => {
         <StatusBadge status="success" leftSection={<Icon />}>
           Complete
         </StatusBadge>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByTestId('icon')).toBeInTheDocument();
@@ -67,12 +67,12 @@ describe('StatusBadge', () => {
   });
 
   it('should render different sizes', () => {
-    const { rerender } = render(
+    const {rerender} = render(
       <ThemeProvider>
         <StatusBadge status="success" size="xs">
           XS
         </StatusBadge>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByText('XS')).toBeInTheDocument();
 
@@ -81,7 +81,7 @@ describe('StatusBadge', () => {
         <StatusBadge status="success" size="lg">
           LG
         </StatusBadge>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByText('LG')).toBeInTheDocument();
   });

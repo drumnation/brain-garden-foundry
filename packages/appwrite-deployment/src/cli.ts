@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { program } from 'commander';
 import chalk from 'chalk';
-import ora from 'ora';
-import { AppwriteDeploymentClient } from './appwrite-client';
-import { execSync } from 'child_process';
+import {execSync} from 'child_process';
+import {program} from 'commander';
 import fs from 'fs';
+import ora from 'ora';
 import path from 'path';
+import {AppwriteDeploymentClient} from './appwrite-client';
 
 /**
  * Brain Garden Appwrite Deployment CLI
@@ -22,12 +22,17 @@ program
   .command('provision')
   .description('Provision Appwrite resources for a new project')
   .argument('<project-name>', 'Name of your project')
-  .option('--api-key <key>', 'Appwrite API key (or set APPWRITE_API_KEY env var)')
+  .option(
+    '--api-key <key>',
+    'Appwrite API key (or set APPWRITE_API_KEY env var)',
+  )
   .action(async (projectName: string, options: any) => {
     console.log(chalk.blue.bold('\n🚀 Brain Garden Deployment System\n'));
     console.log(chalk.gray('━'.repeat(50)));
     console.log(chalk.white(`Project: ${chalk.cyan(projectName)}`));
-    console.log(chalk.white(`Target: ${chalk.cyan('appwrite.singularity-labs.org')}`));
+    console.log(
+      chalk.white(`Target: ${chalk.cyan('appwrite.singularity-labs.org')}`),
+    );
     console.log(chalk.gray('━'.repeat(50) + '\n'));
 
     const apiKey = options.apiKey || process.env.APPWRITE_API_KEY;
@@ -38,7 +43,9 @@ program
       console.log(chalk.gray('  --api-key <key>     CLI option'));
       console.log(chalk.gray('  APPWRITE_API_KEY   Environment variable'));
       console.log('\nGet your API key from:');
-      console.log(chalk.cyan('  https://appwrite.singularity-labs.org/console'));
+      console.log(
+        chalk.cyan('  https://appwrite.singularity-labs.org/console'),
+      );
       process.exit(1);
     }
 
@@ -48,7 +55,7 @@ program
       // Create client with real credentials
       const client = new AppwriteDeploymentClient({
         projectName,
-        apiKey
+        apiKey,
       });
 
       // Test connection
@@ -91,7 +98,9 @@ program
       spinner.succeed('Configuration saved to appwrite-deployment.json');
 
       // Success!
-      console.log(chalk.green.bold('\n✅ Deployment Provisioned Successfully!\n'));
+      console.log(
+        chalk.green.bold('\n✅ Deployment Provisioned Successfully!\n'),
+      );
       console.log(chalk.gray('━'.repeat(50)));
       console.log(chalk.white('Resources created:'));
       console.log(chalk.gray(`  Database:  ${result.config.databaseId}`));
@@ -107,9 +116,10 @@ program
       console.log(chalk.gray('\n  3. Deploy to production:'));
       console.log(chalk.cyan(`     pnpm deploy`));
       console.log(chalk.gray('\n  4. Access Appwrite console:'));
-      console.log(chalk.cyan('     https://appwrite.singularity-labs.org/console'));
+      console.log(
+        chalk.cyan('     https://appwrite.singularity-labs.org/console'),
+      );
       console.log();
-
     } catch (error) {
       spinner.fail('Deployment failed');
       console.error(chalk.red('\nError details:'), error);
@@ -130,7 +140,7 @@ program
     try {
       // Check if we're in a git repo
       try {
-        execSync('git status', { stdio: 'ignore' });
+        execSync('git status', {stdio: 'ignore'});
       } catch {
         spinner.fail('Not a git repository');
         console.log(chalk.yellow('\nInitialize git first:'));
@@ -146,7 +156,9 @@ program
       let repoUrl = options.repo;
       if (!repoUrl) {
         try {
-          repoUrl = execSync('git remote get-url origin', { encoding: 'utf-8' }).trim();
+          repoUrl = execSync('git remote get-url origin', {
+            encoding: 'utf-8',
+          }).trim();
         } catch {
           spinner.fail('No GitHub remote found');
           console.log(chalk.yellow('\nAdd GitHub remote:'));
@@ -169,7 +181,7 @@ program
 
       // Create GitHub Actions workflow
       const workflowDir = path.join(process.cwd(), '.github', 'workflows');
-      fs.mkdirSync(workflowDir, { recursive: true });
+      fs.mkdirSync(workflowDir, {recursive: true});
 
       const workflowContent = generateWorkflow(projectName, repoFullName);
       const workflowPath = path.join(workflowDir, 'deploy-appwrite.yml');
@@ -185,22 +197,39 @@ program
       console.log(chalk.gray('━'.repeat(50)));
 
       console.log(chalk.white('\n📝 Add GitHub Secrets:\n'));
-      console.log(chalk.gray('Go to: ') + chalk.cyan(`https://github.com/${repoFullName}/settings/secrets/actions`));
+      console.log(
+        chalk.gray('Go to: ') +
+          chalk.cyan(
+            `https://github.com/${repoFullName}/settings/secrets/actions`,
+          ),
+      );
       console.log(chalk.gray('\nAdd these secrets:'));
-      console.log(chalk.yellow('  VPS_SSH_KEY') + chalk.gray(' - SSH private key for VPS'));
-      console.log(chalk.yellow('  CLOUDFLARE_API_TOKEN') + chalk.gray(' - Your Cloudflare API token'));
-      console.log(chalk.yellow('  CLOUDFLARE_ZONE_ID') + chalk.gray(' - Zone ID for singularity-labs.org'));
+      console.log(
+        chalk.yellow('  VPS_SSH_KEY') +
+          chalk.gray(' - SSH private key for VPS'),
+      );
+      console.log(
+        chalk.yellow('  CLOUDFLARE_API_TOKEN') +
+          chalk.gray(' - Your Cloudflare API token'),
+      );
+      console.log(
+        chalk.yellow('  CLOUDFLARE_ZONE_ID') +
+          chalk.gray(' - Zone ID for singularity-labs.org'),
+      );
 
       console.log(chalk.white('\n🚀 Deploy:\n'));
       console.log(chalk.gray('  1. Commit workflow:'));
-      console.log(chalk.cyan('     git add .github/workflows/deploy-appwrite.yml'));
+      console.log(
+        chalk.cyan('     git add .github/workflows/deploy-appwrite.yml'),
+      );
       console.log(chalk.cyan('     git commit -m "Add deployment workflow"'));
       console.log(chalk.gray('\n  2. Push to GitHub:'));
       console.log(chalk.cyan('     git push origin main'));
       console.log(chalk.gray('\n  3. View deployment:'));
-      console.log(chalk.cyan(`     https://github.com/${repoFullName}/actions`));
+      console.log(
+        chalk.cyan(`     https://github.com/${repoFullName}/actions`),
+      );
       console.log();
-
     } catch (error) {
       spinner.fail('Deployment setup failed');
       console.error(chalk.red('\nError:'), error);
@@ -219,7 +248,7 @@ program
 
     const client = new AppwriteDeploymentClient({
       projectName: 'test',
-      apiKey
+      apiKey,
     });
 
     const spinner = ora('Connecting to Appwrite...').start();
@@ -228,7 +257,10 @@ program
 
     if (connected) {
       spinner.succeed('Successfully connected to Appwrite!');
-      console.log(chalk.gray('\nEndpoint: ') + chalk.cyan('https://appwrite.singularity-labs.org'));
+      console.log(
+        chalk.gray('\nEndpoint: ') +
+          chalk.cyan('https://appwrite.singularity-labs.org'),
+      );
       console.log(chalk.gray('Status: ') + chalk.green('Online'));
     } else {
       spinner.fail('Failed to connect to Appwrite');

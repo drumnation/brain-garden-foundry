@@ -4,19 +4,23 @@
  * Following functional DI pattern
  */
 
-import { readdir, stat } from 'fs/promises';
-import { existsSync } from 'fs';
-import { join, basename } from 'path';
+import type {Project, ProjectRepo} from '@pm-agent/core-db';
+import {existsSync} from 'fs';
+import {readdir, stat} from 'fs/promises';
 import ignore from 'ignore';
+import {basename, join} from 'path';
 import simpleGit from 'simple-git';
-import type { Project, ProjectRepo } from '@pm-agent/core-db';
-import type { ScanConfig, ScannedProject, ProjectSignals } from './scanner.types.ts';
 import {
-  isProjectRoot,
   detectProjectSignals,
-  getProjectDescription,
   getDirectorySize,
+  getProjectDescription,
+  isProjectRoot,
 } from './project.detector.ts';
+import type {
+  ProjectSignals,
+  ScanConfig,
+  ScannedProject,
+} from './scanner.types.ts';
 
 export interface ScannerService {
   scanDirectory: (config: ScanConfig) => Promise<ScannedProject[]>;
@@ -34,7 +38,7 @@ export interface ScannerService {
 export const makeScannerService = (deps: {
   projectRepo: ProjectRepo;
 }): ScannerService => {
-  const { projectRepo } = deps;
+  const {projectRepo} = deps;
 
   /**
    * Categorize project based on its signals
@@ -88,7 +92,7 @@ export const makeScannerService = (deps: {
     dirPath: string,
     config: ScanConfig,
     currentDepth: number = 0,
-    ig: ReturnType<typeof ignore>
+    ig: ReturnType<typeof ignore>,
   ): Promise<ScannedProject[]> => {
     const projects: ScannedProject[] = [];
 
@@ -123,7 +127,7 @@ export const makeScannerService = (deps: {
               }
 
               // Get last commit date
-              const log = await git.log({ n: 1 });
+              const log = await git.log({n: 1});
               if (log.latest) {
                 lastModified = new Date(log.latest.date);
               }
@@ -161,7 +165,7 @@ export const makeScannerService = (deps: {
       }
 
       // Scan subdirectories
-      const items = await readdir(dirPath, { withFileTypes: true });
+      const items = await readdir(dirPath, {withFileTypes: true});
 
       for (const item of items) {
         if (item.isDirectory() && !item.name.startsWith('.')) {
@@ -177,7 +181,7 @@ export const makeScannerService = (deps: {
             itemPath,
             config,
             currentDepth + 1,
-            ig
+            ig,
           );
 
           projects.push(...subProjects);
@@ -194,11 +198,19 @@ export const makeScannerService = (deps: {
     scanDirectory: async (config: ScanConfig): Promise<ScannedProject[]> => {
       // Create ignore instance
       const ig = ignore();
-      const patterns = [...defaultIgnorePatterns, ...(config.ignorePatterns || [])];
+      const patterns = [
+        ...defaultIgnorePatterns,
+        ...(config.ignorePatterns || []),
+      ];
       ig.add(patterns);
 
       console.log(`Starting scan of ${config.rootPath}`);
-      const projects = await scanDirectoryRecursive(config.rootPath, config, 0, ig);
+      const projects = await scanDirectoryRecursive(
+        config.rootPath,
+        config,
+        0,
+        ig,
+      );
       console.log(`Scan complete. Found ${projects.length} projects.`);
 
       return projects;
@@ -211,7 +223,8 @@ export const makeScannerService = (deps: {
       let projectsUpdated = 0;
 
       // Scan directory for projects
-      const scannedProjects = await makeScannerService(deps).scanDirectory(config);
+      const scannedProjects =
+        await makeScannerService(deps).scanDirectory(config);
 
       // Persist each project to database
       for (const scannedProject of scannedProjects) {
@@ -246,17 +259,35 @@ export const makeScannerService = (deps: {
             has_brain_folder: scannedProject.signals.hasBrainGarden ? 1 : 0,
             has_claude_md: scannedProject.signals.hasClaudeRules ? 1 : 0,
             has_cursor_rules: scannedProject.signals.hasCursorRules ? 1 : 0,
-            is_pnpm_monorepo: (scannedProject.signals.projectType === 'monorepo' &&
-                              existsSync(join(scannedProject.path, 'pnpm-workspace.yaml'))) ? 1 : 0,
-            is_turborepo: scannedProject.signals.techStack.includes('Turborepo') ? 1 : 0,
-            monorepo_type: scannedProject.signals.projectType === 'monorepo' ?
-                          detectMonorepoType(scannedProject) : null,
+            is_pnpm_monorepo:
+              scannedProject.signals.projectType === 'monorepo' &&
+              existsSync(join(scannedProject.path, 'pnpm-workspace.yaml'))
+                ? 1
+                : 0,
+            is_turborepo: scannedProject.signals.techStack.includes('Turborepo')
+              ? 1
+              : 0,
+            monorepo_type:
+              scannedProject.signals.projectType === 'monorepo'
+                ? detectMonorepoType(scannedProject)
+                : null,
 
             // Documentation flags (convert booleans to 0/1 for SQLite)
-            has_prd: (existsSync(join(scannedProject.path, 'docs/PRD.md')) ||
-                    existsSync(join(scannedProject.path, 'docs/architecture/prd.md'))) ? 1 : 0,
-            has_project_overview: existsSync(join(scannedProject.path, 'README.md')) ? 1 : 0,
-            has_architecture_docs: existsSync(join(scannedProject.path, 'docs/architecture')) ? 1 : 0,
+            has_prd:
+              existsSync(join(scannedProject.path, 'docs/PRD.md')) ||
+              existsSync(join(scannedProject.path, 'docs/architecture/prd.md'))
+                ? 1
+                : 0,
+            has_project_overview: existsSync(
+              join(scannedProject.path, 'README.md'),
+            )
+              ? 1
+              : 0,
+            has_architecture_docs: existsSync(
+              join(scannedProject.path, 'docs/architecture'),
+            )
+              ? 1
+              : 0,
           };
 
           if (existing) {

@@ -1,8 +1,8 @@
+import type {Database as DatabaseType} from 'better-sqlite3';
 import Database from 'better-sqlite3';
-import type { Database as DatabaseType } from 'better-sqlite3';
-import { existsSync } from 'fs';
-import { mkdir } from 'fs/promises';
-import { dirname } from 'path';
+import {existsSync} from 'fs';
+import {mkdir} from 'fs/promises';
+import {dirname} from 'path';
 
 export interface DbConfig {
   dbPath: string;
@@ -19,7 +19,7 @@ export const makeDbClient = async (config: DbConfig): Promise<DbClient> => {
   // Ensure directory exists
   const dir = dirname(config.dbPath);
   if (!existsSync(dir)) {
-    await mkdir(dir, { recursive: true });
+    await mkdir(dir, {recursive: true});
   }
 
   // Open database connection

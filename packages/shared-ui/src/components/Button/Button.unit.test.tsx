@@ -1,13 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Button } from './Button';
+import {fireEvent, render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from 'vitest';
+import {Button} from './Button';
 
 describe('Button', () => {
   describe('Rendering', () => {
     it('renders with default props', () => {
       render(<Button>Click me</Button>);
 
-      const button = screen.getByRole('button', { name: 'Click me' });
+      const button = screen.getByRole('button', {name: 'Click me'});
       expect(button).toBeInTheDocument();
     });
 
@@ -95,7 +95,11 @@ describe('Button', () => {
 
     it('does not call onClick when disabled', () => {
       const handleClick = vi.fn();
-      render(<Button onClick={handleClick} disabled>Disabled</Button>);
+      render(
+        <Button onClick={handleClick} disabled>
+          Disabled
+        </Button>,
+      );
 
       const button = screen.getByRole('button');
       fireEvent.click(button);
@@ -105,7 +109,11 @@ describe('Button', () => {
 
     it('does not call onClick when loading', () => {
       const handleClick = vi.fn();
-      render(<Button onClick={handleClick} loading>Loading</Button>);
+      render(
+        <Button onClick={handleClick} loading>
+          Loading
+        </Button>,
+      );
 
       const button = screen.getByRole('button');
       fireEvent.click(button);

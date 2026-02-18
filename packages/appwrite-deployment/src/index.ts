@@ -4,11 +4,10 @@
  * REAL, WORKING integration with appwrite.singularity-labs.org
  */
 
-export { AppwriteDeploymentClient } from './appwrite-client';
-export type { AppwriteDeploymentConfig } from './appwrite-client';
-
 // Re-export Appwrite SDK types for convenience
-export { Client, Account, Databases, Storage, Teams, Functions } from 'appwrite';
+export {Account, Client, Databases, Functions, Storage, Teams} from 'appwrite';
+export type {AppwriteDeploymentConfig} from './appwrite-client';
+export {AppwriteDeploymentClient} from './appwrite-client';
 
 /**
  * Quick Start:

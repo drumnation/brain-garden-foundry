@@ -1,5 +1,5 @@
-import { Badge } from '@bg-kit/design-system';
-import { type ReactNode } from 'react';
+import {Badge} from '@bg-kit/design-system';
+import type {ReactNode} from 'react';
 
 export interface StatusBadgeProps {
   /** Status variant */

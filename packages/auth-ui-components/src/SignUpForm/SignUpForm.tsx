@@ -1,18 +1,18 @@
-import { useState } from 'react';
 import {
-  TextInput,
-  PasswordInput,
+  Alert,
+  Anchor,
   Button,
+  Checkbox,
+  Group,
+  PasswordInput,
+  Progress,
   Stack,
   Text,
-  Anchor,
-  Checkbox,
-  Progress,
-  Group,
-  Alert,
+  TextInput,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { IconAlertCircle } from '@tabler/icons-react';
+import {useForm} from '@mantine/form';
+import {IconAlertCircle} from '@tabler/icons-react';
+import {useState} from 'react';
 
 interface SignUpFormProps {
   onSuccess?: () => void;
@@ -26,7 +26,7 @@ function calculatePasswordStrength(password: string): {
   label: string;
   color: string;
 } {
-  if (!password) return { strength: 0, label: '', color: 'gray' };
+  if (!password) return {strength: 0, label: '', color: 'gray'};
 
   let strength = 0;
 
@@ -41,11 +41,11 @@ function calculatePasswordStrength(password: string): {
   if (/[^a-zA-Z0-9]/.test(password)) strength += 15;
 
   if (strength < 30) {
-    return { strength, label: 'Weak', color: 'red' };
+    return {strength, label: 'Weak', color: 'red'};
   } else if (strength < 60) {
-    return { strength, label: 'Medium', color: 'yellow' };
+    return {strength, label: 'Medium', color: 'yellow'};
   } else {
-    return { strength, label: 'Strong', color: 'green' };
+    return {strength, label: 'Strong', color: 'green'};
   }
 }
 
@@ -129,7 +129,7 @@ export function SignUpForm({
       }
 
       form.reset();
-      setPasswordStrength({ strength: 0, label: '', color: 'gray' });
+      setPasswordStrength({strength: 0, label: '', color: 'gray'});
 
       if (onSuccess) {
         onSuccess();
@@ -172,10 +172,12 @@ export function SignUpForm({
             required
             disabled={isLoading}
             {...form.getInputProps('password')}
-            onChange={(event) => handlePasswordChange(event.currentTarget.value)}
+            onChange={(event) =>
+              handlePasswordChange(event.currentTarget.value)
+            }
           />
           {form.values.password && (
-            <div style={{ marginTop: 5 }}>
+            <div style={{marginTop: 5}}>
               <Progress
                 value={passwordStrength.strength}
                 color={passwordStrength.color}
@@ -200,7 +202,7 @@ export function SignUpForm({
         <Checkbox
           label="I accept the terms and conditions"
           disabled={isLoading}
-          {...form.getInputProps('acceptTerms', { type: 'checkbox' })}
+          {...form.getInputProps('acceptTerms', {type: 'checkbox'})}
         />
 
         {error && (

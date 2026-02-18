@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
 import chalk from 'chalk';
-import { deployInitCommand } from './commands/deploy-init.js';
-import { deploySyncCommand } from './commands/deploy-sync.js';
-import { deployStatusCommand } from './commands/deploy-status.js';
-import { deployDestroyCommand } from './commands/deploy-destroy.js';
+import {Command} from 'commander';
+import {deployDestroyCommand} from './commands/deploy-destroy.js';
+import {deployInitCommand} from './commands/deploy-init.js';
+import {deployStatusCommand} from './commands/deploy-status.js';
+import {deploySyncCommand} from './commands/deploy-sync.js';
 
 const program = new Command();
 
@@ -28,7 +28,11 @@ program
   .command('init')
   .description('Initialize a new deployment from template')
   .option('-p, --project <name>', 'Project name')
-  .option('-e, --endpoint <url>', 'Appwrite endpoint', 'https://appwrite.singularity-labs.org')
+  .option(
+    '-e, --endpoint <url>',
+    'Appwrite endpoint',
+    'https://appwrite.singularity-labs.org',
+  )
   .option('--no-interactive', 'Skip interactive prompts')
   .option('--dry-run', 'Preview changes without applying')
   .action(deployInitCommand);

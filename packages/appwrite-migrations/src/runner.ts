@@ -1,8 +1,8 @@
-import { promises as fs } from 'node:fs';
+import {createHash} from 'node:crypto';
+import {promises as fs} from 'node:fs';
 import path from 'node:path';
-import { createHash } from 'node:crypto';
+import {Client, Databases, ID} from 'appwrite';
 import chalk from 'chalk';
-import { Client, Databases, ID } from 'appwrite';
 import type {
   Migration,
   MigrationConfig,
@@ -35,17 +35,17 @@ export class MigrationRunner {
 
       // Get applied migrations
       const history = await this.getHistory();
-      const appliedIds = new Set(history.map(h => h.id));
+      const appliedIds = new Set(history.map((h) => h.id));
 
       // Find pending migrations
-      const pending = files.filter(file => {
+      const pending = files.filter((file) => {
         const id = this.extractId(file);
         return !appliedIds.has(id);
       });
 
       if (pending.length === 0) {
         console.log(chalk.gray('No pending migrations'));
-        return { success: true, migrationsRun: [] };
+        return {success: true, migrationsRun: []};
       }
 
       console.log(chalk.blue(`Found ${pending.length} pending migration(s)`));
@@ -68,7 +68,7 @@ export class MigrationRunner {
           await module.up(this.config.client);
 
           // Record in history
-          await this.recordMigration({ id, name, file });
+          await this.recordMigration({id, name, file});
 
           migrationsRun.push(id);
           console.log(chalk.green(`    ✓ ${id} completed`));
@@ -78,9 +78,10 @@ export class MigrationRunner {
         }
       }
 
-      console.log(chalk.green.bold(`✅ ${migrationsRun.length} migration(s) completed`));
-      return { success: true, migrationsRun };
-
+      console.log(
+        chalk.green.bold(`✅ ${migrationsRun.length} migration(s) completed`),
+      );
+      return {success: true, migrationsRun};
     } catch (error) {
       console.error(chalk.red('Migration failed:'), error);
       return {
@@ -102,14 +103,18 @@ export class MigrationRunner {
 
       if (history.length === 0) {
         console.log(chalk.gray('No migrations to rollback'));
-        return { success: true, migrationsRun: [] };
+        return {success: true, migrationsRun: []};
       }
 
       // Get last migration
       const lastMigration = history[history.length - 1];
       const file = `${lastMigration.id}-${lastMigration.name}.ts`;
 
-      console.log(chalk.gray(`  Rolling back: ${lastMigration.id} - ${lastMigration.name}`));
+      console.log(
+        chalk.gray(
+          `  Rolling back: ${lastMigration.id} - ${lastMigration.name}`,
+        ),
+      );
 
       // Import migration module
       const migrationPath = path.join(this.config.migrationsDir, file);
@@ -122,8 +127,7 @@ export class MigrationRunner {
       await this.removeMigration(lastMigration.id);
 
       console.log(chalk.green(`    ✓ ${lastMigration.id} rolled back`));
-      return { success: true, migrationsRun: [lastMigration.id] };
-
+      return {success: true, migrationsRun: [lastMigration.id]};
     } catch (error) {
       console.error(chalk.red('Rollback failed:'), error);
       return {
@@ -137,18 +141,18 @@ export class MigrationRunner {
   /**
    * Get migration status
    */
-  async status(): Promise<{ pending: string[]; applied: string[] }> {
+  async status(): Promise<{pending: string[]; applied: string[]}> {
     const files = await this.getMigrationFiles();
     const history = await this.getHistory();
-    const appliedIds = new Set(history.map(h => h.id));
+    const appliedIds = new Set(history.map((h) => h.id));
 
     const pending = files
-      .map(file => this.extractId(file))
-      .filter(id => !appliedIds.has(id));
+      .map((file) => this.extractId(file))
+      .filter((id) => !appliedIds.has(id));
 
-    const applied = history.map(h => h.id);
+    const applied = history.map((h) => h.id);
 
-    return { pending, applied };
+    return {pending, applied};
   }
 
   /**
@@ -157,9 +161,7 @@ export class MigrationRunner {
   private async getMigrationFiles(): Promise<string[]> {
     try {
       const files = await fs.readdir(this.config.migrationsDir);
-      return files
-        .filter(file => file.match(/^\d{3}-.*\.ts$/))
-        .sort();
+      return files.filter((file) => file.match(/^\d{3}-.*\.ts$/)).sort();
     } catch (error) {
       // Directory might not exist yet
       return [];
@@ -177,9 +179,7 @@ export class MigrationRunner {
    * Extract migration name from filename
    */
   private extractName(filename: string): string {
-    return filename
-      .replace(/^\d{3}-/, '')
-      .replace(/\.ts$/, '');
+    return filename.replace(/^\d{3}-/, '').replace(/\.ts$/, '');
   }
 
   /**
@@ -197,7 +197,7 @@ export class MigrationRunner {
         databaseId,
         ID.unique(),
         this.historyCollection,
-        []
+        [],
       );
 
       // Add attributes
@@ -206,7 +206,7 @@ export class MigrationRunner {
         this.historyCollection,
         'migrationId',
         255,
-        true
+        true,
       );
 
       await this.databases.createStringAttribute(
@@ -214,7 +214,7 @@ export class MigrationRunner {
         this.historyCollection,
         'name',
         255,
-        true
+        true,
       );
 
       await this.databases.createStringAttribute(
@@ -222,14 +222,14 @@ export class MigrationRunner {
         this.historyCollection,
         'checksum',
         64,
-        false
+        false,
       );
 
       await this.databases.createDatetimeAttribute(
         databaseId,
         this.historyCollection,
         'appliedAt',
-        true
+        true,
       );
 
       // Create unique index on migrationId
@@ -238,7 +238,7 @@ export class MigrationRunner {
         this.historyCollection,
         'unique_migration_id',
         'unique',
-        ['migrationId']
+        ['migrationId'],
       );
     }
   }
@@ -252,10 +252,10 @@ export class MigrationRunner {
     try {
       const response = await this.databases.listDocuments(
         databaseId,
-        this.historyCollection
+        this.historyCollection,
       );
 
-      return response.documents.map(doc => ({
+      return response.documents.map((doc) => ({
         id: doc.migrationId,
         name: doc.name,
         appliedAt: doc.appliedAt,
@@ -291,7 +291,7 @@ export class MigrationRunner {
         name: migration.name,
         checksum,
         appliedAt: new Date().toISOString(),
-      }
+      },
     );
   }
 
@@ -303,15 +303,15 @@ export class MigrationRunner {
 
     const response = await this.databases.listDocuments(
       databaseId,
-      this.historyCollection
+      this.historyCollection,
     );
 
-    const doc = response.documents.find(d => d.migrationId === id);
+    const doc = response.documents.find((d) => d.migrationId === id);
     if (doc) {
       await this.databases.deleteDocument(
         databaseId,
         this.historyCollection,
-        doc.$id
+        doc.$id,
       );
     }
   }

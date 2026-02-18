@@ -1,18 +1,22 @@
 // Main exports
-export { MigrationRunner } from './runner.js';
-export { DatabaseHelper, StorageHelper, CommonSchemas, CommonBuckets } from './helpers.js';
-
-// Type exports
-export type {
-  Migration,
-  MigrationHistory,
-  MigrationConfig,
-  MigrationResult,
-  CollectionSchema,
-  AttributeSchema,
-  IndexSchema,
-  BucketSchema,
-} from './types.js';
 
 // Re-export useful Appwrite types
-export { ID, Permission, Role, Query } from 'appwrite';
+export {ID, Permission, Query, Role} from 'appwrite';
+export {
+  CommonBuckets,
+  CommonSchemas,
+  DatabaseHelper,
+  StorageHelper,
+} from './helpers.js';
+export {MigrationRunner} from './runner.js';
+// Type exports
+export type {
+  AttributeSchema,
+  BucketSchema,
+  CollectionSchema,
+  IndexSchema,
+  Migration,
+  MigrationConfig,
+  MigrationHistory,
+  MigrationResult,
+} from './types.js';

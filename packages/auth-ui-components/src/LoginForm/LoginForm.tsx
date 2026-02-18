@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
 import {
-  TextInput,
-  PasswordInput,
-  Button,
-  Paper,
-  Title,
-  Text,
-  Stack,
-  Anchor,
   Alert,
+  Anchor,
+  Button,
   Group,
+  Paper,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+  Title,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { IconAlertCircle } from '@tabler/icons-react';
+import {useForm} from '@mantine/form';
+import {IconAlertCircle} from '@tabler/icons-react';
+import type React from 'react';
+import {useState} from 'react';
 
 export interface LoginFormProps {
-  onLogin?: (email: string, password: string) => Promise<{ success: boolean }>;
+  onLogin?: (email: string, password: string) => Promise<{success: boolean}>;
   onSuccess?: () => void;
   onError?: (error: string) => void;
   onForgotPassword?: () => void;

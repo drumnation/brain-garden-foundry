@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { within, userEvent, expect } from '@storybook/test';
-import { MantineProvider } from '@mantine/core';
-import { LoginForm } from './LoginForm';
+import {MantineProvider} from '@mantine/core';
+import type {Meta, StoryObj} from '@storybook/react';
+import {expect, userEvent, within} from '@storybook/test';
+import {LoginForm} from './LoginForm';
 
 const meta = {
   title: 'Auth/LoginForm',
@@ -12,7 +12,7 @@ const meta = {
   decorators: [
     (Story) => (
       <MantineProvider>
-        <div style={{ width: '400px' }}>
+        <div style={{width: '400px'}}>
           <Story />
         </div>
       </MantineProvider>
@@ -20,11 +20,11 @@ const meta = {
   ],
   tags: ['autodocs'],
   argTypes: {
-    onLogin: { action: 'login' },
-    onSuccess: { action: 'success' },
-    onError: { action: 'error' },
-    onForgotPassword: { action: 'forgot-password' },
-    onSignUp: { action: 'sign-up' },
+    onLogin: {action: 'login'},
+    onSuccess: {action: 'success'},
+    onError: {action: 'error'},
+    onForgotPassword: {action: 'forgot-password'},
+    onSignUp: {action: 'sign-up'},
   },
 } satisfies Meta<typeof LoginForm>;
 
@@ -40,13 +40,13 @@ export const Default: Story = {
 export const SuccessfulLogin: Story = {
   args: {
     onLogin: async (email, password) => {
-      console.log('Login attempt:', { email, password });
+      console.log('Login attempt:', {email, password});
       // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return { success: true };
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return {success: true};
     },
   },
-  play: async ({ canvasElement, args }) => {
+  play: async ({canvasElement, args}) => {
     const canvas = within(canvasElement);
 
     // Fill in the form
@@ -57,14 +57,14 @@ export const SuccessfulLogin: Story = {
     await userEvent.type(passwordInput, 'Password123!');
 
     // Submit the form
-    const submitButton = canvas.getByRole('button', { name: /sign in/i });
+    const submitButton = canvas.getByRole('button', {name: /sign in/i});
     await userEvent.click(submitButton);
 
     // Check that loading state appears
     await expect(canvas.getByText(/signing in/i)).toBeInTheDocument();
 
     // Wait for success
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     expect(args.onSuccess).toHaveBeenCalled();
   },
 };
@@ -74,11 +74,11 @@ export const FailedLogin: Story = {
   args: {
     onLogin: async () => {
       // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       throw new Error('Invalid credentials');
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Fill in the form
@@ -89,22 +89,22 @@ export const FailedLogin: Story = {
     await userEvent.type(passwordInput, 'WrongPassword');
 
     // Submit the form
-    const submitButton = canvas.getByRole('button', { name: /sign in/i });
+    const submitButton = canvas.getByRole('button', {name: /sign in/i});
     await userEvent.click(submitButton);
 
     // Wait for error message
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     await expect(canvas.getByText(/invalid credentials/i)).toBeInTheDocument();
   },
 };
 
 // Story with validation errors
 export const ValidationErrors: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Try to submit without filling form
-    const submitButton = canvas.getByRole('button', { name: /sign in/i });
+    const submitButton = canvas.getByRole('button', {name: /sign in/i});
     await userEvent.click(submitButton);
 
     // Check validation messages
@@ -125,7 +125,7 @@ export const LoadingState: Story = {
   args: {
     onLogin: () => new Promise(() => {}), // Never resolves to show loading state
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Fill in the form
@@ -136,7 +136,7 @@ export const LoadingState: Story = {
     await userEvent.type(passwordInput, 'Password123!');
 
     // Submit the form
-    const submitButton = canvas.getByRole('button', { name: /sign in/i });
+    const submitButton = canvas.getByRole('button', {name: /sign in/i});
     await userEvent.click(submitButton);
 
     // Check loading state
@@ -147,16 +147,18 @@ export const LoadingState: Story = {
 
 // Story showing password visibility toggle
 export const PasswordVisibilityToggle: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const passwordInput = canvas.getByLabelText(/password/i) as HTMLInputElement;
+    const passwordInput = canvas.getByLabelText(
+      /password/i,
+    ) as HTMLInputElement;
 
     // Initially password should be hidden
     expect(passwordInput.type).toBe('password');
 
     // Click the visibility toggle
-    const toggleButton = canvas.getByRole('button', { name: /show password/i });
+    const toggleButton = canvas.getByRole('button', {name: /show password/i});
     await userEvent.click(toggleButton);
 
     // Password should now be visible
@@ -172,9 +174,9 @@ export const PasswordVisibilityToggle: Story = {
 export const InteractiveDemo: Story = {
   args: {
     onLogin: async (email, password) => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       if (email === 'demo@example.com' && password === 'Demo123!') {
-        return { success: true };
+        return {success: true};
       }
       throw new Error('Invalid credentials. Try demo@example.com / Demo123!');
     },

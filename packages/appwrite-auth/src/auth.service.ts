@@ -1,6 +1,6 @@
-import { ID } from 'appwrite';
-import type { AppwriteClient, User, Session } from '@brain-garden/core-appwrite';
-import { AppwriteError } from '@brain-garden/core-appwrite';
+import type {AppwriteClient, Session, User} from '@brain-garden/core-appwrite';
+import {AppwriteError} from '@brain-garden/core-appwrite';
+import {ID} from 'appwrite';
 
 export interface SignUpParams {
   email: string;
@@ -96,48 +96,48 @@ const validatePassword = (password: string): void => {
 export const makeAuthService = (deps: {
   appwriteClient: AppwriteClient;
 }): AuthService => {
-  const { appwriteClient } = deps;
-  const { account } = appwriteClient;
+  const {appwriteClient} = deps;
+  const {account} = appwriteClient;
 
   return {
-    signUp: async ({ email, password, name }) => {
+    signUp: async ({email, password, name}) => {
       // Validate input
       validateEmail(email);
       validatePassword(password);
 
       try {
         // Create account
-        const user = await account.create(
+        const user = (await account.create(
           ID.unique(),
           email,
           password,
           name,
-        ) as User;
+        )) as User;
 
         // Create session immediately after signup
-        const session = await account.createEmailPasswordSession(
+        const session = (await account.createEmailPasswordSession(
           email,
           password,
-        ) as Session;
+        )) as Session;
 
-        return { user, session };
+        return {user, session};
       } catch (error) {
         throw error;
       }
     },
 
-    signIn: async ({ email, password }) => {
+    signIn: async ({email, password}) => {
       try {
         // Create session
-        const session = await account.createEmailPasswordSession(
+        const session = (await account.createEmailPasswordSession(
           email,
           password,
-        ) as Session;
+        )) as Session;
 
         // Get user details
-        const user = await account.get() as User;
+        const user = (await account.get()) as User;
 
-        return { user, session };
+        return {user, session};
       } catch (error) {
         throw error;
       }
@@ -162,7 +162,7 @@ export const makeAuthService = (deps: {
 
     getCurrentUser: async () => {
       try {
-        const user = await account.get() as User;
+        const user = (await account.get()) as User;
         return user;
       } catch (error) {
         // Return null if not authenticated
@@ -170,12 +170,12 @@ export const makeAuthService = (deps: {
       }
     },
 
-    updateProfile: async ({ name, email, password }) => {
+    updateProfile: async ({name, email, password}) => {
       try {
         let user: User;
 
         if (name !== undefined) {
-          user = await account.updateName(name) as User;
+          user = (await account.updateName(name)) as User;
         }
 
         if (email !== undefined) {
@@ -187,18 +187,18 @@ export const makeAuthService = (deps: {
             );
           }
           validateEmail(email);
-          user = await account.updateEmail(email, password) as User;
+          user = (await account.updateEmail(email, password)) as User;
         }
 
         // Get updated user
-        user = await account.get() as User;
+        user = (await account.get()) as User;
         return user;
       } catch (error) {
         throw error;
       }
     },
 
-    updatePassword: async ({ oldPassword, newPassword }) => {
+    updatePassword: async ({oldPassword, newPassword}) => {
       validatePassword(newPassword);
 
       try {
@@ -208,7 +208,7 @@ export const makeAuthService = (deps: {
       }
     },
 
-    resetPassword: async ({ email, url }) => {
+    resetPassword: async ({email, url}) => {
       validateEmail(email);
 
       try {
@@ -218,7 +218,7 @@ export const makeAuthService = (deps: {
       }
     },
 
-    completePasswordReset: async ({ userId, secret, password }) => {
+    completePasswordReset: async ({userId, secret, password}) => {
       validatePassword(password);
 
       try {
@@ -236,7 +236,7 @@ export const makeAuthService = (deps: {
       }
     },
 
-    completeEmailVerification: async ({ userId, secret }) => {
+    completeEmailVerification: async ({userId, secret}) => {
       try {
         await account.updateVerification(userId, secret);
       } catch (error) {
@@ -246,7 +246,7 @@ export const makeAuthService = (deps: {
 
     createJWT: async () => {
       try {
-        const { jwt } = await account.createJWT();
+        const {jwt} = await account.createJWT();
         // Set the JWT on the client
         appwriteClient.setJWT(jwt);
         return jwt;

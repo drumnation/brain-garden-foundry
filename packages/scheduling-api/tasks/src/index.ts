@@ -1,2 +1,2 @@
 // Task types
-export type { Task, TaskInput, TaskStatus, TaskPriority } from './task.types.js';
+export type {Task, TaskInput, TaskPriority, TaskStatus} from './task.types.js';

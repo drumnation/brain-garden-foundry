@@ -1,5 +1,5 @@
-import type { DbClient } from './db.client.ts';
-import type { Project, ProjectFilter } from './db.types.ts';
+import type {DbClient} from './db.client.ts';
+import type {Project, ProjectFilter} from './db.types.ts';
 
 export interface ProjectRepo {
   findByPath: (path: string) => Promise<Project | null>;
@@ -15,8 +15,8 @@ export interface ProjectRepo {
  * Factory function to create project repository
  * Following functional DI pattern
  */
-export const makeProjectRepo = (deps: { db: DbClient }): ProjectRepo => {
-  const { db } = deps;
+export const makeProjectRepo = (deps: {db: DbClient}): ProjectRepo => {
+  const {db} = deps;
 
   return {
     findByPath: async (path: string): Promise<Project | null> => {
@@ -95,7 +95,9 @@ export const makeProjectRepo = (deps: { db: DbClient }): ProjectRepo => {
 
     create: async (project: Omit<Project, 'id'>): Promise<Project> => {
       const columns = Object.keys(project).join(', ');
-      const placeholders = Object.keys(project).map(() => '?').join(', ');
+      const placeholders = Object.keys(project)
+        .map(() => '?')
+        .join(', ');
       const values = Object.values(project);
 
       const stmt = db.prepare(`
@@ -113,14 +115,14 @@ export const makeProjectRepo = (deps: { db: DbClient }): ProjectRepo => {
 
     update: async (path: string, updates: Partial<Project>): Promise<void> => {
       // Remove id and path from updates
-      const { id, path: _, ...validUpdates } = updates;
+      const {id, path: _, ...validUpdates} = updates;
 
       if (Object.keys(validUpdates).length === 0) {
         return;
       }
 
       const setClause = Object.keys(validUpdates)
-        .map(key => `${key} = ?`)
+        .map((key) => `${key} = ?`)
         .join(', ');
 
       const values = [...Object.values(validUpdates), path];
@@ -139,7 +141,7 @@ export const makeProjectRepo = (deps: { db: DbClient }): ProjectRepo => {
 
       if (existing) {
         await makeProjectRepo(deps).update(project.path, project);
-        return { ...existing, ...project };
+        return {...existing, ...project};
       } else {
         return await makeProjectRepo(deps).create(project);
       }
@@ -182,7 +184,7 @@ export const makeProjectRepo = (deps: { db: DbClient }): ProjectRepo => {
       }
 
       const stmt = db.prepare(query);
-      const result = stmt.get(...params) as { count: number };
+      const result = stmt.get(...params) as {count: number};
       return result.count;
     },
   };

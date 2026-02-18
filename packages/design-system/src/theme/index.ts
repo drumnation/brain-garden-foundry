@@ -2,4 +2,4 @@
  * Theme barrel export
  */
 
-export { theme } from './theme';
+export {theme} from './theme';

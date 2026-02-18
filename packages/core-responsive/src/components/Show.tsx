@@ -1,6 +1,6 @@
-import { type ReactNode } from 'react';
-import { useBreakpoint } from '../hooks/useBreakpoint';
-import type { Breakpoint } from '../breakpoints';
+import type {ReactNode} from 'react';
+import type {Breakpoint} from '../breakpoints';
+import {useBreakpoint} from '../hooks/useBreakpoint';
 
 export interface ShowProps {
   /**
@@ -57,7 +57,13 @@ export interface ShowProps {
  *   <DesktopNav />
  * </Show>
  */
-export const Show = ({ above, below, at, children, fallback = null }: ShowProps) => {
+export const Show = ({
+  above,
+  below,
+  at,
+  children,
+  fallback = null,
+}: ShowProps) => {
   const breakpoint = useBreakpoint();
 
   // Helper to normalize single value or array
@@ -71,18 +77,22 @@ export const Show = ({ above, below, at, children, fallback = null }: ShowProps)
     // If 'at' is specified, check exact match
     if (at !== undefined) {
       const atBreakpoints = toArray(at);
-      return atBreakpoints.some(bp => breakpoint.is(bp));
+      return atBreakpoints.some((bp) => breakpoint.is(bp));
     }
 
     // If 'above' is specified, check if current is at or above any
     if (above !== undefined) {
       const aboveBreakpoints = toArray(above);
-      const matchesAbove = aboveBreakpoints.some(bp => breakpoint.isAtLeast(bp));
+      const matchesAbove = aboveBreakpoints.some((bp) =>
+        breakpoint.isAtLeast(bp),
+      );
 
       // If 'below' is also specified, must be in range
       if (below !== undefined) {
         const belowBreakpoints = toArray(below);
-        const matchesBelow = belowBreakpoints.some(bp => breakpoint.isAtMost(bp));
+        const matchesBelow = belowBreakpoints.some((bp) =>
+          breakpoint.isAtMost(bp),
+        );
         return matchesAbove && matchesBelow;
       }
 
@@ -92,7 +102,7 @@ export const Show = ({ above, below, at, children, fallback = null }: ShowProps)
     // If only 'below' is specified
     if (below !== undefined) {
       const belowBreakpoints = toArray(below);
-      return belowBreakpoints.some(bp => breakpoint.isAtMost(bp));
+      return belowBreakpoints.some((bp) => breakpoint.isAtMost(bp));
     }
 
     // No conditions specified, always show

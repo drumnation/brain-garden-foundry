@@ -1,5 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Breakpoint, breakpoints, getCurrentBreakpoint } from '../breakpoints';
+import {useEffect, useState} from 'react';
+import {
+  type Breakpoint,
+  breakpoints,
+  getCurrentBreakpoint,
+} from '../breakpoints';
 
 export interface UseBreakpointReturn {
   /** Current breakpoint */
@@ -25,7 +29,9 @@ export interface UseBreakpointReturn {
  * }
  */
 export function useBreakpoint(): UseBreakpointReturn {
-  const [current, setCurrent] = useState<Breakpoint>(() => getCurrentBreakpoint());
+  const [current, setCurrent] = useState<Breakpoint>(() =>
+    getCurrentBreakpoint(),
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -64,6 +70,6 @@ export function useBreakpoint(): UseBreakpointReturn {
     current,
     isAtLeast,
     isAtMost,
-    is
+    is,
   };
 }

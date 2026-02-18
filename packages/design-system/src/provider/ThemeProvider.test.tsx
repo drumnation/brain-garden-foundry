@@ -1,14 +1,14 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import { ThemeProvider, useTheme } from './ThemeProvider';
-import { Button, Text } from '@mantine/core';
+import {Button, Text} from '@mantine/core';
+import {render, screen} from '@testing-library/react';
+import {describe, expect, it} from 'vitest';
+import {ThemeProvider, useTheme} from './ThemeProvider';
 
 describe('ThemeProvider', () => {
   it('should render children', () => {
     render(
       <ThemeProvider>
         <div data-testid="child">Test Content</div>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByTestId('child')).toBeInTheDocument();
@@ -19,10 +19,10 @@ describe('ThemeProvider', () => {
     render(
       <ThemeProvider>
         <Button>Test Button</Button>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    const button = screen.getByRole('button', { name: 'Test Button' });
+    const button = screen.getByRole('button', {name: 'Test Button'});
     expect(button).toBeInTheDocument();
   });
 
@@ -30,7 +30,7 @@ describe('ThemeProvider', () => {
     render(
       <ThemeProvider>
         <Text>Themed Text</Text>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByText('Themed Text')).toBeInTheDocument();
@@ -38,12 +38,12 @@ describe('ThemeProvider', () => {
 
   it('should accept theme overrides', () => {
     render(
-      <ThemeProvider themeOverrides={{ primaryColor: 'blue' }}>
+      <ThemeProvider themeOverrides={{primaryColor: 'blue'}}>
         <Button>Overridden Button</Button>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    const button = screen.getByRole('button', { name: 'Overridden Button' });
+    const button = screen.getByRole('button', {name: 'Overridden Button'});
     expect(button).toBeInTheDocument();
   });
 
@@ -56,17 +56,19 @@ describe('ThemeProvider', () => {
             <Text>Nested Text</Text>
           </div>
         </div>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    expect(screen.getByRole('button', { name: 'Outer Button' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', {name: 'Outer Button'}),
+    ).toBeInTheDocument();
     expect(screen.getByText('Nested Text')).toBeInTheDocument();
   });
 });
 
 describe('useTheme', () => {
   function ThemeConsumer() {
-    const { colorScheme, isDark, isLight } = useTheme();
+    const {colorScheme, isDark, isLight} = useTheme();
 
     return (
       <div>
@@ -81,7 +83,7 @@ describe('useTheme', () => {
     render(
       <ThemeProvider>
         <ThemeConsumer />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     const colorScheme = screen.getByTestId('color-scheme');

@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { SignUpForm } from './SignUpForm';
-import { within, userEvent, expect } from '@storybook/test';
+import type {Meta, StoryObj} from '@storybook/react';
+import {expect, userEvent, within} from '@storybook/test';
+import {SignUpForm} from './SignUpForm';
 
 const meta: Meta<typeof SignUpForm> = {
   title: 'Auth/SignUpForm',
@@ -11,7 +11,7 @@ const meta: Meta<typeof SignUpForm> = {
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <div style={{ width: '400px' }}>
+      <div style={{width: '400px'}}>
         <Story />
       </div>
     ),
@@ -34,10 +34,10 @@ export const Default: Story = {
 export const WithHandler: Story = {
   args: {
     onSignUp: async (email, password, name) => {
-      console.log('Signing up:', { email, name });
+      console.log('Signing up:', {email, name});
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      return { success: true };
+      return {success: true};
     },
     onSuccess: () => console.log('Success!'),
   },
@@ -48,10 +48,10 @@ export const SuccessfulSignUp: Story = {
   args: {
     onSignUp: async (email, password, name) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      return { success: true };
+      return {success: true};
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Fill in the form
@@ -71,7 +71,7 @@ export const SuccessfulSignUp: Story = {
     await expect(canvas.getByText(/strong/i)).toBeInTheDocument();
 
     // Submit the form
-    const submitButton = canvas.getByRole('button', { name: /sign up/i });
+    const submitButton = canvas.getByRole('button', {name: /sign up/i});
     await userEvent.click(submitButton);
 
     // Check loading state
@@ -81,30 +81,34 @@ export const SuccessfulSignUp: Story = {
 
 // Interactive story - validation errors
 export const ValidationErrors: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Try to submit empty form
-    const submitButton = canvas.getByRole('button', { name: /sign up/i });
+    const submitButton = canvas.getByRole('button', {name: /sign up/i});
     await userEvent.click(submitButton);
 
     // Check for validation errors
-    await expect(canvas.getByText(/full name is required/i)).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/full name is required/i),
+    ).toBeInTheDocument();
     await expect(canvas.getByText(/email is required/i)).toBeInTheDocument();
     await expect(canvas.getByText(/password is required/i)).toBeInTheDocument();
-    await expect(canvas.getByText(/you must accept the terms/i)).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/you must accept the terms/i),
+    ).toBeInTheDocument();
   },
 };
 
 // Email validation error
 export const InvalidEmail: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     const emailInput = canvas.getByLabelText(/email/i);
     await userEvent.type(emailInput, 'invalid-email');
 
-    const submitButton = canvas.getByRole('button', { name: /sign up/i });
+    const submitButton = canvas.getByRole('button', {name: /sign up/i});
     await userEvent.click(submitButton);
 
     await expect(canvas.getByText(/invalid email format/i)).toBeInTheDocument();
@@ -113,7 +117,7 @@ export const InvalidEmail: Story = {
 
 // Password mismatch
 export const PasswordMismatch: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     const passwordInput = canvas.getByLabelText(/^password$/i);
@@ -122,16 +126,18 @@ export const PasswordMismatch: Story = {
     await userEvent.type(passwordInput, 'Password123!');
     await userEvent.type(confirmInput, 'DifferentPassword!');
 
-    const submitButton = canvas.getByRole('button', { name: /sign up/i });
+    const submitButton = canvas.getByRole('button', {name: /sign up/i});
     await userEvent.click(submitButton);
 
-    await expect(canvas.getByText(/passwords do not match/i)).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/passwords do not match/i),
+    ).toBeInTheDocument();
   },
 };
 
 // Weak password
 export const WeakPassword: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     const passwordInput = canvas.getByLabelText(/^password$/i);
@@ -149,7 +155,7 @@ export const APIError: Story = {
       throw new Error('Email already exists');
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Fill in valid form
@@ -165,7 +171,7 @@ export const APIError: Story = {
     await userEvent.type(confirmInput, 'Password123!');
     await userEvent.click(termsCheckbox);
 
-    const submitButton = canvas.getByRole('button', { name: /sign up/i });
+    const submitButton = canvas.getByRole('button', {name: /sign up/i});
     await userEvent.click(submitButton);
 
     // Check for error message

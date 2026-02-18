@@ -1,4 +1,4 @@
-import type { Client } from 'appwrite';
+import type {Client} from 'appwrite';
 
 export interface Migration {
   id: string;
@@ -36,7 +36,17 @@ export interface CollectionSchema {
 
 export interface AttributeSchema {
   key: string;
-  type: 'string' | 'integer' | 'float' | 'boolean' | 'datetime' | 'email' | 'ip' | 'url' | 'enum' | 'relationship';
+  type:
+    | 'string'
+    | 'integer'
+    | 'float'
+    | 'boolean'
+    | 'datetime'
+    | 'email'
+    | 'ip'
+    | 'url'
+    | 'enum'
+    | 'relationship';
   required?: boolean;
   array?: boolean;
   size?: number;

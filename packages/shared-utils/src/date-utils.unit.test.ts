@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import {describe, expect, it} from 'vitest';
 import {
-  formatDate,
-  parseDate,
   addDays,
-  isWeekend,
-  startOfDay,
-  endOfDay,
   daysBetween,
+  endOfDay,
+  formatDate,
+  isWeekend,
+  parseDate,
+  startOfDay,
 } from './date-utils';
 
 describe('date-utils', () => {

@@ -5,15 +5,6 @@
     "baseUrl": ".",
     "paths": {}
   },
-  "include": [
-    "*.ts",
-    "*.tsx",
-    "*.css",
-    "src",
-    "src/**/*.d.ts",
-    "*.d.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["*.ts", "*.tsx", "*.css", "src", "src/**/*.d.ts", "*.d.ts"],
+  "exclude": ["node_modules"]
 }

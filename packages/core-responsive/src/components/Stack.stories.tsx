@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Stack } from './Stack';
+import type {Meta, StoryObj} from '@storybook/react';
+import {Stack} from './Stack';
 
 const meta = {
   title: 'Core Responsive/Components/Stack',
@@ -8,9 +8,10 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Responsive flexbox layout for vertical or horizontal stacking. Supports responsive direction, gap, alignment, and wrapping.'
-      }
-    }
+        component:
+          'Responsive flexbox layout for vertical or horizontal stacking. Supports responsive direction, gap, alignment, and wrapping.',
+      },
+    },
   },
   tags: ['autodocs'],
 } satisfies Meta<typeof Stack>;
@@ -38,16 +39,18 @@ const desktopViewport = {
 };
 
 // Sample card component for demos
-const Card = ({ children }: { children: React.ReactNode }) => (
-  <div style={{
-    padding: '1rem',
-    backgroundColor: '#3b82f6',
-    color: 'white',
-    borderRadius: '8px',
-    minWidth: '120px',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  }}>
+const Card = ({children}: {children: React.ReactNode}) => (
+  <div
+    style={{
+      padding: '1rem',
+      backgroundColor: '#3b82f6',
+      color: 'white',
+      borderRadius: '8px',
+      minWidth: '120px',
+      textAlign: 'center',
+      fontWeight: 'bold',
+    }}
+  >
     {children}
   </div>
 );
@@ -153,8 +156,8 @@ export const HorizontalStack_Desktop: Story = {
  */
 export const ResponsiveDirection_Mobile: Story = {
   args: {
-    direction: { xs: 'vertical', md: 'horizontal' },
-    gap: { xs: 8, md: 16 },
+    direction: {xs: 'vertical', md: 'horizontal'},
+    gap: {xs: 8, md: 16},
     children: (
       <>
         <Card>Card 1</Card>
@@ -168,8 +171,8 @@ export const ResponsiveDirection_Mobile: Story = {
 
 export const ResponsiveDirection_Tablet: Story = {
   args: {
-    direction: { xs: 'vertical', md: 'horizontal' },
-    gap: { xs: 8, md: 16 },
+    direction: {xs: 'vertical', md: 'horizontal'},
+    gap: {xs: 8, md: 16},
     children: (
       <>
         <Card>Card 1</Card>
@@ -183,8 +186,8 @@ export const ResponsiveDirection_Tablet: Story = {
 
 export const ResponsiveDirection_Desktop: Story = {
   args: {
-    direction: { xs: 'vertical', md: 'horizontal' },
-    gap: { xs: 8, md: 16 },
+    direction: {xs: 'vertical', md: 'horizontal'},
+    gap: {xs: 8, md: 16},
     children: (
       <>
         <Card>Card 1</Card>
@@ -205,7 +208,11 @@ export const CenteredStack_Mobile: Story = {
     gap: 12,
     align: 'center',
     justify: 'center',
-    style: { minHeight: '200px', border: '2px dashed #e5e7eb', borderRadius: '8px' },
+    style: {
+      minHeight: '200px',
+      border: '2px dashed #e5e7eb',
+      borderRadius: '8px',
+    },
     children: (
       <>
         <Card>Button 1</Card>
@@ -223,7 +230,11 @@ export const CenteredStack_Tablet: Story = {
     gap: 12,
     align: 'center',
     justify: 'center',
-    style: { minHeight: '200px', border: '2px dashed #e5e7eb', borderRadius: '8px' },
+    style: {
+      minHeight: '200px',
+      border: '2px dashed #e5e7eb',
+      borderRadius: '8px',
+    },
     children: (
       <>
         <Card>Button 1</Card>
@@ -241,7 +252,11 @@ export const CenteredStack_Desktop: Story = {
     gap: 12,
     align: 'center',
     justify: 'center',
-    style: { minHeight: '200px', border: '2px dashed #e5e7eb', borderRadius: '8px' },
+    style: {
+      minHeight: '200px',
+      border: '2px dashed #e5e7eb',
+      borderRadius: '8px',
+    },
     children: (
       <>
         <Card>Button 1</Card>
@@ -261,7 +276,12 @@ export const WrappingStack_Mobile: Story = {
     direction: 'horizontal',
     gap: 12,
     wrap: true,
-    style: { maxWidth: '300px', border: '2px dashed #e5e7eb', borderRadius: '8px', padding: '1rem' },
+    style: {
+      maxWidth: '300px',
+      border: '2px dashed #e5e7eb',
+      borderRadius: '8px',
+      padding: '1rem',
+    },
     children: (
       <>
         <Card>Tag 1</Card>
@@ -281,7 +301,12 @@ export const WrappingStack_Tablet: Story = {
     direction: 'horizontal',
     gap: 12,
     wrap: true,
-    style: { maxWidth: '500px', border: '2px dashed #e5e7eb', borderRadius: '8px', padding: '1rem' },
+    style: {
+      maxWidth: '500px',
+      border: '2px dashed #e5e7eb',
+      borderRadius: '8px',
+      padding: '1rem',
+    },
     children: (
       <>
         <Card>Tag 1</Card>
@@ -301,7 +326,12 @@ export const WrappingStack_Desktop: Story = {
     direction: 'horizontal',
     gap: 12,
     wrap: true,
-    style: { maxWidth: '600px', border: '2px dashed #e5e7eb', borderRadius: '8px', padding: '1rem' },
+    style: {
+      maxWidth: '600px',
+      border: '2px dashed #e5e7eb',
+      borderRadius: '8px',
+      padding: '1rem',
+    },
     children: (
       <>
         <Card>Tag 1</Card>
@@ -324,7 +354,12 @@ export const SpaceBetween_Mobile: Story = {
     direction: 'horizontal',
     gap: 0,
     justify: 'space-between',
-    style: { width: '100%', border: '2px dashed #e5e7eb', borderRadius: '8px', padding: '1rem' },
+    style: {
+      width: '100%',
+      border: '2px dashed #e5e7eb',
+      borderRadius: '8px',
+      padding: '1rem',
+    },
     children: (
       <>
         <Card>Left</Card>
@@ -341,7 +376,12 @@ export const SpaceBetween_Tablet: Story = {
     direction: 'horizontal',
     gap: 0,
     justify: 'space-between',
-    style: { width: '100%', border: '2px dashed #e5e7eb', borderRadius: '8px', padding: '1rem' },
+    style: {
+      width: '100%',
+      border: '2px dashed #e5e7eb',
+      borderRadius: '8px',
+      padding: '1rem',
+    },
     children: (
       <>
         <Card>Left</Card>
@@ -358,7 +398,12 @@ export const SpaceBetween_Desktop: Story = {
     direction: 'horizontal',
     gap: 0,
     justify: 'space-between',
-    style: { width: '100%', border: '2px dashed #e5e7eb', borderRadius: '8px', padding: '1rem' },
+    style: {
+      width: '100%',
+      border: '2px dashed #e5e7eb',
+      borderRadius: '8px',
+      padding: '1rem',
+    },
     children: (
       <>
         <Card>Left</Card>

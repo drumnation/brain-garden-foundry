@@ -22,9 +22,8 @@
  * ```
  */
 
+export type {FeatureCardProps} from './components/FeatureCard';
 // COMPONENT EXPORTS
-export { FeatureCard } from './components/FeatureCard';
-export type { FeatureCardProps } from './components/FeatureCard';
-
-export { StatusBadge } from './components/StatusBadge';
-export type { StatusBadgeProps } from './components/StatusBadge';
+export {FeatureCard} from './components/FeatureCard';
+export type {StatusBadgeProps} from './components/StatusBadge';
+export {StatusBadge} from './components/StatusBadge';

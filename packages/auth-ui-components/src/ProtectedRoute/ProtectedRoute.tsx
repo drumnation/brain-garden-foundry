@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { Center, Loader, Text, Stack, Alert } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
-import { useAuth } from '@brain-garden/appwrite-auth';
+import {useAuth} from '@brain-garden/appwrite-auth';
+import {Alert, Center, Loader, Stack, Text} from '@mantine/core';
+import {IconAlertCircle} from '@tabler/icons-react';
+import {useEffect} from 'react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -28,7 +28,7 @@ export function ProtectedRoute({
   loadingComponent,
   fallbackComponent,
 }: ProtectedRouteProps) {
-  const { user, isLoading } = useAuth();
+  const {user, isLoading} = useAuth();
 
   // Effect for handling redirects
   useEffect(() => {
@@ -95,7 +95,9 @@ export function ProtectedRoute({
   // Check for required roles
   if (requiredRoles.length > 0) {
     const userRoles = user.roles || [];
-    const hasRequiredRole = requiredRoles.some(role => userRoles.includes(role));
+    const hasRequiredRole = requiredRoles.some((role) =>
+      userRoles.includes(role),
+    );
 
     if (!hasRequiredRole) {
       // Call unauthorized callback if provided
@@ -128,8 +130,8 @@ export function ProtectedRoute({
   // Check for required permissions
   if (requiredPermissions.length > 0) {
     const userPermissions = user.permissions || [];
-    const hasAllPermissions = requiredPermissions.every(permission =>
-      userPermissions.includes(permission)
+    const hasAllPermissions = requiredPermissions.every((permission) =>
+      userPermissions.includes(permission),
     );
 
     if (!hasAllPermissions) {

@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { Show } from './Show';
+import {render, screen} from '@testing-library/react';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import * as breakpointHook from '../hooks/useBreakpoint';
+import {Show} from './Show';
 
 describe('Show Component', () => {
   const mockUseBreakpoint = vi.spyOn(breakpointHook, 'useBreakpoint');
@@ -34,7 +34,7 @@ describe('Show Component', () => {
       render(
         <Show above="md" fallback={<div>Mobile fallback</div>}>
           Desktop content
-        </Show>
+        </Show>,
       );
 
       expect(screen.queryByText('Desktop content')).not.toBeInTheDocument();
@@ -78,7 +78,7 @@ describe('Show Component', () => {
       render(
         <Show below="sm" fallback={<div>Desktop fallback</div>}>
           Mobile content
-        </Show>
+        </Show>,
       );
 
       expect(screen.queryByText('Mobile content')).not.toBeInTheDocument();
@@ -122,7 +122,7 @@ describe('Show Component', () => {
       render(
         <Show at="md" fallback={<div>Not tablet</div>}>
           Tablet content
-        </Show>
+        </Show>,
       );
 
       expect(screen.queryByText('Tablet content')).not.toBeInTheDocument();
@@ -151,7 +151,11 @@ describe('Show Component', () => {
         isAtMost: (bp) => bp === 'lg',
       });
 
-      render(<Show above="sm" below="lg">Tablet range content</Show>);
+      render(
+        <Show above="sm" below="lg">
+          Tablet range content
+        </Show>,
+      );
       expect(screen.getByText('Tablet range content')).toBeInTheDocument();
     });
 
@@ -166,10 +170,12 @@ describe('Show Component', () => {
       render(
         <Show above="sm" below="lg" fallback={<div>Outside range</div>}>
           Tablet range content
-        </Show>
+        </Show>,
       );
 
-      expect(screen.queryByText('Tablet range content')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Tablet range content'),
+      ).not.toBeInTheDocument();
       expect(screen.getByText('Outside range')).toBeInTheDocument();
     });
   });
@@ -183,7 +189,7 @@ describe('Show Component', () => {
         isAtMost: () => true,
       });
 
-      const { container } = render(<Show above="md">Desktop content</Show>);
+      const {container} = render(<Show above="md">Desktop content</Show>);
       expect(container.textContent).toBe('');
     });
 
@@ -198,7 +204,7 @@ describe('Show Component', () => {
       render(
         <Show above="md" fallback={<div>Mobile UI</div>}>
           Desktop UI
-        </Show>
+        </Show>,
       );
 
       expect(screen.getByText('Mobile UI')).toBeInTheDocument();
@@ -231,7 +237,7 @@ describe('Show Component', () => {
       render(
         <Show at="md" above="sm" below="lg">
           Exact match content
-        </Show>
+        </Show>,
       );
 
       expect(screen.getByText('Exact match content')).toBeInTheDocument();

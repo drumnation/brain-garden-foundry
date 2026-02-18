@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { ThemeProvider } from '@bg-kit/design-system';
-import { FeatureCard } from './FeatureCard';
+import {ThemeProvider} from '@bg-kit/design-system';
+import {render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from 'vitest';
+import {FeatureCard} from './FeatureCard';
 
 const TestIcon = () => <svg data-testid="test-icon">Icon</svg>;
 
@@ -14,7 +14,7 @@ describe('FeatureCard', () => {
           title="Test Feature"
           description="Test description"
         />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByText('Test Feature')).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe('FeatureCard', () => {
           title="Test"
           description="Description"
         />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByTestId('test-icon')).toBeInTheDocument();
@@ -47,10 +47,10 @@ describe('FeatureCard', () => {
           actionLabel="Click Me"
           onAction={handleAction}
         />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    const button = screen.getByRole('button', { name: 'Click Me' });
+    const button = screen.getByRole('button', {name: 'Click Me'});
     expect(button).toBeInTheDocument();
   });
 
@@ -66,10 +66,10 @@ describe('FeatureCard', () => {
           actionLabel="Click Me"
           onAction={handleAction}
         />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
-    const button = screen.getByRole('button', { name: 'Click Me' });
+    const button = screen.getByRole('button', {name: 'Click Me'});
     button.click();
 
     expect(handleAction).toHaveBeenCalledTimes(1);
@@ -83,7 +83,7 @@ describe('FeatureCard', () => {
           title="Test"
           description="Description"
         />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
@@ -98,7 +98,7 @@ describe('FeatureCard', () => {
           description="Description"
           variant="success"
         />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     // Component renders successfully with variant

@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { PasswordResetForm } from './PasswordResetForm';
-import { within, userEvent, expect } from '@storybook/test';
+import type {Meta, StoryObj} from '@storybook/react';
+import {expect, userEvent, within} from '@storybook/test';
+import {PasswordResetForm} from './PasswordResetForm';
 
 const meta: Meta<typeof PasswordResetForm> = {
   title: 'Auth/PasswordResetForm',
@@ -11,7 +11,7 @@ const meta: Meta<typeof PasswordResetForm> = {
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <div style={{ width: '400px' }}>
+      <div style={{width: '400px'}}>
         <Story />
       </div>
     ),
@@ -37,7 +37,7 @@ export const RequestWithHandler: Story = {
     onRequestReset: async (email) => {
       console.log('Requesting reset for:', email);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      return { success: true };
+      return {success: true};
     },
   },
 };
@@ -62,7 +62,7 @@ export const ConfirmWithHandler: Story = {
     onConfirmReset: async (userId, secret, password) => {
       console.log('Resetting password for:', userId);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      return { success: true };
+      return {success: true};
     },
   },
 };
@@ -73,10 +73,10 @@ export const RequestResetFlow: Story = {
     mode: 'request',
     onRequestReset: async (email) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      return { success: true };
+      return {success: true};
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Fill in email
@@ -84,7 +84,7 @@ export const RequestResetFlow: Story = {
     await userEvent.type(emailInput, 'user@example.com');
 
     // Submit form
-    const submitButton = canvas.getByRole('button', { name: /send reset link/i });
+    const submitButton = canvas.getByRole('button', {name: /send reset link/i});
     await userEvent.click(submitButton);
 
     // Check loading state
@@ -100,14 +100,14 @@ export const RequestInvalidEmail: Story = {
   args: {
     mode: 'request',
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Try invalid email
     const emailInput = canvas.getByLabelText(/email/i);
     await userEvent.type(emailInput, 'invalid-email');
 
-    const submitButton = canvas.getByRole('button', { name: /send reset link/i });
+    const submitButton = canvas.getByRole('button', {name: /send reset link/i});
     await userEvent.click(submitButton);
 
     // Check error message
@@ -123,7 +123,7 @@ export const RequestAPIError: Story = {
       throw new Error('User not found');
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Fill in email
@@ -131,7 +131,7 @@ export const RequestAPIError: Story = {
     await userEvent.type(emailInput, 'nonexistent@example.com');
 
     // Submit
-    const submitButton = canvas.getByRole('button', { name: /send reset link/i });
+    const submitButton = canvas.getByRole('button', {name: /send reset link/i});
     await userEvent.click(submitButton);
 
     // Check error
@@ -147,10 +147,10 @@ export const ConfirmResetFlow: Story = {
     secret: 'secret123',
     onConfirmReset: async (userId, secret, password) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      return { success: true };
+      return {success: true};
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Fill in passwords
@@ -164,7 +164,7 @@ export const ConfirmResetFlow: Story = {
     await expect(canvas.getByText(/strong/i)).toBeInTheDocument();
 
     // Submit
-    const submitButton = canvas.getByRole('button', { name: /reset password/i });
+    const submitButton = canvas.getByRole('button', {name: /reset password/i});
     await userEvent.click(submitButton);
 
     // Check loading
@@ -172,7 +172,9 @@ export const ConfirmResetFlow: Story = {
 
     // Check success
     await new Promise((resolve) => setTimeout(resolve, 1100));
-    await expect(canvas.getByText(/password reset successful/i)).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/password reset successful/i),
+    ).toBeInTheDocument();
   },
 };
 
@@ -182,7 +184,7 @@ export const ConfirmPasswordMismatch: Story = {
     userId: 'user123',
     secret: 'secret123',
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Fill in mismatched passwords
@@ -193,11 +195,13 @@ export const ConfirmPasswordMismatch: Story = {
     await userEvent.type(confirmInput, 'DifferentPassword!');
 
     // Submit
-    const submitButton = canvas.getByRole('button', { name: /reset password/i });
+    const submitButton = canvas.getByRole('button', {name: /reset password/i});
     await userEvent.click(submitButton);
 
     // Check error
-    await expect(canvas.getByText(/passwords do not match/i)).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/passwords do not match/i),
+    ).toBeInTheDocument();
   },
 };
 
@@ -207,7 +211,7 @@ export const WeakPasswordStrength: Story = {
     userId: 'user123',
     secret: 'secret123',
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     const passwordInput = canvas.getByPlaceholderText(/enter new password/i);
@@ -238,7 +242,7 @@ export const ConfirmAPIError: Story = {
       throw new Error('Invalid reset token');
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
     // Fill in passwords
@@ -249,7 +253,7 @@ export const ConfirmAPIError: Story = {
     await userEvent.type(confirmInput, 'NewPassword123!');
 
     // Submit
-    const submitButton = canvas.getByRole('button', { name: /reset password/i });
+    const submitButton = canvas.getByRole('button', {name: /reset password/i});
     await userEvent.click(submitButton);
 
     // Check error

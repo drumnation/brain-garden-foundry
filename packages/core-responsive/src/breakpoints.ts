@@ -3,12 +3,12 @@
  * Mobile-first approach: styles apply from breakpoint and up
  */
 export const breakpoints = {
-  xs: 0,      // Mobile (all devices)
-  sm: 640,    // Large mobile / Small tablet
-  md: 768,    // Tablet
-  lg: 1024,   // Desktop
-  xl: 1280,   // Large desktop
-  '2xl': 1536 // Extra large desktop
+  xs: 0, // Mobile (all devices)
+  sm: 640, // Large mobile / Small tablet
+  md: 768, // Tablet
+  lg: 1024, // Desktop
+  xl: 1280, // Large desktop
+  '2xl': 1536, // Extra large desktop
 } as const;
 
 export type Breakpoint = keyof typeof breakpoints;
@@ -22,7 +22,7 @@ export const mediaQueries = {
   md: `(min-width: ${breakpoints.md}px)`,
   lg: `(min-width: ${breakpoints.lg}px)`,
   xl: `(min-width: ${breakpoints.xl}px)`,
-  '2xl': `(min-width: ${breakpoints['2xl']}px)`
+  '2xl': `(min-width: ${breakpoints['2xl']}px)`,
 } as const;
 
 /**

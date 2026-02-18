@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { FeatureCard } from './FeatureCard';
-import { IconRocket, IconShield, IconBolt } from '@tabler/icons-react';
+import type {Meta, StoryObj} from '@storybook/react';
+import {IconBolt, IconRocket, IconShield} from '@tabler/icons-react';
+import {FeatureCard} from './FeatureCard';
 
 const meta = {
   title: 'UI Components/FeatureCard',
@@ -65,7 +65,14 @@ export const WithoutAction: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', width: '800px' }}>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '1rem',
+        width: '800px',
+      }}
+    >
       <FeatureCard
         icon={<IconRocket size={32} />}
         title="Primary Variant"
