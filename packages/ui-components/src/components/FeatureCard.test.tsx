@@ -3,7 +3,11 @@ import {render, screen} from '@testing-library/react';
 import {describe, expect, it, vi} from 'vitest';
 import {FeatureCard} from './FeatureCard';
 
-const TestIcon = () => <svg data-testid="test-icon">Icon</svg>;
+const TestIcon = () => (
+  <svg data-testid="test-icon">
+    <title>Test icon</title>Icon
+  </svg>
+);
 
 describe('FeatureCard', () => {
   it('should render with title and description', () => {

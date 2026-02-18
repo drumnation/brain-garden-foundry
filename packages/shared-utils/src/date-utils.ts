@@ -14,7 +14,7 @@
  * formatDate(new Date('2025-10-22')) // '2025-10-22'
  */
 export function formatDate(date: Date): string {
-  return date.toISOString().split('T')[0]!;
+  return date.toISOString().split('T')[0] ?? '';
 }
 
 /**

@@ -269,7 +269,7 @@ export class StorageHelper {
   ): Promise<void> {
     await this.storage.updateBucket(
       schema.bucketId,
-      schema.name!,
+      schema.name ?? '',
       schema.permissions,
       schema.fileSecurity,
       schema.enabled,

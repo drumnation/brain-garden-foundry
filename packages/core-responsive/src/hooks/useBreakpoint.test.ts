@@ -154,7 +154,7 @@ describe('useBreakpoint', () => {
         value: 500,
         configurable: true,
       });
-      const {result, rerender} = renderHook(() => useBreakpoint());
+      const {result} = renderHook(() => useBreakpoint());
 
       expect(result.current.current).toBe('xs');
 

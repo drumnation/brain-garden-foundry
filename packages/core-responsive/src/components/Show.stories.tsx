@@ -381,16 +381,16 @@ export const ResponsiveNav_Mobile: Story = {
           borderRadius: '8px',
         }}
       >
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           Home
         </a>
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           About
         </a>
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           Services
         </a>
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           Contact
         </a>
       </nav>
@@ -406,6 +406,7 @@ export const ResponsiveNav_Mobile: Story = {
         }}
       >
         <button
+          type="button"
           style={{
             backgroundColor: '#3b82f6',
             color: 'white',
@@ -437,16 +438,16 @@ export const ResponsiveNav_Tablet: Story = {
           borderRadius: '8px',
         }}
       >
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           Home
         </a>
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           About
         </a>
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           Services
         </a>
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           Contact
         </a>
       </nav>
@@ -462,6 +463,7 @@ export const ResponsiveNav_Tablet: Story = {
         }}
       >
         <button
+          type="button"
           style={{
             backgroundColor: '#3b82f6',
             color: 'white',
@@ -493,16 +495,16 @@ export const ResponsiveNav_Desktop: Story = {
           borderRadius: '8px',
         }}
       >
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           Home
         </a>
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           About
         </a>
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           Services
         </a>
-        <a href="#" style={{color: 'white', textDecoration: 'none'}}>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
           Contact
         </a>
       </nav>
@@ -518,6 +520,7 @@ export const ResponsiveNav_Desktop: Story = {
         }}
       >
         <button
+          type="button"
           style={{
             backgroundColor: '#3b82f6',
             color: 'white',
