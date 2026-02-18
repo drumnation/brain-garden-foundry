@@ -12,7 +12,7 @@
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 100,
+    "lineWidth": 80,
     "lineEnding": "lf"
   },
   "linter": {
@@ -23,20 +23,23 @@
         "noUselessTypeConstraint": "error"
       },
       "correctness": {
-        "noUnusedVariables": "warn",
+        "noUnusedVariables": "error",
         "noUnusedImports": "error",
+        "noUnusedFunctionParameters": "off",
         "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error"
       },
       "style": {
         "noNonNullAssertion": "warn",
         "useConst": "error",
-        "useImportType": "error"
+        "useImportType": "error",
+        "useNodejsImportProtocol": "off",
+        "useTemplate": "off"
       },
       "suspicious": {
-        "noExplicitAny": "warn",
+        "noExplicitAny": "off",
         "noArrayIndexKey": "warn",
-        "noConsole": "warn"
+        "noConsole": "off"
       },
       "a11y": {
         "recommended": true
@@ -48,7 +51,8 @@
       "quoteStyle": "single",
       "trailingCommas": "all",
       "semicolons": "always",
-      "arrowParentheses": "always"
+      "arrowParentheses": "always",
+      "bracketSpacing": false
     }
   },
   "json": {
@@ -70,28 +74,7 @@
       "linter": {
         "rules": {
           "suspicious": {
-            "noExplicitAny": "off",
-            "noConsole": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["*.stories.tsx", "*.stories.ts"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noConsole": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["scripts/**", "tooling/generators/**"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noConsole": "off"
+            "noExplicitAny": "off"
           }
         }
       }

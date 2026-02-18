@@ -1,92 +1,115 @@
-# Migrating Existing Repos to Biome
+# Biome Migration Guide
 
-This guide covers migrating an existing Brain Garden project (created before the Biome switch) from ESLint + Prettier to Biome.
+## Current Status: Side-by-Side (Phase 1)
 
-## Quick Migration (< 5 minutes)
+Biome runs **alongside** ESLint + Prettier — not replacing them. Both toolchains are available.
 
-### 1. Install Biome
+### Why Side-by-Side?
 
-```bash
-pnpm add -Dw @biomejs/biome
-```
+Biome lacks equivalents for these ESLint plugins we rely on:
 
-### 2. Copy biome.json
+| ESLint Plugin | What It Does | Biome Status |
+|---------------|-------------|--------------|
+| `sort-keys-fix` | Auto-sort object keys | ❌ No equivalent |
+| `typescript-sort-keys` | Sort interface/enum keys | ❌ No equivalent |
+| `styled-components-a11y` | a11y rules for CSS-in-JS | ❌ No equivalent |
+| `better-styled-components` | Sort CSS declarations | ❌ No equivalent |
+| `eslint-config-turbo` | Turborepo env var safety | ❌ No equivalent |
+| `import/no-cycle` | Circular dependency detection | ❌ No equivalent |
+| `eslint-plugin-storybook` | Storybook best practices | ❌ No equivalent |
 
-Copy `biome.json` from the foundry template root into your project root.
+Until Biome covers these, ESLint stays.
 
-### 3. Remove ESLint + Prettier
+## What Biome Handles Now
 
-```bash
-# Remove config files
-rm -f eslint.config.* .eslintrc* .prettierrc* prettier.config.*
-find . -name "eslint.config.*" -not -path "*/node_modules/*" -delete
-find . -name "prettier.config.*" -not -path "*/node_modules/*" -delete
+**Formatting** (replaces Prettier for speed):
+- `pnpm biome:format` — 10-50x faster than Prettier
 
-# Remove tooling packages
-rm -rf tooling/eslint tooling/prettier
-```
+**Linting** (subset that overlaps ESLint):
+- Unused imports/variables (auto-fixable)
+- Import type enforcement
+- Import organization
+- React hooks rules
+- a11y checks
+- General code quality (useless catch, etc.)
 
-### 4. Clean package.json files
-
-For each `package.json` in your monorepo:
-
-1. Remove these devDependencies:
-   - `eslint`, `prettier`, and all `eslint-*`, `prettier-*`, `@eslint/*` packages
-   - `@kit/eslint-config`, `@kit/prettier-config`
-
-2. Remove these keys:
-   - `eslintConfig`
-   - `prettier`
-
-3. Update scripts:
-   - `"lint": "biome lint ."`
-   - `"format": "biome format . --check"`
-
-### 5. Update root package.json
-
-```json
-{
-  "scripts": {
-    "lint": "biome lint .",
-    "format": "biome format . --check",
-    "format:fix": "biome format . --write",
-    "check": "biome check .",
-    "check:fix": "biome check . --write"
-  }
-}
-```
-
-### 6. Auto-fix
+## Running Both
 
 ```bash
-# Fix all formatting + lint auto-fixable issues
-pnpm biome check . --write
+# ESLint (existing — full rule coverage)
+pnpm lint
+
+# Biome (new — fast subset)
+pnpm biome:check        # Check only
+pnpm biome:fix          # Auto-fix safe issues
+pnpm biome:format       # Format only
+pnpm biome:ci           # CI mode (errors on issues)
 ```
 
-### 7. Update VS Code
+## Biome Config Tuning
 
-Replace ESLint + Prettier extensions with the Biome extension (`biomejs.biome`).
+The `biome.json` is tuned to match our existing ESLint/Prettier config:
 
-## Rule Mapping
+| Setting | Value | Matches |
+|---------|-------|---------|
+| `lineWidth` | 80 | Prettier `printWidth: 80` |
+| `indentStyle` | space | Prettier `useTabs: false` |
+| `indentWidth` | 2 | Prettier `tabWidth: 2` |
+| `quoteStyle` | single | Prettier `singleQuote: true` |
+| `semicolons` | always | Prettier `semi: true` |
+| `trailingCommas` | all | Prettier `trailingComma: 'all'` |
+| `bracketSpacing` | false | Prettier `bracketSpacing: false` |
+| `noExplicitAny` | off | Matches ESLint `no-explicit-any: off` |
+| `noConsole` | off | Matches ESLint overrides |
+| `noUnusedFunctionParameters` | off | Not enforced by ESLint |
 
-| ESLint Rule | Biome Equivalent |
-|-------------|-----------------|
-| `no-unused-vars` | `correctness/noUnusedVariables` |
-| `no-console` | `suspicious/noConsoleLog` |
-| `prefer-const` | `style/useConst` |
-| `react-hooks/exhaustive-deps` | `correctness/useExhaustiveDependencies` |
-| `react-hooks/rules-of-hooks` | `correctness/useHookAtTopLevel` |
-| `import/order` | Built-in import sorting (`organizeImports`) |
-| `@typescript-eslint/no-explicit-any` | `suspicious/noExplicitAny` |
-| `@typescript-eslint/no-unused-vars` | `correctness/noUnusedVariables` |
+### Dry Run Results (148 files)
 
-## Prettier → Biome Formatting
+| Stage | Diagnostics |
+|-------|------------|
+| Biome defaults (untuned) | ❌ 550 |
+| After matching ESLint rules | 249 (102 auto-fixable) |
+| After auto-fix | ✅ 63 (real code quality catches) |
 
-Biome's formatter is compatible with Prettier. The `biome.json` in the template configures:
-- 2-space indent
-- Single quotes
-- Trailing commas
-- Semicolons always
-- 100 char line width
+The 63 remaining are legitimate issues ESLint wasn't catching:
+- 25 unused vars/imports (need manual review)
+- 12 a11y: invalid anchors
+- 10 useless catch blocks
+- 16 misc (button types, fragments, etc.)
 
-These match the previous Prettier config.
+## Migration Plan (When Ready)
+
+### Phase 2: Replace Prettier with Biome Formatter
+- Remove Prettier dependency
+- Keep ESLint for lint rules
+- Use Biome for formatting only (10-50x faster)
+
+### Phase 3: Replace Overlapping ESLint Rules
+- Disable ESLint rules that Biome covers
+- Keep ESLint only for plugin-specific rules (styled-components, sort-keys, turbo, storybook)
+
+### Phase 4: Full Migration (blocked)
+- Only when Biome adds CSS-in-JS support and key-sorting
+- Track: https://github.com/biomejs/biome/issues
+
+## Rule Mapping Reference
+
+| ESLint Rule | Biome Equivalent | Status |
+|-------------|-----------------|--------|
+| `no-unused-vars` | `correctness/noUnusedVariables` | ✅ |
+| `no-console` | `suspicious/noConsole` | ✅ |
+| `prefer-const` | `style/useConst` | ✅ |
+| `react-hooks/exhaustive-deps` | `correctness/useExhaustiveDependencies` | ✅ |
+| `react-hooks/rules-of-hooks` | `correctness/useHookAtTopLevel` | ✅ |
+| `import/order` | `assist/source/organizeImports` | ✅ |
+| `@typescript-eslint/no-explicit-any` | `suspicious/noExplicitAny` | ✅ |
+| `@typescript-eslint/no-unused-vars` | `correctness/noUnusedVariables` | ✅ |
+| `import/no-cycle` | — | ❌ Not available |
+| `sort-keys-fix` | — | ❌ Not available |
+| `typescript-sort-keys` | — | ❌ Not available |
+| `styled-components-a11y/*` | — | ❌ Not available |
+| `better-styled-components/*` | — | ❌ Not available |
+
+## Emotion Migration Note
+
+The template is migrating from `styled-components` to `@emotion/styled` (styled-components is deprecated). The a11y and sorting lint rules for CSS-in-JS will need emotion-compatible equivalents — this is tracked separately.
