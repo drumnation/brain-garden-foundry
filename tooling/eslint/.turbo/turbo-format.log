@@ -1,0 +1,5 @@
+
+> @kit/eslint-config@0.2.0 format /Users/dmieloch/Dev/tooling/eslint
+> prettier --check "**/*.{ts,js,json}"
+
+Checking formatting...

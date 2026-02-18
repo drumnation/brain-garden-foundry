@@ -1,6 +1,6 @@
-# Overseer Pm Agent
+# Brain Garden Foundry
 
-A production-ready monorepo template with generator-first approach for web, mobile, desktop, and backend applications. Features Brain Garden AI tooling, complete testing infrastructure, automated validation, and comprehensive development tools.
+AI-powered project materialization system — production-ready monorepo template with generator-first approach for web, mobile, desktop, and backend applications. Features Brain Garden AI tooling, complete testing infrastructure, automated validation, and comprehensive development tools.
 
 ## 🚀 What's Included
 
@@ -14,7 +14,7 @@ This mega template provides everything you need to start building modern full-st
 - **Comprehensive Testing** - Unit, Integration, and E2E tests for all apps
 - **Brain Monitor** - AI-assisted validation and error tracking
 - **GitHub Actions** - Automated CI/CD workflows
-- **Complete Tooling** - ESLint, Prettier, TypeScript, Turborepo
+- **Complete Tooling** - Biome (linting & formatting), TypeScript, Turborepo
 - **🆕 Appwrite Deployment** - ONE-COMMAND deployment to REAL infrastructure
 
 ## 🎯 Quick Start
@@ -107,8 +107,6 @@ brain-garden-monorepo-template/
 ├── tooling/                   # Shared tooling packages
 │   ├── brain-monitor/        # Validation orchestration
 │   ├── testing/              # Centralized test configs
-│   ├── eslint/               # ESLint configurations
-│   ├── prettier/             # Prettier configuration
 │   ├── typescript/           # TypeScript configurations
 │   ├── logger/               # Structured logging
 │   └── generators/           # App/package generators
@@ -229,7 +227,7 @@ pnpm test:integration # Run integration tests
 pnpm test:e2e         # Run end-to-end tests
 pnpm lint             # Lint all packages
 pnpm typecheck        # Type-check all packages
-pnpm format           # Format code with Prettier
+pnpm format           # Format code with Biome
 pnpm validate         # Run lint + typecheck + test
 pnpm clean            # Remove all node_modules and build artifacts
 ```
