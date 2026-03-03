@@ -3,6 +3,6 @@
  * Following hexagonal architecture with functional DI pattern
  */
 
-export * from './scanner.types.ts';
-export * from './scanner.service.ts';
 export * from './project.detector.ts';
+export * from './scanner.service.ts';
+export * from './scanner.types.ts';

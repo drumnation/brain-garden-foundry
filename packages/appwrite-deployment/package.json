@@ -17,7 +17,7 @@
     "test:e2e": "vitest run tests/e2e",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "biome lint .",
     "deploy:test": "tsx ./src/cli.ts test",
     "deploy:provision": "tsx ./src/cli.ts provision"
   },
@@ -30,7 +30,6 @@
   "devDependencies": {
     "@types/node": "^20.17.6",
     "@vitest/ui": "^2.1.4",
-    "eslint": "^8.57.1",
     "node-fetch": "^3.3.2",
     "tsx": "^4.19.1",
     "typescript": "^5.7.2",

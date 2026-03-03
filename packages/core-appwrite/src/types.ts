@@ -1,4 +1,4 @@
-import type { Models } from 'appwrite';
+import type {Models} from 'appwrite';
 
 /**
  * Type-safe collection document with Appwrite metadata
@@ -174,7 +174,8 @@ export const Roles = {
   any: () => 'any',
   users: () => 'users',
   user: (id: string) => `user:${id}`,
-  team: (id: string, role?: string) => role ? `team:${id}/${role}` : `team:${id}`,
+  team: (id: string, role?: string) =>
+    role ? `team:${id}/${role}` : `team:${id}`,
   member: (id: string) => `member:${id}`,
   label: (label: string) => `label:${label}`,
 } as const;

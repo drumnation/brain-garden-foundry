@@ -1,13 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { ProtectedRoute } from './ProtectedRoute';
+import {render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from 'vitest';
+import {ProtectedRoute} from './ProtectedRoute';
 
 // Mock the auth hook
 vi.mock('@brain-garden/appwrite-auth', () => ({
   useAuth: vi.fn(),
 }));
 
-import { useAuth } from '@brain-garden/appwrite-auth';
+import {useAuth} from '@brain-garden/appwrite-auth';
 
 describe('ProtectedRoute', () => {
   const mockUseAuth = useAuth as any;
@@ -18,14 +18,14 @@ describe('ProtectedRoute', () => {
 
   it('should render children when user is authenticated', () => {
     mockUseAuth.mockReturnValue({
-      user: { id: 'user123', email: 'user@example.com' },
+      user: {id: 'user123', email: 'user@example.com'},
       isLoading: false,
     });
 
     render(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.getByText('Protected Content')).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
@@ -56,7 +56,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute loadingComponent={<div>Custom Loading...</div>}>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.getByText('Custom Loading...')).toBeInTheDocument();
@@ -72,7 +72,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute onRedirect={mockRedirect}>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
@@ -89,7 +89,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute redirectTo="/auth/signin" onRedirect={mockRedirect}>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(mockRedirect).toHaveBeenCalledWith('/auth/signin');
@@ -104,7 +104,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
@@ -120,7 +120,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute fallbackComponent={<div>Please sign in first</div>}>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.getByText('Please sign in first')).toBeInTheDocument();
@@ -131,7 +131,7 @@ describe('ProtectedRoute', () => {
       user: {
         id: 'user123',
         email: 'user@example.com',
-        roles: ['user']
+        roles: ['user'],
       },
       isLoading: false,
     });
@@ -139,7 +139,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute requiredRoles={['admin']}>
         <div>Admin Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.queryByText('Admin Content')).not.toBeInTheDocument();
@@ -151,7 +151,7 @@ describe('ProtectedRoute', () => {
       user: {
         id: 'user123',
         email: 'admin@example.com',
-        roles: ['user', 'admin']
+        roles: ['user', 'admin'],
       },
       isLoading: false,
     });
@@ -159,7 +159,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute requiredRoles={['admin']}>
         <div>Admin Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.getByText('Admin Content')).toBeInTheDocument();
@@ -170,7 +170,7 @@ describe('ProtectedRoute', () => {
       user: {
         id: 'user123',
         email: 'user@example.com',
-        permissions: ['read']
+        permissions: ['read'],
       },
       isLoading: false,
     });
@@ -178,7 +178,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute requiredPermissions={['write', 'delete']}>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
@@ -190,7 +190,7 @@ describe('ProtectedRoute', () => {
       user: {
         id: 'user123',
         email: 'user@example.com',
-        permissions: ['read', 'write', 'delete']
+        permissions: ['read', 'write', 'delete'],
       },
       isLoading: false,
     });
@@ -198,7 +198,7 @@ describe('ProtectedRoute', () => {
     render(
       <ProtectedRoute requiredPermissions={['write', 'delete']}>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(screen.getByText('Protected Content')).toBeInTheDocument();
@@ -210,7 +210,7 @@ describe('ProtectedRoute', () => {
       user: {
         id: 'user123',
         email: 'user@example.com',
-        roles: ['user']
+        roles: ['user'],
       },
       isLoading: false,
     });
@@ -221,11 +221,11 @@ describe('ProtectedRoute', () => {
         onUnauthorized={mockOnUnauthorized}
       >
         <div>Admin Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
     );
 
     expect(mockOnUnauthorized).toHaveBeenCalledWith({
-      user: expect.objectContaining({ id: 'user123' }),
+      user: expect.objectContaining({id: 'user123'}),
       requiredRoles: ['admin'],
       requiredPermissions: undefined,
     });

@@ -1,10 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { ProtectedRoute } from './ProtectedRoute';
-import { Button, Card, Text, Title } from '@mantine/core';
-
 // Mock the auth hook
-import { useAuth } from '@brain-garden/appwrite-auth';
-import { vi } from 'vitest';
+import {useAuth} from '@brain-garden/appwrite-auth';
+import {Button, Card, Text, Title} from '@mantine/core';
+import type {Meta, StoryObj} from '@storybook/react';
+import {vi} from 'vitest';
+import {ProtectedRoute} from './ProtectedRoute';
 
 vi.mock('@brain-garden/appwrite-auth', () => ({
   useAuth: vi.fn(),
@@ -19,7 +18,7 @@ const meta: Meta<typeof ProtectedRoute> = {
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <div style={{ width: '600px', height: '400px' }}>
+      <div style={{width: '600px', height: '400px'}}>
         <Story />
       </div>
     ),
@@ -297,7 +296,13 @@ export const MultipleRequirements: Story = {
         email: 'superadmin@example.com',
         name: 'Super Admin',
         roles: ['user', 'admin', 'super-admin'],
-        permissions: ['read', 'write', 'delete', 'manage-users', 'manage-system'],
+        permissions: [
+          'read',
+          'write',
+          'delete',
+          'manage-users',
+          'manage-system',
+        ],
       },
       isLoading: false,
     });

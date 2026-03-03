@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { Responsive } from './Responsive';
+import {render, screen} from '@testing-library/react';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import * as breakpointHook from '../hooks/useBreakpoint';
+import {Responsive} from './Responsive';
 
 describe('Responsive Component', () => {
   const mockUseBreakpoint = vi.spyOn(breakpointHook, 'useBreakpoint');
@@ -21,50 +21,52 @@ describe('Responsive Component', () => {
       render(
         <Responsive>
           <div>Static content</div>
-        </Responsive>
+        </Responsive>,
       );
 
       expect(screen.getByText('Static content')).toBeInTheDocument();
     });
 
     it('should render as div by default', () => {
-      const { container } = render(
+      const {container} = render(
         <Responsive>
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
       expect(container.firstChild?.nodeName).toBe('DIV');
     });
 
     it('should render as custom element when "as" prop is provided', () => {
-      const { container } = render(
+      const {container} = render(
         <Responsive as="section">
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
       expect(container.firstChild?.nodeName).toBe('SECTION');
     });
 
     it('should apply static className', () => {
-      const { container } = render(
+      const {container} = render(
         <Responsive className="custom-class">
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
       expect(container.firstChild).toHaveClass('custom-class');
     });
 
     it('should apply static style', () => {
-      const { container } = render(
-        <Responsive style={{ backgroundColor: 'red' }}>
+      const {container} = render(
+        <Responsive style={{backgroundColor: 'red'}}>
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
-      expect(container.firstChild).toHaveStyle('background-color: rgb(255, 0, 0)');
+      expect(container.firstChild).toHaveStyle(
+        'background-color: rgb(255, 0, 0)',
+      );
     });
   });
 
@@ -83,7 +85,7 @@ describe('Responsive Component', () => {
             xs: <div>Mobile content</div>,
             md: <div>Desktop content</div>,
           }}
-        </Responsive>
+        </Responsive>,
       );
 
       expect(screen.getByText('Mobile content')).toBeInTheDocument();
@@ -104,7 +106,7 @@ describe('Responsive Component', () => {
             md: <div>Medium content</div>,
             lg: <div>Large content</div>,
           }}
-        </Responsive>
+        </Responsive>,
       );
 
       // Since xs is not defined, should render nothing
@@ -125,7 +127,7 @@ describe('Responsive Component', () => {
             xs: <div>Small content</div>,
             md: <div>Medium content</div>,
           }}
-        </Responsive>
+        </Responsive>,
       );
 
       // lg should use md (closest smaller defined breakpoint)
@@ -150,7 +152,7 @@ describe('Responsive Component', () => {
             xl: <div>xl</div>,
             '2xl': <div>2xl</div>,
           }}
-        </Responsive>
+        </Responsive>,
       );
 
       expect(screen.getByText('xl')).toBeInTheDocument();
@@ -166,7 +168,7 @@ describe('Responsive Component', () => {
         isAtMost: () => false,
       });
 
-      const { container } = render(
+      const {container} = render(
         <Responsive
           className={{
             xs: 'mobile-class',
@@ -174,7 +176,7 @@ describe('Responsive Component', () => {
           }}
         >
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
       expect(container.firstChild).toHaveClass('mobile-class');
@@ -189,7 +191,7 @@ describe('Responsive Component', () => {
         isAtMost: () => false,
       });
 
-      const { container } = render(
+      const {container} = render(
         <Responsive
           className={{
             xs: 'small-class',
@@ -197,7 +199,7 @@ describe('Responsive Component', () => {
           }}
         >
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
       expect(container.firstChild).toHaveClass('medium-class');
@@ -213,18 +215,18 @@ describe('Responsive Component', () => {
         isAtMost: () => false,
       });
 
-      const { container } = render(
+      const {container} = render(
         <Responsive
           style={{
-            xs: { padding: '8px' },
-            md: { padding: '16px' },
+            xs: {padding: '8px'},
+            md: {padding: '16px'},
           }}
         >
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
-      expect(container.firstChild).toHaveStyle({ padding: '8px' });
+      expect(container.firstChild).toHaveStyle({padding: '8px'});
     });
 
     it('should use closest smaller breakpoint for style', () => {
@@ -235,18 +237,18 @@ describe('Responsive Component', () => {
         isAtMost: () => false,
       });
 
-      const { container } = render(
+      const {container} = render(
         <Responsive
           style={{
-            xs: { padding: '8px' },
-            md: { padding: '16px' },
+            xs: {padding: '8px'},
+            md: {padding: '16px'},
           }}
         >
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
-      expect(container.firstChild).toHaveStyle({ padding: '16px' });
+      expect(container.firstChild).toHaveStyle({padding: '16px'});
     });
 
     it('should support complex style objects', () => {
@@ -257,7 +259,7 @@ describe('Responsive Component', () => {
         isAtMost: () => false,
       });
 
-      const { container } = render(
+      const {container} = render(
         <Responsive
           style={{
             md: {
@@ -268,7 +270,7 @@ describe('Responsive Component', () => {
           }}
         >
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
       expect(container.firstChild).toHaveStyle({
@@ -288,7 +290,7 @@ describe('Responsive Component', () => {
         isAtMost: () => false,
       });
 
-      const { container } = render(
+      const {container} = render(
         <Responsive
           as="section"
           className={{
@@ -297,9 +299,9 @@ describe('Responsive Component', () => {
             lg: 'desktop-layout',
           }}
           style={{
-            xs: { padding: '8px' },
-            md: { padding: '16px' },
-            lg: { padding: '24px' },
+            xs: {padding: '8px'},
+            md: {padding: '16px'},
+            lg: {padding: '24px'},
           }}
         >
           {{
@@ -307,12 +309,12 @@ describe('Responsive Component', () => {
             md: <div>Tablet</div>,
             lg: <div>Desktop</div>,
           }}
-        </Responsive>
+        </Responsive>,
       );
 
       expect(container.firstChild?.nodeName).toBe('SECTION');
       expect(container.firstChild).toHaveClass('tablet-layout');
-      expect(container.firstChild).toHaveStyle({ padding: '16px' });
+      expect(container.firstChild).toHaveStyle({padding: '16px'});
       expect(screen.getByText('Tablet')).toBeInTheDocument();
     });
 
@@ -324,20 +326,20 @@ describe('Responsive Component', () => {
         isAtMost: () => false,
       });
 
-      const { container } = render(
+      const {container} = render(
         <Responsive
           className="static-class"
           style={{
-            xs: { padding: '8px' },
-            md: { padding: '16px' },
+            xs: {padding: '8px'},
+            md: {padding: '16px'},
           }}
         >
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
       expect(container.firstChild).toHaveClass('static-class');
-      expect(container.firstChild).toHaveStyle({ padding: '8px' });
+      expect(container.firstChild).toHaveStyle({padding: '8px'});
     });
   });
 
@@ -350,18 +352,18 @@ describe('Responsive Component', () => {
         isAtMost: () => false,
       });
 
-      const { container } = render(
+      const {container} = render(
         <Responsive
           style={{
-            md: { padding: '16px' },
+            md: {padding: '16px'},
           }}
         >
           <div>Content</div>
-        </Responsive>
+        </Responsive>,
       );
 
       // Should render without style since xs is not defined
-      expect(container.firstChild).not.toHaveStyle({ padding: '16px' });
+      expect(container.firstChild).not.toHaveStyle({padding: '16px'});
     });
 
     it('should handle empty children object', () => {
@@ -372,11 +374,7 @@ describe('Responsive Component', () => {
         isAtMost: () => false,
       });
 
-      render(
-        <Responsive>
-          {{}}
-        </Responsive>
-      );
+      render(<Responsive>{{}}</Responsive>);
 
       // Should render empty div
       const element = document.querySelector('div');
@@ -384,20 +382,14 @@ describe('Responsive Component', () => {
     });
 
     it('should handle null children', () => {
-      const { container } = render(
-        <Responsive>
-          {null}
-        </Responsive>
-      );
+      const {container} = render(<Responsive>{null}</Responsive>);
 
       expect(container.firstChild).toBeInTheDocument();
       expect(container.firstChild).toBeEmptyDOMElement();
     });
 
     it('should handle undefined children', () => {
-      const { container } = render(
-        <Responsive />
-      );
+      const {container} = render(<Responsive />);
 
       expect(container.firstChild).toBeInTheDocument();
       expect(container.firstChild).toBeEmptyDOMElement();
@@ -421,7 +413,7 @@ describe('Responsive Component', () => {
             md: <div>md</div>,
             lg: <div>lg</div>,
           }}
-        </Responsive>
+        </Responsive>,
       );
 
       expect(screen.getByText('md')).toBeInTheDocument();
@@ -441,7 +433,7 @@ describe('Responsive Component', () => {
             xs: <div>xs</div>,
             md: <div>md</div>,
           }}
-        </Responsive>
+        </Responsive>,
       );
 
       expect(screen.getByText('md')).toBeInTheDocument();
@@ -462,7 +454,7 @@ describe('Responsive Component', () => {
             lg: <div>lg</div>,
             '2xl': <div>2xl</div>,
           }}
-        </Responsive>
+        </Responsive>,
       );
 
       expect(screen.getByText('2xl')).toBeInTheDocument();

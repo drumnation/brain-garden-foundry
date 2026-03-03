@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { AppwriteDeploymentClient } from '../../src/appwrite-client';
 import fetch from 'node-fetch';
+import {afterAll, beforeAll, describe, expect, it} from 'vitest';
+import {AppwriteDeploymentClient} from '../../src/appwrite-client';
 
 /**
  * E2E Test: REAL Appwrite Deployment
@@ -17,16 +17,19 @@ describe('REAL Appwrite Deployment Integration', () => {
 
   beforeAll(async () => {
     // Use real API key from environment or test key
-    const apiKey = process.env.APPWRITE_API_KEY || process.env.TEST_APPWRITE_API_KEY;
+    const apiKey =
+      process.env.APPWRITE_API_KEY || process.env.TEST_APPWRITE_API_KEY;
 
     if (!apiKey) {
-      console.warn('⚠️  No API key provided. Set APPWRITE_API_KEY to run E2E tests.');
+      console.warn(
+        '⚠️  No API key provided. Set APPWRITE_API_KEY to run E2E tests.',
+      );
       return;
     }
 
     client = new AppwriteDeploymentClient({
       projectName: testProjectName,
-      apiKey
+      apiKey,
     });
   });
 
@@ -46,7 +49,9 @@ describe('REAL Appwrite Deployment Integration', () => {
     expect(connected).toBe(true);
 
     // Also verify the endpoint is accessible
-    const response = await fetch('https://appwrite.singularity-labs.org/v1/health');
+    const response = await fetch(
+      'https://appwrite.singularity-labs.org/v1/health',
+    );
     expect(response.ok).toBe(true);
   });
 
@@ -78,7 +83,9 @@ describe('REAL Appwrite Deployment Integration', () => {
     // If they already exist, that's OK (idempotent)
     expect(true).toBe(true);
 
-    console.log(`✅ REAL collections created in database: ${createdDatabaseId}`);
+    console.log(
+      `✅ REAL collections created in database: ${createdDatabaseId}`,
+    );
   });
 
   it('should create REAL storage bucket on Appwrite VPS', async () => {
@@ -105,11 +112,13 @@ describe('REAL Appwrite Deployment Integration', () => {
     const envVars = client.generateEnvVariables(
       testProjectName,
       createdDatabaseId,
-      createdBucketId
+      createdBucketId,
     );
 
     // Verify all required env vars are present
-    expect(envVars.VITE_APPWRITE_ENDPOINT).toBe('https://appwrite.singularity-labs.org/v1');
+    expect(envVars.VITE_APPWRITE_ENDPOINT).toBe(
+      'https://appwrite.singularity-labs.org/v1',
+    );
     expect(envVars.VITE_APPWRITE_PROJECT_ID).toBe('6917d0a50033ebe8d013');
     expect(envVars.VITE_APPWRITE_DATABASE_ID).toBe(createdDatabaseId);
     expect(envVars.VITE_APPWRITE_BUCKET_ID).toBe(createdBucketId);
@@ -129,7 +138,7 @@ describe('REAL Appwrite Deployment Integration', () => {
     const testProjectE2E = `e2e_full_${Date.now()}`;
     const e2eClient = new AppwriteDeploymentClient({
       projectName: testProjectE2E,
-      apiKey: process.env.APPWRITE_API_KEY!
+      apiKey: process.env.APPWRITE_API_KEY!,
     });
 
     const result = await e2eClient.provisionDeployment(testProjectE2E);
@@ -139,7 +148,9 @@ describe('REAL Appwrite Deployment Integration', () => {
     expect(result.config).toBeDefined();
     expect(result.config.databaseId).toBeDefined();
     expect(result.config.bucketId).toBeDefined();
-    expect(result.config.endpoint).toBe('https://appwrite.singularity-labs.org/v1');
+    expect(result.config.endpoint).toBe(
+      'https://appwrite.singularity-labs.org/v1',
+    );
     expect(result.config.projectId).toBe('6917d0a50033ebe8d013');
 
     // Verify env vars generated
@@ -150,7 +161,7 @@ describe('REAL Appwrite Deployment Integration', () => {
     console.log('📊 Deployed resources:', {
       database: result.config.databaseId,
       storage: result.config.bucketId,
-      domain: result.config.deployment.domain
+      domain: result.config.deployment.domain,
     });
   });
 });
@@ -158,17 +169,17 @@ describe('REAL Appwrite Deployment Integration', () => {
 describe('Deployment CLI Integration', () => {
   it('should be executable as CLI command', async () => {
     // Test that the CLI can be invoked
-    const { exec } = await import('child_process');
-    const { promisify } = await import('util');
+    const {exec} = await import('child_process');
+    const {promisify} = await import('util');
     const execAsync = promisify(exec);
 
     try {
-      const { stdout } = await execAsync('node ./src/cli.js --help');
+      const {stdout} = await execAsync('node ./src/cli.js --help');
       expect(stdout).toContain('brain-garden-deploy');
       expect(stdout).toContain('provision');
       expect(stdout).toContain('deploy');
       expect(stdout).toContain('test');
-    } catch (error: any) {
+    } catch (_error: any) {
       // CLI might not be built yet, that's OK for now
       console.log('CLI not yet built, skipping CLI test');
     }

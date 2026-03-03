@@ -14,8 +14,8 @@
   ],
   "scripts": {
     "clean": "rimraf node_modules .turbo",
-    "format": "prettier --check \"**/*.{ts,tsx,md}\"",
-    "lint": "eslint . --ext .ts,.tsx",
+    "format": "biome format . --check",
+    "lint": "biome lint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -27,16 +27,7 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
     "@kit/testing": "workspace:*",
     "@kit/tsconfig": "workspace:*"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@kit/eslint-config/base"
-    ]
-  },
-  "prettier": "@kit/prettier-config"
+  }
 }

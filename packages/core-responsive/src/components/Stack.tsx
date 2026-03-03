@@ -1,6 +1,6 @@
-import { type ReactNode, type CSSProperties } from 'react';
-import { useBreakpoint } from '../hooks/useBreakpoint';
-import type { Breakpoint } from '../breakpoints';
+import type {CSSProperties, ReactNode} from 'react';
+import type {Breakpoint} from '../breakpoints';
+import {useBreakpoint} from '../hooks/useBreakpoint';
 
 type ResponsiveValue<T> = T | Partial<Record<Breakpoint, T>>;
 
@@ -30,7 +30,14 @@ export interface StackProps {
   /**
    * Justification of items along the main axis - can be responsive
    */
-  justify?: ResponsiveValue<'start' | 'center' | 'end' | 'space-between' | 'space-around' | 'space-evenly'>;
+  justify?: ResponsiveValue<
+    | 'start'
+    | 'center'
+    | 'end'
+    | 'space-between'
+    | 'space-around'
+    | 'space-evenly'
+  >;
 
   /**
    * Whether items should wrap - can be responsive
@@ -95,7 +102,10 @@ export const Stack = ({
   const breakpoint = useBreakpoint();
 
   // Helper to resolve responsive values
-  const resolveValue = <T,>(value: ResponsiveValue<T> | undefined, fallback: T): T => {
+  const resolveValue = <T,>(
+    value: ResponsiveValue<T> | undefined,
+    fallback: T,
+  ): T => {
     if (value === undefined) {
       return fallback;
     }
@@ -106,7 +116,7 @@ export const Stack = ({
     // Check if this object has any breakpoint keys - if not, it's a static value
     const responsiveValue = value as Partial<Record<Breakpoint, T>>;
     const breakpoints: Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'];
-    const hasBreakpointKeys = breakpoints.some(bp => bp in responsiveValue);
+    const hasBreakpointKeys = breakpoints.some((bp) => bp in responsiveValue);
 
     if (!hasBreakpointKeys) {
       // No breakpoint keys found, return as static value
@@ -134,12 +144,18 @@ export const Stack = ({
   const resolvedWrap = resolveValue(wrap, false);
 
   const flexDirection = resolvedDirection === 'vertical' ? 'column' : 'row';
-  const alignItems = resolvedAlign === 'start' ? 'flex-start'
-    : resolvedAlign === 'end' ? 'flex-end'
-    : resolvedAlign;
-  const justifyContent = resolvedJustify === 'start' ? 'flex-start'
-    : resolvedJustify === 'end' ? 'flex-end'
-    : resolvedJustify;
+  const alignItems =
+    resolvedAlign === 'start'
+      ? 'flex-start'
+      : resolvedAlign === 'end'
+        ? 'flex-end'
+        : resolvedAlign;
+  const justifyContent =
+    resolvedJustify === 'start'
+      ? 'flex-start'
+      : resolvedJustify === 'end'
+        ? 'flex-end'
+        : resolvedJustify;
 
   return (
     <div

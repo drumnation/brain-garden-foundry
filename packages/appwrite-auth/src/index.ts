@@ -1,36 +1,35 @@
 // Auth service exports
-export {
-  makeAuthService,
-  type AuthService,
-  type SignUpParams,
-  type SignInParams,
-  type SignOutParams,
-  type UpdateProfileParams,
-  type UpdatePasswordParams,
-  type ResetPasswordParams,
-  type CompletePasswordResetParams,
-  type VerifyEmailParams,
-  type AuthResponse,
-} from './auth.service.js';
-
-// Auth store exports
-export {
-  createAuthStore,
-  initializeAuthStore,
-  getAuthStore,
-  type AuthState,
-} from './auth.store.js';
 
 // Auth hooks exports
 export {
   useAuth,
-  useUser,
-  useSession,
-  useIsAuthenticated,
-  useAuthLoading,
-  useAuthError,
+  useAuthActions,
   useAuthCheck,
+  useAuthError,
+  useAuthLoading,
+  useIsAuthenticated,
   useRequireAuth,
   useRequireGuest,
-  useAuthActions,
+  useSession,
+  useUser,
 } from './auth.hooks.js';
+export {
+  type AuthResponse,
+  type AuthService,
+  type CompletePasswordResetParams,
+  makeAuthService,
+  type ResetPasswordParams,
+  type SignInParams,
+  type SignOutParams,
+  type SignUpParams,
+  type UpdatePasswordParams,
+  type UpdateProfileParams,
+  type VerifyEmailParams,
+} from './auth.service.js';
+// Auth store exports
+export {
+  type AuthState,
+  createAuthStore,
+  getAuthStore,
+  initializeAuthStore,
+} from './auth.store.js';

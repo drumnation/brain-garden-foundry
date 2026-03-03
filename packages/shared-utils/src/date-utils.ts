@@ -14,7 +14,7 @@
  * formatDate(new Date('2025-10-22')) // '2025-10-22'
  */
 export function formatDate(date: Date): string {
-  return date.toISOString().split('T')[0]!;
+  return date.toISOString().split('T')[0] ?? '';
 }
 
 /**
@@ -34,7 +34,7 @@ export function parseDate(dateString: string): Date {
 
   const date = new Date(dateString);
 
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     throw new Error('Invalid date');
   }
 

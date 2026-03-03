@@ -1,17 +1,18 @@
 ```
  ___  ___  ___   _____  __  ________   ___  ___  _____  __
   / _ )/ _ \/ _ | /  _/ |/ / / ___/ _ | / _ \/ _ \/ __/ |/ /
- / _  / , _/ __ |_/ //    / / (_ / __ |/ , _/ // / _//    / 
-/____/_/|_/_/ |_/___/_/|_/  \___/_/ |_/_/|_/____/___/_/|_/  
+ / _  / , _/ __ |_/ //    / / (_ / __ |/ , _/ // / _//    /
+/____/_/|_/_/ |_/___/_/|_/  \___/_/ |_/_/|_/____/___/_/|_/
 
    ________  __  ___  _____  _____  __
   / __/ __ \/ / / / |/ / _ \/ _ \ \/ /
- / _// /_/ / /_/ /    / // / , _/\  / 
+ / _// /_/ / /_/ /    / // / , _/\  /
 /_/  \____/\____/_/|_/____/_/|_| /_/
 
                         [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] MEMORY_PERSISTENT
-                        [▓▓▓▓▓▓▓▓░░░░░░░░░░] AGENT_XP_TRACKING  
+                        [▓▓▓▓▓▓▓▓░░░░░░░░░░] AGENT_XP_TRACKING
                         [▓▓▓▓▓▓░░░░░░░░░░░░] NEO4J_GRAPH_READY
+                        [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] BIOME_FORMATTER
 ```
 
 # Brain Garden Foundry
@@ -20,6 +21,7 @@
 
 > *Clone this repo → Your agents gain domain knowledge from day one.*
 
+## What This Is
 
 Brain Garden Foundry is a template for spawning new projects where **agents learn and remember**. Every execution writes to Neo4j + DomainStore, building cumulative domain knowledge over time.
 
@@ -42,7 +44,13 @@ rm -rf .git && git init
 # Install dependencies
 pnpm install
 
-# Start building with agent memory
+# Check code quality (Biome - 10-50x faster than ESLint)
+pnpm check
+
+# Auto-fix issues
+pnpm check:fix
+
+# Start developing
 # Your agents read .claude/AGENTS.md and .claude/memory/MEMORY.md
 ```
 
@@ -80,13 +88,32 @@ pnpm install
 | core-layouts | 🔴 | Stub - needs implementation or removal |
 | core-panels | 🔴 | Stub - needs implementation or removal |
 
-### Tooling
-- **pnpm** - Fast, disk-efficient package manager
-- **Turbo** - Monorepo build system
-- **Vitest** - Testing framework (standardize on 3.2.4)
-- **TypeScript 5.7.3** - Type safety
-- **Storybook 8.6** - Component development
-- **Generators** - Create libraries, apps, express APIs
+### Rust-Based Tooling
+
+| Tool | Replaces | Speedup |
+|------|----------|---------|
+| [Biome](https://biomejs.dev) | ESLint + Prettier | 10-50x |
+| Rolldown (via Vite 8) | esbuild/Rollup | Planned |
+
+## Scripts
+
+```bash
+# Development
+pnpm dev              # Start all apps in dev mode
+pnpm build            # Build all packages
+pnpm test             # Run all tests
+
+# Biome (Rust-based linting/formatting)
+pnpm check            # Lint + format check
+pnpm check:fix        # Auto-fix all issues
+pnpm biome:format     # Format only
+pnpm biome:lint       # Lint only
+
+# Generators
+pnpm gen:library      # Create new library package
+pnpm gen:react-web    # Create React web app
+pnpm gen:express-api  # Create Express API
+```
 
 ## Agent Experience System
 
@@ -106,33 +133,13 @@ print(get_agent_experience("architect"))
 # {'agent': 'architect', 'stories': 2, 'domains': {'agent-definition': 1, 'memory-systems': 1}}
 ```
 
-## Known Issues (From PROP-030)
+## Known Issues
 
 | Issue | Impact | Landmine |
 |-------|--------|----------|
-| better-sqlite3 | Blocks bun migration | Native module, no workaround |
+| better-sqlite3 | Blocks bun migration | Native module, investigating alternatives |
 | Vitest fragmentation | 2.1.x vs 3.2.4 | Standardize to 3.2.4 |
 | 3 stub packages | Dead weight | core-crud, core-layouts, core-panels |
-| 30 vulnerabilities | Dev deps only | Fix via `pnpm update` |
-
-## Scripts
-
-```bash
-# Development
-pnpm dev              # Start all apps in dev mode
-pnpm build            # Build all packages
-pnpm test             # Run all tests
-pnpm lint             # Lint all packages
-
-# Generators
-pnpm gen:library      # Create new library package
-pnpm gen:react-web    # Create React web app
-pnpm gen:express-api  # Create Express API
-
-# Brain Garden
-pnpm rules:build      # Build consolidated rules
-pnpm brain:check      # Check validation summary
-```
 
 ## Architecture
 
@@ -147,9 +154,11 @@ brain-garden-foundry/
 │   └── AGENTS.md         # Quick start for agents
 ├── packages/             # 17 shared packages
 ├── docs/
-│   └── features/         # Feature documentation
+│   ├── features/         # Feature documentation
+│   └── rust-toolchain/   # Biome migration docs
 ├── tooling/
 │   └── generators/       # Package generators
+├── biome.json            # Biome config (Rust-based linting)
 └── scripts/              # Utility scripts
 ```
 
@@ -188,6 +197,7 @@ context = get_context_for_task("migrate from pnpm to bun")
 3. **Self-contained** - No external dependencies on global config
 4. **Evidence-based** - Stories require proof of completion (score ≥90)
 5. **Game Dev Tycoon model** - Agents level up through work
+6. **Rust tooling** - Biome for 10-50x faster linting/formatting
 
 ## Origin
 
@@ -212,4 +222,5 @@ MIT
 
 **Built with ❤️ by the Brain Garden team**
 
-*Provenance: PROP-030 (Foundry Revival) - 4 stories completed, 31 decisions recorded, 12 landmines discovered*
+*Provenance: PROP-030 (Foundry Revival) + rust-toolchain-biome-rolldown merge*
+*Graph state: 6 StoryExecutions, 34 Decisions, 12 Landmines, 5 Agents*

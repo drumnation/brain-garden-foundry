@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import type { User, Session } from '@brain-garden/core-appwrite';
-import type { AuthService } from './auth.service.js';
+import type {Session, User} from '@brain-garden/core-appwrite';
+import {create} from 'zustand';
+import {devtools, persist} from 'zustand/middleware';
+import type {AuthService} from './auth.service.js';
 
 export interface AuthState {
   // State
@@ -23,10 +23,18 @@ export interface AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: (all?: boolean) => Promise<void>;
   checkAuth: () => Promise<void>;
-  updateProfile: (name?: string, email?: string, password?: string) => Promise<void>;
+  updateProfile: (
+    name?: string,
+    email?: string,
+    password?: string,
+  ) => Promise<void>;
   updatePassword: (oldPassword: string, newPassword: string) => Promise<void>;
   resetPassword: (email: string, url: string) => Promise<void>;
-  completePasswordReset: (userId: string, secret: string, password: string) => Promise<void>;
+  completePasswordReset: (
+    userId: string,
+    secret: string,
+    password: string,
+  ) => Promise<void>;
   sendEmailVerification: (url: string) => Promise<void>;
   completeEmailVerification: (userId: string, secret: string) => Promise<void>;
 }
@@ -64,17 +72,17 @@ export const createAuthStore = (authService: AuthService) => {
               isAuthenticated: !!session,
             }),
 
-          setLoading: (isLoading) => set({ isLoading }),
+          setLoading: (isLoading) => set({isLoading}),
 
-          setError: (error) => set({ error, isLoading: false }),
+          setError: (error) => set({error, isLoading: false}),
 
           reset: () => set(initialState),
 
           // Async actions with AuthService
           signUp: async (email, password, name) => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
-              const { user, session } = await authService.signUp({
+              const {user, session} = await authService.signUp({
                 email,
                 password,
                 name,
@@ -88,7 +96,8 @@ export const createAuthStore = (authService: AuthService) => {
               });
             } catch (error) {
               set({
-                error: error instanceof Error ? error.message : 'Sign up failed',
+                error:
+                  error instanceof Error ? error.message : 'Sign up failed',
                 isLoading: false,
               });
               throw error;
@@ -96,9 +105,9 @@ export const createAuthStore = (authService: AuthService) => {
           },
 
           signIn: async (email, password) => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
-              const { user, session } = await authService.signIn({
+              const {user, session} = await authService.signIn({
                 email,
                 password,
               });
@@ -111,7 +120,8 @@ export const createAuthStore = (authService: AuthService) => {
               });
             } catch (error) {
               set({
-                error: error instanceof Error ? error.message : 'Sign in failed',
+                error:
+                  error instanceof Error ? error.message : 'Sign in failed',
                 isLoading: false,
               });
               throw error;
@@ -119,13 +129,14 @@ export const createAuthStore = (authService: AuthService) => {
           },
 
           signOut: async (all = false) => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
-              await authService.signOut({ all });
+              await authService.signOut({all});
               set(initialState);
             } catch (error) {
               set({
-                error: error instanceof Error ? error.message : 'Sign out failed',
+                error:
+                  error instanceof Error ? error.message : 'Sign out failed',
                 isLoading: false,
               });
               throw error;
@@ -133,7 +144,7 @@ export const createAuthStore = (authService: AuthService) => {
           },
 
           checkAuth: async () => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
               const user = await authService.getCurrentUser();
               set({
@@ -142,7 +153,7 @@ export const createAuthStore = (authService: AuthService) => {
                 isLoading: false,
                 error: null,
               });
-            } catch (error) {
+            } catch (_error) {
               set({
                 user: null,
                 session: null,
@@ -154,7 +165,7 @@ export const createAuthStore = (authService: AuthService) => {
           },
 
           updateProfile: async (name, email, password) => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
               const user = await authService.updateProfile({
                 name,
@@ -176,16 +187,19 @@ export const createAuthStore = (authService: AuthService) => {
           },
 
           updatePassword: async (oldPassword, newPassword) => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
-              await authService.updatePassword({ oldPassword, newPassword });
+              await authService.updatePassword({oldPassword, newPassword});
               set({
                 isLoading: false,
                 error: null,
               });
             } catch (error) {
               set({
-                error: error instanceof Error ? error.message : 'Password update failed',
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : 'Password update failed',
                 isLoading: false,
               });
               throw error;
@@ -193,16 +207,19 @@ export const createAuthStore = (authService: AuthService) => {
           },
 
           resetPassword: async (email, url) => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
-              await authService.resetPassword({ email, url });
+              await authService.resetPassword({email, url});
               set({
                 isLoading: false,
                 error: null,
               });
             } catch (error) {
               set({
-                error: error instanceof Error ? error.message : 'Password reset failed',
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : 'Password reset failed',
                 isLoading: false,
               });
               throw error;
@@ -210,7 +227,7 @@ export const createAuthStore = (authService: AuthService) => {
           },
 
           completePasswordReset: async (userId, secret, password) => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
               await authService.completePasswordReset({
                 userId,
@@ -223,7 +240,10 @@ export const createAuthStore = (authService: AuthService) => {
               });
             } catch (error) {
               set({
-                error: error instanceof Error ? error.message : 'Password reset failed',
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : 'Password reset failed',
                 isLoading: false,
               });
               throw error;
@@ -231,7 +251,7 @@ export const createAuthStore = (authService: AuthService) => {
           },
 
           sendEmailVerification: async (url) => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
               await authService.sendEmailVerification(url);
               set({
@@ -240,7 +260,10 @@ export const createAuthStore = (authService: AuthService) => {
               });
             } catch (error) {
               set({
-                error: error instanceof Error ? error.message : 'Verification failed',
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : 'Verification failed',
                 isLoading: false,
               });
               throw error;
@@ -248,9 +271,9 @@ export const createAuthStore = (authService: AuthService) => {
           },
 
           completeEmailVerification: async (userId, secret) => {
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
             try {
-              await authService.completeEmailVerification({ userId, secret });
+              await authService.completeEmailVerification({userId, secret});
               // Update user to reflect verified status
               const user = await authService.getCurrentUser();
               set({
@@ -260,7 +283,10 @@ export const createAuthStore = (authService: AuthService) => {
               });
             } catch (error) {
               set({
-                error: error instanceof Error ? error.message : 'Verification failed',
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : 'Verification failed',
                 isLoading: false,
               });
               throw error;
@@ -298,7 +324,9 @@ export const initializeAuthStore = (authService: AuthService) => {
 
 export const getAuthStore = () => {
   if (!defaultAuthStore) {
-    throw new Error('Auth store not initialized. Call initializeAuthStore first.');
+    throw new Error(
+      'Auth store not initialized. Call initializeAuthStore first.',
+    );
   }
   return defaultAuthStore;
 };

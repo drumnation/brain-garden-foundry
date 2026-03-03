@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Show } from './Show';
+import type {Meta, StoryObj} from '@storybook/react';
+import {Show} from './Show';
 
 const meta = {
   title: 'Core Responsive/Components/Show',
@@ -8,9 +8,10 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Conditionally renders children based on current breakpoint. Use `above`, `below`, or `at` props to control visibility across different screen sizes.'
-      }
-    }
+        component:
+          'Conditionally renders children based on current breakpoint. Use `above`, `below`, or `at` props to control visibility across different screen sizes.',
+      },
+    },
   },
   tags: ['autodocs'],
 } satisfies Meta<typeof Show>;
@@ -46,26 +47,30 @@ export const MobileOnly_Mobile: Story = {
   args: {
     below: 'sm',
     children: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#10b981',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✓ Visible on Mobile Only
       </div>
     ),
     fallback: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#ef4444',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✗ Hidden on Mobile
       </div>
     ),
@@ -77,26 +82,30 @@ export const MobileOnly_Tablet: Story = {
   args: {
     below: 'sm',
     children: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#10b981',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✓ Visible on Mobile Only
       </div>
     ),
     fallback: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#ef4444',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✗ Hidden on Tablet/Desktop
       </div>
     ),
@@ -108,26 +117,30 @@ export const MobileOnly_Desktop: Story = {
   args: {
     below: 'sm',
     children: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#10b981',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✓ Visible on Mobile Only
       </div>
     ),
     fallback: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#ef4444',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✗ Hidden on Desktop
       </div>
     ),
@@ -142,26 +155,30 @@ export const DesktopOnly_Mobile: Story = {
   args: {
     above: 'md',
     children: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#10b981',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✓ Visible on Desktop Only
       </div>
     ),
     fallback: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#ef4444',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✗ Hidden on Mobile
       </div>
     ),
@@ -173,26 +190,30 @@ export const DesktopOnly_Tablet: Story = {
   args: {
     above: 'md',
     children: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#10b981',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✓ Visible on Desktop Only
       </div>
     ),
     fallback: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#ef4444',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✗ Hidden on Tablet
       </div>
     ),
@@ -204,26 +225,30 @@ export const DesktopOnly_Desktop: Story = {
   args: {
     above: 'md',
     children: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#10b981',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✓ Visible on Desktop Only
       </div>
     ),
     fallback: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#ef4444',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✗ Hidden on Desktop
       </div>
     ),
@@ -238,26 +263,30 @@ export const TabletOnly_Mobile: Story = {
   args: {
     at: 'md',
     children: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#10b981',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✓ Visible on Tablet Only
       </div>
     ),
     fallback: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#ef4444',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✗ Hidden on Mobile
       </div>
     ),
@@ -269,26 +298,30 @@ export const TabletOnly_Tablet: Story = {
   args: {
     at: 'md',
     children: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#10b981',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✓ Visible on Tablet Only
       </div>
     ),
     fallback: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#ef4444',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✗ Hidden on Tablet
       </div>
     ),
@@ -300,26 +333,30 @@ export const TabletOnly_Desktop: Story = {
   args: {
     at: 'md',
     children: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#10b981',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#10b981',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✓ Visible on Tablet Only
       </div>
     ),
     fallback: (
-      <div style={{
-        padding: '2rem',
-        backgroundColor: '#ef4444',
-        color: 'white',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          padding: '2rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}
+      >
         ✗ Hidden on Desktop
       </div>
     ),
@@ -334,36 +371,51 @@ export const ResponsiveNav_Mobile: Story = {
   args: {
     above: 'md',
     children: (
-      <nav style={{
-        display: 'flex',
-        gap: '2rem',
-        padding: '1rem',
-        backgroundColor: '#1f2937',
-        color: 'white',
-        borderRadius: '8px'
-      }}>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Home</a>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>About</a>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Services</a>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Contact</a>
+      <nav
+        style={{
+          display: 'flex',
+          gap: '2rem',
+          padding: '1rem',
+          backgroundColor: '#1f2937',
+          color: 'white',
+          borderRadius: '8px',
+        }}
+      >
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          Home
+        </a>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          About
+        </a>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          Services
+        </a>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          Contact
+        </a>
       </nav>
     ),
     fallback: (
-      <nav style={{
-        padding: '1rem',
-        backgroundColor: '#1f2937',
-        color: 'white',
-        borderRadius: '8px',
-        textAlign: 'center'
-      }}>
-        <button style={{
-          backgroundColor: '#3b82f6',
+      <nav
+        style={{
+          padding: '1rem',
+          backgroundColor: '#1f2937',
           color: 'white',
-          border: 'none',
-          padding: '0.5rem 1rem',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}>
+          borderRadius: '8px',
+          textAlign: 'center',
+        }}
+      >
+        <button
+          type="button"
+          style={{
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
           ☰ Menu
         </button>
       </nav>
@@ -376,36 +428,51 @@ export const ResponsiveNav_Tablet: Story = {
   args: {
     above: 'md',
     children: (
-      <nav style={{
-        display: 'flex',
-        gap: '2rem',
-        padding: '1rem',
-        backgroundColor: '#1f2937',
-        color: 'white',
-        borderRadius: '8px'
-      }}>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Home</a>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>About</a>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Services</a>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Contact</a>
+      <nav
+        style={{
+          display: 'flex',
+          gap: '2rem',
+          padding: '1rem',
+          backgroundColor: '#1f2937',
+          color: 'white',
+          borderRadius: '8px',
+        }}
+      >
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          Home
+        </a>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          About
+        </a>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          Services
+        </a>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          Contact
+        </a>
       </nav>
     ),
     fallback: (
-      <nav style={{
-        padding: '1rem',
-        backgroundColor: '#1f2937',
-        color: 'white',
-        borderRadius: '8px',
-        textAlign: 'center'
-      }}>
-        <button style={{
-          backgroundColor: '#3b82f6',
+      <nav
+        style={{
+          padding: '1rem',
+          backgroundColor: '#1f2937',
           color: 'white',
-          border: 'none',
-          padding: '0.5rem 1rem',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}>
+          borderRadius: '8px',
+          textAlign: 'center',
+        }}
+      >
+        <button
+          type="button"
+          style={{
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
           ☰ Menu
         </button>
       </nav>
@@ -418,36 +485,51 @@ export const ResponsiveNav_Desktop: Story = {
   args: {
     above: 'md',
     children: (
-      <nav style={{
-        display: 'flex',
-        gap: '2rem',
-        padding: '1rem',
-        backgroundColor: '#1f2937',
-        color: 'white',
-        borderRadius: '8px'
-      }}>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Home</a>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>About</a>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Services</a>
-        <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Contact</a>
+      <nav
+        style={{
+          display: 'flex',
+          gap: '2rem',
+          padding: '1rem',
+          backgroundColor: '#1f2937',
+          color: 'white',
+          borderRadius: '8px',
+        }}
+      >
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          Home
+        </a>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          About
+        </a>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          Services
+        </a>
+        <a href="/demo" style={{color: 'white', textDecoration: 'none'}}>
+          Contact
+        </a>
       </nav>
     ),
     fallback: (
-      <nav style={{
-        padding: '1rem',
-        backgroundColor: '#1f2937',
-        color: 'white',
-        borderRadius: '8px',
-        textAlign: 'center'
-      }}>
-        <button style={{
-          backgroundColor: '#3b82f6',
+      <nav
+        style={{
+          padding: '1rem',
+          backgroundColor: '#1f2937',
           color: 'white',
-          border: 'none',
-          padding: '0.5rem 1rem',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}>
+          borderRadius: '8px',
+          textAlign: 'center',
+        }}
+      >
+        <button
+          type="button"
+          style={{
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
           ☰ Menu
         </button>
       </nav>

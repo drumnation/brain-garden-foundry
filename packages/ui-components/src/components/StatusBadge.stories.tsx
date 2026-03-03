@@ -1,6 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { StatusBadge } from './StatusBadge';
-import { IconCheck, IconAlertTriangle, IconX, IconInfoCircle } from '@tabler/icons-react';
+import type {Meta, StoryObj} from '@storybook/react';
+import {
+  IconAlertTriangle,
+  IconCheck,
+  IconInfoCircle,
+  IconX,
+} from '@tabler/icons-react';
+import {StatusBadge} from './StatusBadge';
 
 const meta = {
   title: 'UI Components/StatusBadge',
@@ -38,7 +43,7 @@ export const Warning: Story = {
   },
 };
 
-export const Error: Story = {
+export const ErrorStatus: Story = {
   args: {
     status: 'error',
     children: 'Failed',
@@ -69,7 +74,14 @@ export const WithIcon: Story = {
 
 export const AllSizes: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+        alignItems: 'flex-start',
+      }}
+    >
       <StatusBadge status="success" size="xs">
         Extra Small
       </StatusBadge>
@@ -91,11 +103,14 @@ export const AllSizes: Story = {
 
 export const AllStatuses: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+    <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
       <StatusBadge status="success" leftSection={<IconCheck size={12} />}>
         Success
       </StatusBadge>
-      <StatusBadge status="warning" leftSection={<IconAlertTriangle size={12} />}>
+      <StatusBadge
+        status="warning"
+        leftSection={<IconAlertTriangle size={12} />}
+      >
         Warning
       </StatusBadge>
       <StatusBadge status="error" leftSection={<IconX size={12} />}>

@@ -1,4 +1,4 @@
-import { promises as fs } from 'node:fs';
+import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -8,10 +8,10 @@ interface StatusReport {
   environment: string;
   health: 'healthy' | 'degraded' | 'error';
   services: {
-    appwrite: { status: string; endpoint: string };
-    database: { status: string; collections: number };
-    storage: { status: string; buckets: number };
-    github: { status: string; actionsEnabled: boolean };
+    appwrite: {status: string; endpoint: string};
+    database: {status: string; collections: number};
+    storage: {status: string; buckets: number};
+    github: {status: string; actionsEnabled: boolean};
   };
   lastSync: string;
   migrations: {
@@ -31,8 +31,10 @@ export async function deployStatusCommand(options: any) {
   const configPath = path.join(process.cwd(), '.deploy', 'config.json');
 
   // Check if project is initialized
-  if (!await fileExists(configPath)) {
-    console.error(chalk.red('❌ Project not initialized. Run "pnpm deploy:init" first.'));
+  if (!(await fileExists(configPath))) {
+    console.error(
+      chalk.red('❌ Project not initialized. Run "pnpm deploy:init" first.'),
+    );
     process.exit(1);
   }
 
@@ -59,7 +61,9 @@ export async function deployStatusCommand(options: any) {
         buckets: config.appwrite.buckets.length,
       },
       github: {
-        status: config.github.secretsConfigured ? '✅ Configured' : '⚠️  Not configured',
+        status: config.github.secretsConfigured
+          ? '✅ Configured'
+          : '⚠️  Not configured',
         actionsEnabled: config.github.actionsEnabled,
       },
     },
@@ -95,26 +99,38 @@ export async function deployStatusCommand(options: any) {
   console.log(chalk.gray(`  Last Sync:   ${report.lastSync}`));
 
   console.log(chalk.bold('\n🏥 Health Status'));
-  const healthColor = report.health === 'healthy' ? chalk.green :
-                     report.health === 'degraded' ? chalk.yellow : chalk.red;
+  const healthColor =
+    report.health === 'healthy'
+      ? chalk.green
+      : report.health === 'degraded'
+        ? chalk.yellow
+        : chalk.red;
   console.log(healthColor(`  Overall: ${report.health.toUpperCase()}`));
 
   console.log(chalk.bold('\n🔌 Services'));
   console.log(chalk.gray(`  Appwrite:  ${report.services.appwrite.status}`));
   console.log(chalk.gray(`    └─ ${report.services.appwrite.endpoint}`));
   console.log(chalk.gray(`  Database:  ${report.services.database.status}`));
-  console.log(chalk.gray(`    └─ ${report.services.database.collections} collections`));
+  console.log(
+    chalk.gray(`    └─ ${report.services.database.collections} collections`),
+  );
   console.log(chalk.gray(`  Storage:   ${report.services.storage.status}`));
   console.log(chalk.gray(`    └─ ${report.services.storage.buckets} buckets`));
   console.log(chalk.gray(`  GitHub:    ${report.services.github.status}`));
-  console.log(chalk.gray(`    └─ Actions: ${report.services.github.actionsEnabled ? 'Enabled' : 'Disabled'}`));
+  console.log(
+    chalk.gray(
+      `    └─ Actions: ${report.services.github.actionsEnabled ? 'Enabled' : 'Disabled'}`,
+    ),
+  );
 
   console.log(chalk.bold('\n🔄 Migrations'));
   console.log(chalk.gray(`  Current:   v${report.migrations.current}`));
   console.log(chalk.gray(`  Pending:   ${report.migrations.pending}`));
 
   console.log(chalk.bold('\n🌐 URLs'));
-  console.log(chalk.gray(`  Production: ${chalk.cyan(report.urls.production)}`));
+  console.log(
+    chalk.gray(`  Production: ${chalk.cyan(report.urls.production)}`),
+  );
   console.log(chalk.gray(`  Preview:    ${chalk.cyan(report.urls.preview)}`));
   console.log(chalk.gray(`  Appwrite:   ${chalk.cyan(report.urls.appwrite)}`));
 

@@ -18,8 +18,8 @@
   ],
   "scripts": {
     "clean": "rimraf node_modules .turbo",
-    "format": "prettier --check \"**/*.{ts,tsx,md}\"",
-    "lint": "eslint . --ext .ts,.tsx",
+    "format": "biome format . --check",
+    "lint": "biome lint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -30,8 +30,6 @@
     "pino": "^9.5.0"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
     "@kit/testing": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@types/express": "^4.17.21",
@@ -40,8 +38,6 @@
     "react": "^18.3.1"
   },
   "peerDependencies": {
-    "eslint": "^9.17.0",
-    "prettier": "^3.4.2",
     "react": "^18.0.0",
     "typescript": "^5.7.3",
     "vitest": "^3.2.4"
@@ -50,12 +46,5 @@
     "react": {
       "optional": true
     }
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@kit/eslint-config/base"
-    ]
-  },
-  "prettier": "@kit/prettier-config"
+  }
 }

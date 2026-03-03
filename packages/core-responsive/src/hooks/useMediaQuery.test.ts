@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import { useMediaQuery } from './useMediaQuery';
+import {act, renderHook} from '@testing-library/react';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {useMediaQuery} from './useMediaQuery';
 
 describe('useMediaQuery', () => {
   let listeners: Map<string, Set<(event: MediaQueryListEvent) => void>>;
@@ -13,19 +13,23 @@ describe('useMediaQuery', () => {
       const mql = {
         matches: false,
         media: query,
-        addEventListener: vi.fn((event: string, handler: (e: MediaQueryListEvent) => void) => {
-          if (event === 'change') {
-            if (!listeners.has(query)) {
-              listeners.set(query, new Set());
+        addEventListener: vi.fn(
+          (event: string, handler: (e: MediaQueryListEvent) => void) => {
+            if (event === 'change') {
+              if (!listeners.has(query)) {
+                listeners.set(query, new Set());
+              }
+              listeners.get(query)?.add(handler);
             }
-            listeners.get(query)!.add(handler);
-          }
-        }),
-        removeEventListener: vi.fn((event: string, handler: (e: MediaQueryListEvent) => void) => {
-          if (event === 'change' && listeners.has(query)) {
-            listeners.get(query)!.delete(handler);
-          }
-        }),
+          },
+        ),
+        removeEventListener: vi.fn(
+          (event: string, handler: (e: MediaQueryListEvent) => void) => {
+            if (event === 'change' && listeners.has(query)) {
+              listeners.get(query)?.delete(handler);
+            }
+          },
+        ),
       };
       return mql as unknown as MediaQueryList;
     });
@@ -39,7 +43,7 @@ describe('useMediaQuery', () => {
   });
 
   it('should return false initially when query does not match', () => {
-    const { result } = renderHook(() => useMediaQuery('(max-width: 768px)'));
+    const {result} = renderHook(() => useMediaQuery('(max-width: 768px)'));
     expect(result.current).toBe(false);
   });
 
@@ -51,13 +55,13 @@ describe('useMediaQuery', () => {
       removeEventListener: vi.fn(),
     }));
 
-    const { result } = renderHook(() => useMediaQuery('(min-width: 1024px)'));
+    const {result} = renderHook(() => useMediaQuery('(min-width: 1024px)'));
     expect(result.current).toBe(true);
   });
 
   it('should update when media query changes', () => {
     const query = '(max-width: 768px)';
-    const { result } = renderHook(() => useMediaQuery(query));
+    const {result} = renderHook(() => useMediaQuery(query));
 
     expect(result.current).toBe(false);
 
@@ -65,8 +69,8 @@ describe('useMediaQuery', () => {
     act(() => {
       const handlers = listeners.get(query);
       if (handlers) {
-        handlers.forEach(handler => {
-          handler({ matches: true } as MediaQueryListEvent);
+        handlers.forEach((handler) => {
+          handler({matches: true} as MediaQueryListEvent);
         });
       }
     });
@@ -84,7 +88,7 @@ describe('useMediaQuery', () => {
       removeEventListener: removeListener,
     }));
 
-    const { unmount } = renderHook(() => useMediaQuery(query));
+    const {unmount} = renderHook(() => useMediaQuery(query));
     unmount();
 
     expect(removeListener).toHaveBeenCalledWith('change', expect.any(Function));
@@ -98,8 +102,12 @@ describe('useMediaQuery', () => {
       removeEventListener: vi.fn(),
     }));
 
-    const { result: landscape } = renderHook(() => useMediaQuery('(orientation: landscape)'));
-    const { result: portrait } = renderHook(() => useMediaQuery('(orientation: portrait)'));
+    const {result: landscape} = renderHook(() =>
+      useMediaQuery('(orientation: landscape)'),
+    );
+    const {result: portrait} = renderHook(() =>
+      useMediaQuery('(orientation: portrait)'),
+    );
 
     expect(landscape.current).toBe(true);
     expect(portrait.current).toBe(false);
@@ -113,8 +121,8 @@ describe('useMediaQuery', () => {
       removeEventListener: vi.fn(),
     }));
 
-    const { result } = renderHook(() =>
-      useMediaQuery('(min-width: 768px) and (max-width: 1024px)')
+    const {result} = renderHook(() =>
+      useMediaQuery('(min-width: 768px) and (max-width: 1024px)'),
     );
 
     expect(result.current).toBe(true);

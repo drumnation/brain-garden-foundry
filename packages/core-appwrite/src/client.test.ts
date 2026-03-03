@@ -1,6 +1,13 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { makeAppwriteClient } from './client.js';
-import { Client, Account, Databases, Storage, Teams, Functions, Realtime } from 'appwrite';
+import {
+  Account,
+  Databases,
+  Functions,
+  Realtime,
+  Storage,
+  Teams,
+} from 'appwrite';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {makeAppwriteClient} from './client.js';
 
 // Mock Appwrite SDK
 vi.mock('appwrite', () => ({
@@ -105,7 +112,9 @@ describe('AppwriteClient', () => {
       const client = makeAppwriteClient();
       const mockClient = client.client as any;
 
-      expect(mockClient.setEndpoint).toHaveBeenCalledWith('https://env.appwrite.io/v1');
+      expect(mockClient.setEndpoint).toHaveBeenCalledWith(
+        'https://env.appwrite.io/v1',
+      );
       expect(mockClient.setProject).toHaveBeenCalledWith('env-project-id');
       expect(mockClient.setKey).toHaveBeenCalledWith('env-api-key');
 
@@ -114,11 +123,13 @@ describe('AppwriteClient', () => {
 
     it('should throw error when required config is missing', () => {
       const originalEnv = process.env;
-      process.env = { ...originalEnv };
+      process.env = {...originalEnv};
       delete process.env.VITE_APPWRITE_ENDPOINT;
       delete process.env.VITE_APPWRITE_PROJECT_ID;
 
-      expect(() => makeAppwriteClient()).toThrow('Appwrite endpoint is required');
+      expect(() => makeAppwriteClient()).toThrow(
+        'Appwrite endpoint is required',
+      );
 
       process.env = originalEnv;
     });

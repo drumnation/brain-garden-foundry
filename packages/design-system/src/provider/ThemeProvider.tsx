@@ -1,12 +1,12 @@
 import {
-  MantineProvider,
-  type MantineColorScheme,
   ColorSchemeScript,
   createTheme,
+  type MantineColorScheme,
+  MantineProvider,
 } from '@mantine/core';
-import { useColorScheme, useLocalStorage } from '@mantine/hooks';
-import { type ReactNode } from 'react';
-import { theme as baseTheme } from '../theme';
+import {useColorScheme, useLocalStorage} from '@mantine/hooks';
+import type {ReactNode} from 'react';
+import {theme as baseTheme} from '../theme';
 
 /**
  * Props for ThemeProvider component
@@ -61,7 +61,7 @@ export function ThemeProvider({
   themeOverrides,
 }: ThemeProviderProps) {
   // Persist color scheme preference in localStorage
-  const [colorScheme, setColorScheme] = useLocalStorage<MantineColorScheme>({
+  const [colorScheme, _setColorScheme] = useLocalStorage<MantineColorScheme>({
     key: 'bg-color-scheme',
     defaultValue: defaultColorScheme,
     getInitialValueInEffect: true,
@@ -69,7 +69,7 @@ export function ThemeProvider({
 
   // Merge base theme with any overrides
   const finalTheme = themeOverrides
-    ? createTheme({ ...baseTheme, ...themeOverrides })
+    ? createTheme({...baseTheme, ...themeOverrides})
     : baseTheme;
 
   return (
@@ -129,4 +129,4 @@ export function useTheme() {
  * }
  * ```
  */
-export { ColorSchemeScript };
+export {ColorSchemeScript};

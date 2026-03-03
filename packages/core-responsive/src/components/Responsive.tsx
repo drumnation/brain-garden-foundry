@@ -1,6 +1,6 @@
-import { type ReactNode, type CSSProperties } from 'react';
-import { useBreakpoint } from '../hooks/useBreakpoint';
-import type { Breakpoint } from '../breakpoints';
+import type {CSSProperties, ReactNode} from 'react';
+import type {Breakpoint} from '../breakpoints';
+import {useBreakpoint} from '../hooks/useBreakpoint';
 
 type ResponsiveValue<T> = T | Partial<Record<Breakpoint, T>>;
 
@@ -78,7 +78,9 @@ export const Responsive = ({
   const breakpoint = useBreakpoint();
 
   // Helper to resolve responsive values
-  const resolveValue = <T,>(value: ResponsiveValue<T> | undefined): T | undefined => {
+  const resolveValue = <T,>(
+    value: ResponsiveValue<T> | undefined,
+  ): T | undefined => {
     if (value === undefined) return undefined;
     if (typeof value !== 'object' || value === null) {
       return value as T;
@@ -94,7 +96,7 @@ export const Responsive = ({
     // Check if this object has any breakpoint keys - if not, it's a static value
     const responsiveValue = value as Partial<Record<Breakpoint, T>>;
     const breakpoints: Breakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'];
-    const hasBreakpointKeys = breakpoints.some(bp => bp in responsiveValue);
+    const hasBreakpointKeys = breakpoints.some((bp) => bp in responsiveValue);
 
     if (!hasBreakpointKeys) {
       // No breakpoint keys found, return as static value
@@ -120,14 +122,15 @@ export const Responsive = ({
   const resolvedClassName = resolveValue(className);
 
   // Handle edge case: empty object as children
-  const finalChildren = resolvedChildren !== undefined &&
-                       resolvedChildren !== null &&
-                       typeof resolvedChildren === 'object' &&
-                       !Array.isArray(resolvedChildren) &&
-                       !('$$typeof' in resolvedChildren) &&
-                       Object.keys(resolvedChildren).length === 0
-    ? null
-    : resolvedChildren;
+  const finalChildren =
+    resolvedChildren !== undefined &&
+    resolvedChildren !== null &&
+    typeof resolvedChildren === 'object' &&
+    !Array.isArray(resolvedChildren) &&
+    !('$$typeof' in resolvedChildren) &&
+    Object.keys(resolvedChildren).length === 0
+      ? null
+      : resolvedChildren;
 
   return (
     <Component style={resolvedStyle} className={resolvedClassName}>

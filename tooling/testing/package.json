@@ -78,8 +78,8 @@
   "scripts": {
     "clean": "git clean -xdf .turbo node_modules",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint .",
-    "format": "prettier --check \"**/*.{ts,tsx}\"",
+    "lint": "biome lint .",
+    "format": "biome format . --check",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:unit": "tsx ./src/runners/recursive.ts unit",
@@ -108,8 +108,6 @@
     "vitest": "^3.2.4"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@types/node": "^22.5.0",
     "@types/react": "^18.3.0",
@@ -121,15 +119,6 @@
     "react": "^18.3.0"
   },
   "peerDependencies": {
-    "eslint": "^9.17.0",
-    "prettier": "^3.4.2",
     "typescript": "^5.7.3"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@kit/eslint-config/base"
-    ]
-  },
-  "prettier": "@kit/prettier-config"
+  }
 }

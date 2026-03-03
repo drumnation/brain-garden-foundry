@@ -1,4 +1,4 @@
-import { Client, Account, Databases, Storage, Teams, Functions } from 'appwrite';
+import {Account, Client, Databases, Functions, Storage, Teams} from 'appwrite';
 
 /**
  * REAL Appwrite Client for Brain Garden Deployment
@@ -18,20 +18,15 @@ export interface AppwriteDeploymentConfig {
 
 export class AppwriteDeploymentClient {
   private client: Client;
-  private account: Account;
   private databases: Databases;
   private storage: Storage;
-  private teams: Teams;
-  private functions: Functions;
 
   constructor(config: AppwriteDeploymentConfig) {
     // Use real production endpoints
     const endpoint = config.endpoint || APPWRITE_ENDPOINT;
     const projectId = config.projectId || APPWRITE_PROJECT_ID;
 
-    this.client = new Client()
-      .setEndpoint(endpoint)
-      .setProject(projectId);
+    this.client = new Client().setEndpoint(endpoint).setProject(projectId);
 
     // If API key provided, use it for server-side operations
     if (config.apiKey) {
@@ -54,8 +49,8 @@ export class AppwriteDeploymentClient {
       // Try to get project info - this should work with API key
       const health = await fetch(`${APPWRITE_ENDPOINT}/health`, {
         headers: {
-          'X-Appwrite-Project': APPWRITE_PROJECT_ID
-        }
+          'X-Appwrite-Project': APPWRITE_PROJECT_ID,
+        },
       });
       return health.ok;
     } catch (error) {
@@ -71,10 +66,7 @@ export class AppwriteDeploymentClient {
     try {
       const databaseId = `${name.toLowerCase().replace(/[^a-z0-9]/g, '_')}_db`;
 
-      const database = await this.databases.create(
-        databaseId,
-        name
-      );
+      const database = await this.databases.create(databaseId, name);
 
       console.log(`✅ Database created: ${database.$id}`);
       return database.$id;
@@ -96,23 +88,23 @@ export class AppwriteDeploymentClient {
       {
         id: 'users',
         name: 'Users',
-        permissions: ['read("any")', 'write("users")']
+        permissions: ['read("any")', 'write("users")'],
       },
       {
         id: 'projects',
         name: 'Projects',
-        permissions: ['read("users")', 'write("users")']
+        permissions: ['read("users")', 'write("users")'],
       },
       {
         id: 'todos',
         name: 'Todos',
-        permissions: ['read("users")', 'write("users")']
+        permissions: ['read("users")', 'write("users")'],
       },
       {
         id: 'settings',
         name: 'Settings',
-        permissions: ['read("users")', 'write("users")']
-      }
+        permissions: ['read("users")', 'write("users")'],
+      },
     ];
 
     for (const collection of collections) {
@@ -121,14 +113,17 @@ export class AppwriteDeploymentClient {
           databaseId,
           collection.id,
           collection.name,
-          collection.permissions
+          collection.permissions,
         );
         console.log(`✅ Collection created: ${collection.name}`);
       } catch (error: any) {
         if (error.code === 409) {
           console.log(`Collection ${collection.name} already exists`);
         } else {
-          console.error(`Failed to create collection ${collection.name}:`, error);
+          console.error(
+            `Failed to create collection ${collection.name}:`,
+            error,
+          );
         }
       }
     }
@@ -146,10 +141,10 @@ export class AppwriteDeploymentClient {
         name,
         ['read("any")', 'write("users")'],
         false, // No encryption for now
-        true,  // Enable antivirus
+        true, // Enable antivirus
         undefined,
         ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx'], // Allowed extensions
-        30000000 // 30MB max file size
+        30000000, // 30MB max file size
       );
 
       console.log(`✅ Storage bucket created: ${bucket.$id}`);
@@ -176,20 +171,20 @@ export class AppwriteDeploymentClient {
         google: {
           enabled: false, // Need client ID/secret
           clientId: '',
-          clientSecret: ''
+          clientSecret: '',
         },
         github: {
           enabled: false, // Need client ID/secret
           clientId: '',
-          clientSecret: ''
-        }
+          clientSecret: '',
+        },
       },
       teams: true,
       jwt: true,
       sessions: {
         limit: 10,
-        duration: 365 * 24 * 60 * 60 // 1 year
-      }
+        duration: 365 * 24 * 60 * 60, // 1 year
+      },
     };
 
     console.log('📝 Authentication configuration:');
@@ -205,7 +200,11 @@ export class AppwriteDeploymentClient {
   /**
    * Generate environment variables for deployment
    */
-  generateEnvVariables(projectName: string, databaseId: string, bucketId: string): Record<string, string> {
+  generateEnvVariables(
+    projectName: string,
+    databaseId: string,
+    bucketId: string,
+  ): Record<string, string> {
     return {
       // Public variables (safe for client-side)
       VITE_APPWRITE_ENDPOINT: APPWRITE_ENDPOINT,
@@ -222,7 +221,7 @@ export class AppwriteDeploymentClient {
       // Deployment metadata
       DEPLOYMENT_NAME: projectName,
       DEPLOYMENT_DOMAIN: `${projectName}.singularity-labs.org`,
-      DEPLOYMENT_TIMESTAMP: new Date().toISOString()
+      DEPLOYMENT_TIMESTAMP: new Date().toISOString(),
     };
   }
 
@@ -240,7 +239,9 @@ export class AppwriteDeploymentClient {
       // Test connection first
       const connected = await this.testConnection();
       if (!connected) {
-        throw new Error('Failed to connect to Appwrite. Check endpoint and credentials.');
+        throw new Error(
+          'Failed to connect to Appwrite. Check endpoint and credentials.',
+        );
       }
       console.log('✅ Connected to Appwrite');
 
@@ -257,7 +258,11 @@ export class AppwriteDeploymentClient {
       const authConfig = await this.setupAuthentication();
 
       // Generate environment variables
-      const envVars = this.generateEnvVariables(projectName, databaseId, bucketId);
+      const envVars = this.generateEnvVariables(
+        projectName,
+        databaseId,
+        bucketId,
+      );
 
       const config = {
         endpoint: APPWRITE_ENDPOINT,
@@ -268,8 +273,8 @@ export class AppwriteDeploymentClient {
         deployment: {
           name: projectName,
           domain: `${projectName}.singularity-labs.org`,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
 
       console.log('\n✅ Deployment provisioned successfully!');
@@ -278,14 +283,14 @@ export class AppwriteDeploymentClient {
       return {
         success: true,
         config,
-        envVars
+        envVars,
       };
     } catch (error) {
       console.error('❌ Provisioning failed:', error);
       return {
         success: false,
         config: {},
-        envVars: {}
+        envVars: {},
       };
     }
   }

@@ -1,12 +1,12 @@
-import { promises as fs } from 'node:fs';
+import {execSync} from 'node:child_process';
+import {promises as fs} from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {fileURLToPath} from 'node:url';
+import {ID} from 'appwrite';
 import chalk from 'chalk';
 import ora from 'ora';
 import prompts from 'prompts';
-import { Client, Databases, Storage, Projects, ID } from 'appwrite';
-import { z } from 'zod';
-import { execSync } from 'node:child_process';
+import {z} from 'zod';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -33,11 +33,13 @@ const DeployConfigSchema = z.object({
   }),
   migrations: z.object({
     current: z.string(),
-    history: z.array(z.object({
-      id: z.string(),
-      name: z.string(),
-      appliedAt: z.string(),
-    })),
+    history: z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        appliedAt: z.string(),
+      }),
+    ),
   }),
 });
 
@@ -52,7 +54,7 @@ export async function deployInitCommand(options: any) {
 
   if (await fileExists(configPath)) {
     console.log(chalk.yellow('⚠️  Project already initialized'));
-    const { overwrite } = await prompts({
+    const {overwrite} = await prompts({
       type: 'confirm',
       name: 'overwrite',
       message: 'Overwrite existing configuration?',
@@ -82,9 +84,9 @@ export async function deployInitCommand(options: any) {
         name: 'environment',
         message: 'Deployment environment:',
         choices: [
-          { title: 'Production', value: 'production' },
-          { title: 'Staging', value: 'staging' },
-          { title: 'Development', value: 'development' },
+          {title: 'Production', value: 'production'},
+          {title: 'Staging', value: 'staging'},
+          {title: 'Development', value: 'development'},
         ],
         initial: 0,
       },
@@ -98,13 +100,15 @@ export async function deployInitCommand(options: any) {
         type: 'text',
         name: 'githubRepo',
         message: 'GitHub repository (owner/name):',
-        validate: (value) => /^[^\/]+\/[^\/]+$/.test(value) || 'Format: owner/repo',
+        validate: (value) =>
+          /^[^/]+\/[^/]+$/.test(value) || 'Format: owner/repo',
       },
       {
         type: 'text',
         name: 'productionDomain',
         message: 'Production domain:',
-        initial: (prev: any, values: any) => `${values.project}.singularity-labs.org`,
+        initial: (prev: any, values: any) =>
+          `${values.project}.singularity-labs.org`,
       },
     ]);
 
@@ -172,15 +176,42 @@ export async function deployInitCommand(options: any) {
   console.log(chalk.bold('\n⚡ Provisioning Infrastructure\n'));
 
   const steps = [
-    { name: 'Creating .deploy directory', fn: () => createDeployDirectory(deployDir) },
-    { name: 'Saving configuration', fn: () => saveConfig(configPath, config as DeployConfig) },
-    { name: 'Creating Appwrite project', fn: () => createAppwriteProject(config as DeployConfig) },
-    { name: 'Setting up database collections', fn: () => setupCollections(config as DeployConfig) },
-    { name: 'Creating storage buckets', fn: () => createStorageBuckets(config as DeployConfig) },
-    { name: 'Configuring GitHub secrets', fn: () => configureGitHubSecrets(config as DeployConfig) },
-    { name: 'Setting up CI/CD pipeline', fn: () => setupCIPipeline(config as DeployConfig) },
-    { name: 'Running initial migrations', fn: () => runInitialMigrations(config as DeployConfig) },
-    { name: 'Creating deployment scripts', fn: () => createDeploymentScripts(config as DeployConfig) },
+    {
+      name: 'Creating .deploy directory',
+      fn: () => createDeployDirectory(deployDir),
+    },
+    {
+      name: 'Saving configuration',
+      fn: () => saveConfig(configPath, config as DeployConfig),
+    },
+    {
+      name: 'Creating Appwrite project',
+      fn: () => createAppwriteProject(config as DeployConfig),
+    },
+    {
+      name: 'Setting up database collections',
+      fn: () => setupCollections(config as DeployConfig),
+    },
+    {
+      name: 'Creating storage buckets',
+      fn: () => createStorageBuckets(config as DeployConfig),
+    },
+    {
+      name: 'Configuring GitHub secrets',
+      fn: () => configureGitHubSecrets(config as DeployConfig),
+    },
+    {
+      name: 'Setting up CI/CD pipeline',
+      fn: () => setupCIPipeline(config as DeployConfig),
+    },
+    {
+      name: 'Running initial migrations',
+      fn: () => runInitialMigrations(config as DeployConfig),
+    },
+    {
+      name: 'Creating deployment scripts',
+      fn: () => createDeploymentScripts(config as DeployConfig),
+    },
   ];
 
   for (const step of steps) {
@@ -197,22 +228,60 @@ export async function deployInitCommand(options: any) {
 
   // Success message
   console.log(chalk.green.bold('\n🎉 Deployment Initialized Successfully!\n'));
-  console.log(chalk.white('Your app is configured and ready for deployment.\n'));
+  console.log(
+    chalk.white('Your app is configured and ready for deployment.\n'),
+  );
 
   console.log(chalk.bold('📍 Deployment URLs:'));
-  console.log(chalk.gray(`  Production: ${chalk.cyan(`https://${config.domains?.production}`)}`));
-  console.log(chalk.gray(`  Preview:    ${chalk.cyan(`https://${config.domains?.preview}`)}`));
-  console.log(chalk.gray(`  Appwrite:   ${chalk.cyan(config.appwrite?.endpoint)}`));
+  console.log(
+    chalk.gray(
+      `  Production: ${chalk.cyan(`https://${config.domains?.production}`)}`,
+    ),
+  );
+  console.log(
+    chalk.gray(
+      `  Preview:    ${chalk.cyan(`https://${config.domains?.preview}`)}`,
+    ),
+  );
+  console.log(
+    chalk.gray(`  Appwrite:   ${chalk.cyan(config.appwrite?.endpoint)}`),
+  );
 
   console.log(chalk.bold('\n📚 Next Steps:'));
-  console.log(chalk.gray('  1. Run ' + chalk.cyan('pnpm deploy:sync') + ' to sync database schema'));
-  console.log(chalk.gray('  2. Run ' + chalk.cyan('git push') + ' to trigger deployment'));
-  console.log(chalk.gray('  3. Run ' + chalk.cyan('pnpm deploy:status') + ' to check deployment health'));
+  console.log(
+    chalk.gray(
+      '  1. Run ' + chalk.cyan('pnpm deploy:sync') + ' to sync database schema',
+    ),
+  );
+  console.log(
+    chalk.gray('  2. Run ' + chalk.cyan('git push') + ' to trigger deployment'),
+  );
+  console.log(
+    chalk.gray(
+      '  3. Run ' +
+        chalk.cyan('pnpm deploy:status') +
+        ' to check deployment health',
+    ),
+  );
 
   console.log(chalk.bold('\n🔧 Available Commands:'));
-  console.log(chalk.gray('  • ' + chalk.cyan('pnpm deploy:sync') + '    - Sync infrastructure with code'));
-  console.log(chalk.gray('  • ' + chalk.cyan('pnpm deploy:status') + '  - Check deployment status'));
-  console.log(chalk.gray('  • ' + chalk.cyan('pnpm deploy:destroy') + ' - Teardown deployment'));
+  console.log(
+    chalk.gray(
+      '  • ' +
+        chalk.cyan('pnpm deploy:sync') +
+        '    - Sync infrastructure with code',
+    ),
+  );
+  console.log(
+    chalk.gray(
+      '  • ' + chalk.cyan('pnpm deploy:status') + '  - Check deployment status',
+    ),
+  );
+  console.log(
+    chalk.gray(
+      '  • ' + chalk.cyan('pnpm deploy:destroy') + ' - Teardown deployment',
+    ),
+  );
 }
 
 // Helper functions
@@ -227,9 +296,9 @@ async function fileExists(path: string): Promise<boolean> {
 }
 
 async function createDeployDirectory(deployDir: string) {
-  await fs.mkdir(deployDir, { recursive: true });
-  await fs.mkdir(path.join(deployDir, 'migrations'), { recursive: true });
-  await fs.mkdir(path.join(deployDir, 'scripts'), { recursive: true });
+  await fs.mkdir(deployDir, {recursive: true});
+  await fs.mkdir(path.join(deployDir, 'migrations'), {recursive: true});
+  await fs.mkdir(path.join(deployDir, 'scripts'), {recursive: true});
 }
 
 async function saveConfig(configPath: string, config: DeployConfig) {
@@ -240,7 +309,10 @@ async function saveConfig(configPath: string, config: DeployConfig) {
   const gitignore = await fs.readFile(gitignorePath, 'utf-8').catch(() => '');
 
   if (!gitignore.includes('.deploy')) {
-    await fs.appendFile(gitignorePath, '\n# Deployment configuration\n.deploy/\n');
+    await fs.appendFile(
+      gitignorePath,
+      '\n# Deployment configuration\n.deploy/\n',
+    );
   }
 }
 
@@ -256,7 +328,7 @@ async function createAppwriteProject(config: DeployConfig) {
   // const projects = new Projects(client);
   // await projects.create(config.appwrite.projectId, config.project);
 
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Update config with actual project ID
   config.appwrite.projectId = config.appwrite.projectId || ID.unique();
@@ -264,34 +336,24 @@ async function createAppwriteProject(config: DeployConfig) {
 
 async function setupCollections(config: DeployConfig) {
   // Default collections for auth system
-  const collections = [
-    'users',
-    'sessions',
-    'teams',
-    'memberships',
-    'tokens',
-  ];
+  const collections = ['users', 'sessions', 'teams', 'memberships', 'tokens'];
 
   config.appwrite.collections = collections;
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 async function createStorageBuckets(config: DeployConfig) {
   // Default storage buckets
-  const buckets = [
-    'profile-pictures',
-    'documents',
-    'uploads',
-  ];
+  const buckets = ['profile-pictures', 'documents', 'uploads'];
 
   config.appwrite.buckets = buckets;
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 async function configureGitHubSecrets(config: DeployConfig) {
   // Check if gh CLI is available
   try {
-    execSync('which gh', { stdio: 'ignore' });
+    execSync('which gh', {stdio: 'ignore'});
 
     // Note: In real implementation, would set actual secrets
     // execSync(`gh secret set APPWRITE_ENDPOINT --body "${config.appwrite.endpoint}" --repo ${config.github.repository}`);
@@ -299,16 +361,20 @@ async function configureGitHubSecrets(config: DeployConfig) {
 
     config.github.secretsConfigured = true;
   } catch {
-    console.log(chalk.yellow('\n  ⚠️  GitHub CLI not found. Please configure secrets manually.'));
+    console.log(
+      chalk.yellow(
+        '\n  ⚠️  GitHub CLI not found. Please configure secrets manually.',
+      ),
+    );
   }
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 async function setupCIPipeline(config: DeployConfig) {
   // Create GitHub Actions workflow
   const workflowDir = path.join(process.cwd(), '.github', 'workflows');
-  await fs.mkdir(workflowDir, { recursive: true });
+  await fs.mkdir(workflowDir, {recursive: true});
 
   const workflowContent = `name: Deploy
 on:
@@ -347,7 +413,12 @@ jobs:
 
 async function runInitialMigrations(config: DeployConfig) {
   // Create initial migration file
-  const migrationPath = path.join(process.cwd(), '.deploy', 'migrations', '001-initial-schema.ts');
+  const migrationPath = path.join(
+    process.cwd(),
+    '.deploy',
+    'migrations',
+    '001-initial-schema.ts',
+  );
   const migrationContent = `import { Client, Databases, ID, Permission, Role } from 'appwrite';
 
 export const up = async (client: Client) => {
@@ -387,7 +458,7 @@ export const down = async (client: Client) => {
     appliedAt: new Date().toISOString(),
   });
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 async function createDeploymentScripts(config: DeployConfig) {

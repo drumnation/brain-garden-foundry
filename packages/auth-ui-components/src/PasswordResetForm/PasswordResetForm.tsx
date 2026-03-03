@@ -1,23 +1,27 @@
-import { useState } from 'react';
 import {
-  TextInput,
-  PasswordInput,
+  Alert,
+  Anchor,
   Button,
+  PasswordInput,
+  Progress,
   Stack,
   Text,
-  Anchor,
-  Alert,
-  Progress,
+  TextInput,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { IconAlertCircle, IconCheck, IconMail } from '@tabler/icons-react';
+import {useForm} from '@mantine/form';
+import {IconAlertCircle, IconCheck, IconMail} from '@tabler/icons-react';
+import {useState} from 'react';
 
 interface PasswordResetFormProps {
   mode?: 'request' | 'confirm';
   userId?: string;
   secret?: string;
   onRequestReset?: (email: string) => Promise<any>;
-  onConfirmReset?: (userId: string, secret: string, password: string) => Promise<any>;
+  onConfirmReset?: (
+    userId: string,
+    secret: string,
+    password: string,
+  ) => Promise<any>;
   onSuccess?: () => void;
   onError?: (error: string) => void;
   onBackClick?: () => void;
@@ -28,7 +32,7 @@ function calculatePasswordStrength(password: string): {
   label: string;
   color: string;
 } {
-  if (!password) return { strength: 0, label: '', color: 'gray' };
+  if (!password) return {strength: 0, label: '', color: 'gray'};
 
   let strength = 0;
 
@@ -43,11 +47,11 @@ function calculatePasswordStrength(password: string): {
   if (/[^a-zA-Z0-9]/.test(password)) strength += 15;
 
   if (strength < 30) {
-    return { strength, label: 'Weak', color: 'red' };
+    return {strength, label: 'Weak', color: 'red'};
   } else if (strength < 60) {
-    return { strength, label: 'Medium', color: 'yellow' };
+    return {strength, label: 'Medium', color: 'yellow'};
   } else {
-    return { strength, label: 'Strong', color: 'green' };
+    return {strength, label: 'Strong', color: 'green'};
   }
 }
 
@@ -164,9 +168,11 @@ export function PasswordResetForm({
         await onConfirmReset(userId, secret, values.password);
       }
 
-      setSuccessMessage('Password reset successful! You can now login with your new password.');
+      setSuccessMessage(
+        'Password reset successful! You can now login with your new password.',
+      );
       confirmForm.reset();
-      setPasswordStrength({ strength: 0, label: '', color: 'gray' });
+      setPasswordStrength({strength: 0, label: '', color: 'gray'});
 
       if (onSuccess) {
         onSuccess();
@@ -193,7 +199,8 @@ export function PasswordResetForm({
           </Text>
 
           <Text size="sm" color="dimmed" align="center">
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email address and we'll send you a link to reset your
+            password.
           </Text>
 
           <TextInput
@@ -216,11 +223,7 @@ export function PasswordResetForm({
           )}
 
           {successMessage && (
-            <Alert
-              icon={<IconCheck size={16} />}
-              color="green"
-              title="Success"
-            >
+            <Alert icon={<IconCheck size={16} />} color="green" title="Success">
               {successMessage}
             </Alert>
           )}
@@ -273,10 +276,12 @@ export function PasswordResetForm({
             required
             disabled={isLoading || !!successMessage}
             {...confirmForm.getInputProps('password')}
-            onChange={(event) => handlePasswordChange(event.currentTarget.value)}
+            onChange={(event) =>
+              handlePasswordChange(event.currentTarget.value)
+            }
           />
           {confirmForm.values.password && (
-            <div style={{ marginTop: 5 }}>
+            <div style={{marginTop: 5}}>
               <Progress
                 value={passwordStrength.strength}
                 color={passwordStrength.color}
@@ -309,11 +314,7 @@ export function PasswordResetForm({
         )}
 
         {successMessage && (
-          <Alert
-            icon={<IconCheck size={16} />}
-            color="green"
-            title="Success"
-          >
+          <Alert icon={<IconCheck size={16} />} color="green" title="Success">
             {successMessage}
           </Alert>
         )}

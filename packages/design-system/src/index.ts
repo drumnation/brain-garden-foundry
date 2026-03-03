@@ -19,54 +19,51 @@
  * ```
  */
 
-// Provider and theme exports
-export { ThemeProvider, ColorSchemeScript, useTheme } from './provider';
-export type { ThemeProviderProps } from './provider';
-export { theme } from './theme';
-
-// Design token exports
-export { colors, colorRoles } from './tokens/colors';
-export { spacing, componentSpacing } from './tokens/spacing';
-export { typography, textStyles } from './tokens/typography';
-
-// Re-export commonly used Mantine components and hooks
-export {
-  // Layout
-  Box,
-  Container,
-  Stack,
-  Group,
-  Grid,
-  SimpleGrid,
-  Flex,
-  // Typography
-  Title,
-  Text,
-  // Buttons
-  Button,
-  ActionIcon,
-  // Inputs
-  TextInput,
-  Textarea,
-  Select,
-  // Feedback
-  Alert,
-  Notification,
-  // Data Display
-  Card,
-  Paper,
-  Badge,
-  ThemeIcon,
-  // Hooks
-  useMantineTheme,
-  useMantineColorScheme,
-} from '@mantine/core';
-
 // Re-export Mantine types
 export type {
-  MantineTheme,
-  MantineColorScheme,
   MantineColor,
+  MantineColorScheme,
   MantineSize,
   MantineSpacing,
+  MantineTheme,
 } from '@mantine/core';
+// Re-export commonly used Mantine components and hooks
+export {
+  ActionIcon,
+  // Feedback
+  Alert,
+  Badge,
+  // Layout
+  Box,
+  // Buttons
+  Button,
+  // Data Display
+  Card,
+  Container,
+  Flex,
+  Grid,
+  Group,
+  Notification,
+  Paper,
+  Select,
+  SimpleGrid,
+  Stack,
+  Text,
+  Textarea,
+  // Inputs
+  TextInput,
+  ThemeIcon,
+  // Typography
+  Title,
+  useMantineColorScheme,
+  // Hooks
+  useMantineTheme,
+} from '@mantine/core';
+export type {ThemeProviderProps} from './provider';
+// Provider and theme exports
+export {ColorSchemeScript, ThemeProvider, useTheme} from './provider';
+export {theme} from './theme';
+// Design token exports
+export {colorRoles, colors} from './tokens/colors';
+export {componentSpacing, spacing} from './tokens/spacing';
+export {textStyles, typography} from './tokens/typography';

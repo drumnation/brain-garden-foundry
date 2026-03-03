@@ -1,5 +1,12 @@
-import { Card, Text, Button, Stack, Group, ThemeIcon } from '@bg-kit/design-system';
-import { type ReactNode } from 'react';
+import {
+  Button,
+  Card,
+  Group,
+  Stack,
+  Text,
+  ThemeIcon,
+} from '@bg-kit/design-system';
+import type {ReactNode} from 'react';
 
 export interface FeatureCardProps {
   /** Icon to display */

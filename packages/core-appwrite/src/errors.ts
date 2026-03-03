@@ -1,4 +1,4 @@
-import { AppwriteException } from 'appwrite';
+import {AppwriteException} from 'appwrite';
 
 /**
  * Custom Appwrite error class with additional context
@@ -8,7 +8,12 @@ export class AppwriteError extends Error {
   public readonly type: string;
   public readonly response?: any;
 
-  constructor(message: string, code: number = 500, type: string = 'unknown', response?: any) {
+  constructor(
+    message: string,
+    code: number = 500,
+    type: string = 'unknown',
+    response?: any,
+  ) {
     super(message);
     this.name = 'AppwriteError';
     this.code = code;
@@ -31,7 +36,9 @@ export class AppwriteError extends Error {
   /**
    * Create a network error
    */
-  static networkError(message: string = 'Network request failed'): AppwriteError {
+  static networkError(
+    message: string = 'Network request failed',
+  ): AppwriteError {
     return new AppwriteError(message, 0, 'network_error');
   }
 
@@ -66,7 +73,9 @@ export class AppwriteError extends Error {
   /**
    * Create a rate limit error
    */
-  static rateLimitError(message: string = 'Rate limit exceeded'): AppwriteError {
+  static rateLimitError(
+    message: string = 'Rate limit exceeded',
+  ): AppwriteError {
     return new AppwriteError(message, 429, 'rate_limit_error');
   }
 
@@ -88,7 +97,9 @@ export const isAppwriteError = (error: unknown): error is AppwriteError => {
 /**
  * Type guard to check if an error is an AppwriteException
  */
-export const isAppwriteException = (error: unknown): error is AppwriteException => {
+export const isAppwriteException = (
+  error: unknown,
+): error is AppwriteException => {
   return error instanceof AppwriteException;
 };
 
@@ -109,7 +120,10 @@ export const toAppwriteError = (error: unknown): AppwriteError => {
     if (error.message.includes('Network')) {
       return AppwriteError.networkError(error.message);
     }
-    if (error.message.includes('401') || error.message.includes('unauthorized')) {
+    if (
+      error.message.includes('401') ||
+      error.message.includes('unauthorized')
+    ) {
       return AppwriteError.authError(error.message);
     }
     if (error.message.includes('403') || error.message.includes('forbidden')) {

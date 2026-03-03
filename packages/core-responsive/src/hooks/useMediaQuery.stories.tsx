@@ -1,36 +1,46 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { useState } from 'react';
-import { useMediaQuery } from './useMediaQuery';
+import type {Meta, StoryObj} from '@storybook/react';
+import {useMediaQuery} from './useMediaQuery';
 
-const UseMediaQueryDemo = ({ query }: { query: string }) => {
+const UseMediaQueryDemo = ({query}: {query: string}) => {
   const matches = useMediaQuery(query);
 
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif' }}>
-      <h2 style={{ marginBottom: '1rem' }}>useMediaQuery Hook Demo</h2>
-      <div style={{
-        padding: '1rem',
-        border: '2px solid #e5e7eb',
-        borderRadius: '8px',
-        backgroundColor: matches ? '#10b981' : '#ef4444',
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: '1.25rem',
-        textAlign: 'center',
-        marginBottom: '1rem'
-      }}>
+    <div style={{fontFamily: 'system-ui, sans-serif'}}>
+      <h2 style={{marginBottom: '1rem'}}>useMediaQuery Hook Demo</h2>
+      <div
+        style={{
+          padding: '1rem',
+          border: '2px solid #e5e7eb',
+          borderRadius: '8px',
+          backgroundColor: matches ? '#10b981' : '#ef4444',
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: '1.25rem',
+          textAlign: 'center',
+          marginBottom: '1rem',
+        }}
+      >
         {matches ? '✓ Query Matches' : '✗ Query Does Not Match'}
       </div>
-      <div style={{
-        padding: '1rem',
-        backgroundColor: '#f9fafb',
-        borderRadius: '6px',
-        fontFamily: 'monospace',
-        fontSize: '0.875rem'
-      }}>
-        <div><strong>Query:</strong> {query}</div>
-        <div><strong>Window Width:</strong> {typeof window !== 'undefined' ? `${window.innerWidth}px` : 'N/A'}</div>
-        <div><strong>Result:</strong> {String(matches)}</div>
+      <div
+        style={{
+          padding: '1rem',
+          backgroundColor: '#f9fafb',
+          borderRadius: '6px',
+          fontFamily: 'monospace',
+          fontSize: '0.875rem',
+        }}
+      >
+        <div>
+          <strong>Query:</strong> {query}
+        </div>
+        <div>
+          <strong>Window Width:</strong>{' '}
+          {typeof window !== 'undefined' ? `${window.innerWidth}px` : 'N/A'}
+        </div>
+        <div>
+          <strong>Result:</strong> {String(matches)}
+        </div>
       </div>
     </div>
   );
@@ -43,9 +53,10 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'React hook for responsive media queries. Returns true when the media query matches, false otherwise. Automatically updates when the viewport changes.'
-      }
-    }
+        component:
+          'React hook for responsive media queries. Returns true when the media query matches, false otherwise. Automatically updates when the viewport changes.',
+      },
+    },
   },
   tags: ['autodocs'],
   argTypes: {

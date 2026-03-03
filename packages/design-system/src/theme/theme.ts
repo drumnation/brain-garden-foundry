@@ -1,5 +1,5 @@
-import { createTheme, MantineColorsTuple } from '@mantine/core';
-import { colors, spacing, typography } from '../tokens';
+import {createTheme, type MantineColorsTuple} from '@mantine/core';
+import {colors, spacing, typography} from '../tokens';
 
 /**
  * Brain Garden Design System Theme
@@ -63,10 +63,10 @@ export const theme = createTheme({
    */
   radius: {
     xs: '0.125rem', // 2px
-    sm: '0.25rem',  // 4px
-    md: '0.5rem',   // 8px
-    lg: '0.75rem',  // 12px
-    xl: '1rem',     // 16px
+    sm: '0.25rem', // 4px
+    md: '0.5rem', // 8px
+    lg: '0.75rem', // 12px
+    xl: '1rem', // 16px
   },
 
   /**

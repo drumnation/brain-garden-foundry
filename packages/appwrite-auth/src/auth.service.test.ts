@@ -1,8 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { makeAuthService } from './auth.service.js';
-import type { AppwriteClient } from '@brain-garden/core-appwrite';
-import { AppwriteError } from '@brain-garden/core-appwrite';
-import { ID } from 'appwrite';
+import type {AppwriteClient} from '@brain-garden/core-appwrite';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {makeAuthService} from './auth.service.js';
 
 // Mock Appwrite client
 const createMockClient = (): AppwriteClient => ({
@@ -38,7 +36,7 @@ describe('AuthService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockClient = createMockClient();
-    authService = makeAuthService({ appwriteClient: mockClient });
+    authService = makeAuthService({appwriteClient: mockClient});
   });
 
   describe('signUp', () => {
@@ -48,10 +46,12 @@ describe('AuthService', () => {
         email: 'test@example.com',
         name: 'Test User',
       };
-      const mockSession = { $id: 'session-123', userId: 'user-123' };
+      const mockSession = {$id: 'session-123', userId: 'user-123'};
 
       mockClient.account.create.mockResolvedValue(mockUser);
-      mockClient.account.createEmailPasswordSession.mockResolvedValue(mockSession);
+      mockClient.account.createEmailPasswordSession.mockResolvedValue(
+        mockSession,
+      );
 
       const result = await authService.signUp({
         email: 'test@example.com',
@@ -65,10 +65,9 @@ describe('AuthService', () => {
         'SecurePass123!',
         'Test User',
       );
-      expect(mockClient.account.createEmailPasswordSession).toHaveBeenCalledWith(
-        'test@example.com',
-        'SecurePass123!',
-      );
+      expect(
+        mockClient.account.createEmailPasswordSession,
+      ).toHaveBeenCalledWith('test@example.com', 'SecurePass123!');
       expect(result).toEqual({
         user: mockUser,
         session: mockSession,
@@ -123,7 +122,9 @@ describe('AuthService', () => {
         name: 'Test User',
       };
 
-      mockClient.account.createEmailPasswordSession.mockResolvedValue(mockSession);
+      mockClient.account.createEmailPasswordSession.mockResolvedValue(
+        mockSession,
+      );
       mockClient.account.get.mockResolvedValue(mockUser);
 
       const result = await authService.signIn({
@@ -131,10 +132,9 @@ describe('AuthService', () => {
         password: 'SecurePass123!',
       });
 
-      expect(mockClient.account.createEmailPasswordSession).toHaveBeenCalledWith(
-        'test@example.com',
-        'SecurePass123!',
-      );
+      expect(
+        mockClient.account.createEmailPasswordSession,
+      ).toHaveBeenCalledWith('test@example.com', 'SecurePass123!');
       expect(mockClient.account.get).toHaveBeenCalled();
       expect(result).toEqual({
         user: mockUser,
@@ -165,7 +165,7 @@ describe('AuthService', () => {
     });
 
     it('should delete all sessions when specified', async () => {
-      await authService.signOut({ all: true });
+      await authService.signOut({all: true});
 
       expect(mockClient.account.deleteSessions).toHaveBeenCalled();
       expect(mockClient.clearAuth).toHaveBeenCalled();
@@ -209,9 +209,11 @@ describe('AuthService', () => {
 
       mockClient.account.updateName.mockResolvedValue(mockUser);
 
-      const user = await authService.updateProfile({ name: 'Updated Name' });
+      const user = await authService.updateProfile({name: 'Updated Name'});
 
-      expect(mockClient.account.updateName).toHaveBeenCalledWith('Updated Name');
+      expect(mockClient.account.updateName).toHaveBeenCalledWith(
+        'Updated Name',
+      );
       expect(user).toEqual(mockUser);
     });
 
@@ -238,7 +240,7 @@ describe('AuthService', () => {
 
     it('should require password when updating email', async () => {
       await expect(
-        authService.updateProfile({ email: 'new@example.com' }),
+        authService.updateProfile({email: 'new@example.com'}),
       ).rejects.toThrow('Password required to update email');
     });
   });
@@ -276,7 +278,7 @@ describe('AuthService', () => {
 
   describe('resetPassword', () => {
     it('should send password reset email', async () => {
-      const mockToken = { expire: '2024-11-15T12:00:00Z' };
+      const mockToken = {expire: '2024-11-15T12:00:00Z'};
 
       mockClient.account.createRecovery.mockResolvedValue(mockToken);
 
@@ -316,7 +318,7 @@ describe('AuthService', () => {
 
   describe('verifyEmail', () => {
     it('should send email verification', async () => {
-      const mockVerification = { expire: '2024-11-15T12:00:00Z' };
+      const mockVerification = {expire: '2024-11-15T12:00:00Z'};
 
       mockClient.account.createVerification.mockResolvedValue(mockVerification);
 
@@ -328,7 +330,7 @@ describe('AuthService', () => {
     });
 
     it('should complete email verification', async () => {
-      const mockVerification = { verified: true };
+      const mockVerification = {verified: true};
 
       mockClient.account.updateVerification.mockResolvedValue(mockVerification);
 
@@ -346,7 +348,7 @@ describe('AuthService', () => {
 
   describe('createJWT', () => {
     it('should create a JWT token', async () => {
-      const mockJWT = { jwt: 'eyJhbGciOiJIUzI1NiIs...' };
+      const mockJWT = {jwt: 'eyJhbGciOiJIUzI1NiIs...'};
 
       mockClient.account.createJWT.mockResolvedValue(mockJWT);
 

@@ -1,4 +1,12 @@
-import { Client, Account, Databases, Storage, Teams, Functions, Realtime } from 'appwrite';
+import {
+  Account,
+  Client,
+  Databases,
+  Functions,
+  Realtime,
+  Storage,
+  Teams,
+} from 'appwrite';
 
 export interface AppwriteConfig {
   endpoint?: string;
@@ -24,11 +32,22 @@ export interface AppwriteClient {
  * Creates an Appwrite client with all services initialized
  * Uses environment variables as defaults, can be overridden with config
  */
-export const makeAppwriteClient = (config: AppwriteConfig = {}): AppwriteClient => {
+export const makeAppwriteClient = (
+  config: AppwriteConfig = {},
+): AppwriteClient => {
   // Get configuration from environment or provided config
-  const endpoint = config.endpoint || process.env.VITE_APPWRITE_ENDPOINT || process.env.APPWRITE_ENDPOINT;
-  const projectId = config.projectId || process.env.VITE_APPWRITE_PROJECT_ID || process.env.APPWRITE_PROJECT_ID;
-  const apiKey = config.apiKey || process.env.VITE_APPWRITE_API_KEY || process.env.APPWRITE_API_KEY;
+  const endpoint =
+    config.endpoint ||
+    process.env.VITE_APPWRITE_ENDPOINT ||
+    process.env.APPWRITE_ENDPOINT;
+  const projectId =
+    config.projectId ||
+    process.env.VITE_APPWRITE_PROJECT_ID ||
+    process.env.APPWRITE_PROJECT_ID;
+  const apiKey =
+    config.apiKey ||
+    process.env.VITE_APPWRITE_API_KEY ||
+    process.env.APPWRITE_API_KEY;
   const jwt = config.jwt;
   const locale = config.locale;
 
