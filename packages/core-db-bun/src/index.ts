@@ -1,19 +1,19 @@
 /**
  * Bun SQLite Database Adapter
- * 
+ *
  * Uses bun:sqlite built-in for 3-6x faster performance than better-sqlite3
- * 
+ *
  * Decision: PROP-031/S4 - bun:sqlite chosen for bun runtime
  * Landmine: bun:sqlite not 1:1 API compatible with better-sqlite3
  */
 
 import {Database} from 'bun:sqlite';
 import type {
-  DatabaseAdapter,
-  PreparedStatement,
-  DbRow,
-  DbParams,
   AdapterInfo,
+  DatabaseAdapter,
+  DbParams,
+  DbRow,
+  PreparedStatement,
 } from '@bg-kit/core-db-interface';
 
 /**
@@ -59,10 +59,10 @@ export class BunSqliteAdapter implements DatabaseAdapter {
   constructor(path: string) {
     this._path = path;
     this.db = new Database(path);
-    
+
     // Enable foreign keys
     this.db.run('PRAGMA foreign_keys = ON');
-    
+
     // Optimize for performance
     this.db.run('PRAGMA journal_mode = WAL');
     this.db.run('PRAGMA synchronous = NORMAL');

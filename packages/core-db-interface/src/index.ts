@@ -1,10 +1,10 @@
 /**
  * Database Abstraction Interface
- * 
+ *
  * Allows projects to use different SQLite backends:
  * - pnpm/node: better-sqlite3 (native compilation)
  * - bun: bun:sqlite (built-in, 3-6x faster)
- * 
+ *
  * Decision: PROP-031/S4 recommended abstraction layer over single backend
  * Rationale: Projects choose backend without breaking changes
  */
@@ -21,7 +21,7 @@ export type DbParams = unknown | unknown[];
 
 /**
  * Database adapter interface
- * 
+ *
  * Implementations:
  * - @bg-kit/core-db (better-sqlite3)
  * - @bg-kit/core-db-bun (bun:sqlite)
