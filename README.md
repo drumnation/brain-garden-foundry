@@ -1,344 +1,200 @@
-# Overseer Pm Agent
+# Brain Garden Foundry
 
-A production-ready monorepo template with generator-first approach for web, mobile, desktop, and backend applications. Features Brain Garden AI tooling, complete testing infrastructure, automated validation, and comprehensive development tools.
+**A self-contained monorepo template for multi-agent Claude Code teams with persistent memory.**
 
-## 🚀 What's Included
+Clone this repo → Your agents gain domain knowledge from day one.
 
-This mega template provides everything you need to start building modern full-stack applications:
+## What This Is
 
-- **React Web App** - Vite + Mantine UI + Zustand + React Router
-- **React Native Mobile** - Expo + Expo Router + React Native Paper
-- **Electron Desktop** - Cross-platform desktop app with auto-updates
-- **Express API** - Functional DI pattern with Prisma + Zod + JWT
-- **Shared Packages** - Common utilities and UI components
-- **Comprehensive Testing** - Unit, Integration, and E2E tests for all apps
-- **Brain Monitor** - AI-assisted validation and error tracking
-- **GitHub Actions** - Automated CI/CD workflows
-- **Complete Tooling** - ESLint, Prettier, TypeScript, Turborepo
-- **🆕 Appwrite Deployment** - ONE-COMMAND deployment to REAL infrastructure
+Brain Garden Foundry is a template for spawning new projects where **agents learn and remember**. Every execution writes to Neo4j + DomainStore, building cumulative domain knowledge over time.
 
-## 🎯 Quick Start
+**The Game Dev Tycoon model:**
+- Agents complete stories → gain domain XP
+- Each project teaches patterns that compound
+- New projects query past learnings before starting
+- Your team gets smarter with every execution
 
-### ⚡ ONE-COMMAND Deployment (NEW!)
-
-Deploy your entire backend infrastructure with ONE command:
+## Quick Start
 
 ```bash
-# Clone template
-git clone https://github.com/your-org/brain-garden-monorepo-template.git my-project
+# Clone the template
+git clone https://github.com/drumnation/brain-garden-foundry.git my-project
 cd my-project
 
-# Deploy to Appwrite (30 seconds!)
-./scripts/deploy-to-appwrite.sh my-project
-
-# Done! Your backend is ready with:
-# ✅ Database
-# ✅ Authentication
-# ✅ File Storage
-# ✅ API Endpoints
-# ✅ Custom Domain
-```
-
-### 🚀 Mega Setup (Recommended)
-
-The fastest way to get started is using our mega setup system:
-
-```bash
-# Use this template on GitHub or clone it
-git clone https://github.com/your-org/brain-garden-monorepo-template.git my-project
-cd my-project
+# Remove git history (start fresh)
+rm -rf .git && git init
 
 # Install dependencies
 pnpm install
 
-# Run mega setup - interactive wizard
-pnpm setup:mega
+# Start building with agent memory
+# Your agents read .claude/AGENTS.md and .claude/memory/MEMORY.md
 ```
 
-This interactive wizard will:
-- Ask questions about your project
-- Generate a complete PRD (Product Requirements Document)
-- Create apps and packages based on your needs
-- Set up all documentation automatically
-- Recommend appropriate coding rules
-- Validate everything with brain-monitor
+## What's Included
 
-See the [Mega Setup Guide](./docs/guides/mega-setup-guide.md) for detailed instructions.
+### Agent System
+- **`.claude/agents/grove-steward.md`** - Self-contained orchestrator with borged Cortex patterns
+- **No global dependency** - Everything lives in the repo
 
-### Manual Setup
+### Memory System
+- **`.claude/memory/MEMORY.md`** - Curated long-term wisdom
+- **`.claude/memory/YYYY-MM-DD.md`** - Daily logs
+- **`~/clawd/state/domain-stores/grove-execution/`** - JSON DomainStore
+- **Neo4j on Hetzner** - Graph memory for pattern queries
 
-If you prefer manual control, you can use individual generators:
+### 17 Packages
+
+| Package | Status | Purpose |
+|---------|--------|---------|
+| core-db | 🟢 | SQLite + Drizzle adapter |
+| core-appwrite | 🟢 | Appwrite SDK wrapper |
+| core-responsive | 🟢 | Responsive design utilities |
+| design-system | 🟢 | Mantine-based design system |
+| ui-components | 🟢 | Shared UI components |
+| appwrite-auth | 🟡 | Authentication flows |
+| appwrite-deployment | 🟡 | CLI for Appwrite deployment |
+| appwrite-migrations | 🟡 | Database migrations |
+| auth-ui-components | 🟡 | Auth UI components |
+| core-scanner | 🟡 | Project scanning |
+| deploy-cli | 🟡 | Deployment CLI |
+| shared-types | 🟢 | Type definitions |
+| shared-ui | 🟢 | UI primitives |
+| shared-utils | 🟢 | Utility functions |
+| core-crud | 🔴 | Stub - needs implementation or removal |
+| core-layouts | 🔴 | Stub - needs implementation or removal |
+| core-panels | 🔴 | Stub - needs implementation or removal |
+
+### Tooling
+- **pnpm** - Fast, disk-efficient package manager
+- **Turbo** - Monorepo build system
+- **Vitest** - Testing framework (standardize on 3.2.4)
+- **TypeScript 5.7.3** - Type safety
+- **Storybook 8.6** - Component development
+- **Generators** - Create libraries, apps, express APIs
+
+## Agent Experience System
+
+Agents gain XP when they complete stories:
+
+| Level | Stories | Title |
+|-------|---------|-------|
+| 1-2 | Trainee | New agent, learning |
+| 3-5 | Junior | Gaining competence |
+| 6-9 | Senior | Domain expert |
+| 10+ | Expert | Master |
+
+Track agent stats:
+```python
+from grove_memory import get_agent_experience
+print(get_agent_experience("architect"))
+# {'agent': 'architect', 'stories': 2, 'domains': {'agent-definition': 1, 'memory-systems': 1}}
+```
+
+## Known Issues (From PROP-030)
+
+| Issue | Impact | Landmine |
+|-------|--------|----------|
+| better-sqlite3 | Blocks bun migration | Native module, no workaround |
+| Vitest fragmentation | 2.1.x vs 3.2.4 | Standardize to 3.2.4 |
+| 3 stub packages | Dead weight | core-crud, core-layouts, core-panels |
+| 30 vulnerabilities | Dev deps only | Fix via `pnpm update` |
+
+## Scripts
 
 ```bash
-# Generate your apps (choose what you need)
-pnpm gen:express-api     # Generate Express API server → apps/api
-pnpm gen:react-web       # Generate React web app → apps/web (if available)
-pnpm gen:react-native    # Generate React Native app → apps/mobile (if available)
-pnpm gen:electron        # Generate Electron desktop app → apps/desktop (if available)
+# Development
+pnpm dev              # Start all apps in dev mode
+pnpm build            # Build all packages
+pnpm test             # Run all tests
+pnpm lint             # Lint all packages
 
-# Start all generated apps in development mode
-pnpm dev
+# Generators
+pnpm gen:library      # Create new library package
+pnpm gen:react-web    # Create React web app
+pnpm gen:express-api  # Create Express API
 
-# Run validation
-pnpm validate
+# Brain Garden
+pnpm rules:build      # Build consolidated rules
+pnpm brain:check      # Check validation summary
 ```
-
-### What Runs When You `pnpm dev` (After Generating Apps)
-
-The following apps run **after you generate them** using the generators above:
-
-- **Web App** → http://localhost:3000 (after `pnpm gen:react-web`)
-- **API** → http://localhost:8080 (after `pnpm gen:express-api`)
-- **Mobile** → Expo Dev Server (after `pnpm gen:react-native`)
-- **Desktop** → Electron app window (after `pnpm gen:electron`)
-
-## 📦 Template Structure
-
-```
-brain-garden-monorepo-template/
-├── apps/                      # Executable applications
-│   ├── web/                  # React web app (Vite + Mantine UI)
-│   ├── mobile/               # React Native app (Expo)
-│   ├── desktop/              # Electron desktop app
-│   └── api/                  # Express REST API (Prisma + JWT)
-├── packages/                  # Shared libraries (no build step)
-│   ├── shared-utils/         # Common utility functions
-│   └── shared-ui/            # Shared React components
-├── tooling/                   # Shared tooling packages
-│   ├── brain-monitor/        # Validation orchestration
-│   ├── testing/              # Centralized test configs
-│   ├── eslint/               # ESLint configurations
-│   ├── prettier/             # Prettier configuration
-│   ├── typescript/           # TypeScript configurations
-│   ├── logger/               # Structured logging
-│   └── generators/           # App/package generators
-├── docs/                      # Documentation
-│   ├── guides/               # How-to guides
-│   ├── architecture/         # Architecture decisions
-│   └── MEGA_TEMPLATE_SETUP.md
-├── scripts/                   # Automation scripts
-├── _errors/                   # Validation error reports (tracked in git)
-├── _logs/                     # Application logs (tracked in git)
-└── .github/workflows/         # GitHub Actions CI/CD
-```
-
-## Getting Started
-
-### Prerequisites
-
-- **Node.js**: 22+ (uses native ESM)
-- **pnpm**: 9+ (package manager)
-
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-
-```bash
-pnpm install
-```
-
-### Environment Setup
-
-1. Copy the root environment example:
-
-```bash
-cp .env.example .env
-```
-
-2. Configure your environment variables in the `.env` file
-
-**Note**: This template uses `tooling/env-loader` to consolidate all environment variables in the monorepo root `.env` file. Individual apps should use `@kit/env-loader` to access environment variables rather than maintaining separate `.env` files.
-
-### Running the Development Server
-
-**Prerequisites:** Generate apps first using the generators (e.g., `pnpm gen:express-api`)
-
-Start all generated apps with hot-reloading:
-
-```bash
-pnpm dev
-```
-
-**Available endpoints** (after generating apps):
-- API: `http://localhost:8080` (after `pnpm gen:express-api`)
-- Web: `http://localhost:3000` (after `pnpm gen:react-web`, if available)
-- Mobile: Expo Dev Server (after `pnpm gen:react-native`, if available)
-- Desktop: Electron window (after `pnpm gen:electron`, if available)
 
 ## Architecture
 
-### Key Principles
-
-1. **ESM-only**: All packages use `"type": "module"` - no CommonJS
-2. **No build step for libraries**: Packages in `/packages` export TypeScript source directly
-3. **Functional programming**: No classes, pure functions with dependency injection
-4. **Strict typing**: TypeScript with `strict: true` and `noUncheckedIndexedAccess`
-5. **Monorepo**: pnpm workspaces + Turborepo for task orchestration
-
-### Technology Stack
-
-- **Runtime**: Node.js 22+ (ESM)
-- **Package Manager**: pnpm 9+
-- **Build Orchestrator**: Turborepo
-- **Backend Framework**: Express.js (functional DI pattern)
-- **Type System**: TypeScript 5.7+
-- **Testing**: Vitest
-- **Validation**: Zod
-- **Logging**: Custom `@kit/logger` (structured logging)
-
-## Development Workflow
-
-### Adding a New Feature
-
-1. **Define types** in the appropriate shared package (e.g., `@starter/shared-utils` or create a new package using `pnpm gen:library`)
-2. **Implement business logic** in the package's service layer
-3. **Create API endpoints** in your Express app (e.g., `apps/api/src/modules/<feature>/`)
-4. **Register routes** in your app's route configuration
-5. **Write tests** using the centralized `@kit/testing` configs
-
-### Package Naming Conventions
-
-- **Apps**: `@[app-name]` (e.g., `@starter/web`, `@starter/api`)
-- **Shared Packages**: `@starter/[package-name]` (e.g., `@starter/shared-utils`, `@starter/shared-ui`)
-- **Tooling**: `@kit/[tool-name]` (e.g., `@kit/logger`, `@kit/testing`)
-
-### Importing from Packages
-
-```typescript
-// Shared packages
-import { formatDate, addDays } from '@starter/shared-utils';
-import { Button } from '@starter/shared-ui';
-
-// Tooling packages (use @kit/logger for all logging)
-import { createLogger } from '@kit/logger';
-import { loadEnvironment } from '@kit/env-loader/node';
+```
+brain-garden-foundry/
+├── .claude/
+│   ├── agents/           # Agent definitions
+│   │   └── grove-steward.md
+│   ├── memory/           # Persistent memory
+│   │   ├── MEMORY.md     # Long-term wisdom
+│   │   └── YYYY-MM-DD.md # Daily logs
+│   └── AGENTS.md         # Quick start for agents
+├── packages/             # 17 shared packages
+├── docs/
+│   └── features/         # Feature documentation
+├── tooling/
+│   └── generators/       # Package generators
+└── scripts/              # Utility scripts
 ```
 
-## Available Scripts
+## Grove Memory Integration
 
-### Root Level
+Every story execution writes to memory:
 
-```bash
-pnpm dev              # Start all apps in development mode
-pnpm build            # Build all apps
-pnpm test             # Run all tests
-pnpm test:watch       # Run tests in watch mode
-pnpm test:unit        # Run unit tests only
-pnpm test:integration # Run integration tests
-pnpm test:e2e         # Run end-to-end tests
-pnpm lint             # Lint all packages
-pnpm typecheck        # Type-check all packages
-pnpm format           # Format code with Prettier
-pnpm validate         # Run lint + typecheck + test
-pnpm clean            # Remove all node_modules and build artifacts
+```python
+from grove_memory import GroveMemory
+
+mem = GroveMemory()
+mem.record_story(
+    proposal="PROP-XXX",
+    story="SX",
+    what="Description of deliverable",
+    how="Approach used",
+    decisions=["Non-obvious choice 1", "Choice 2"],
+    landmines=["Warning for future"],
+    score=95,
+    executed_by="agent-name",
+    domain="domain-expertise"
+)
 ```
 
-### App Level Scripts
-
-Each app (web, mobile, desktop, api) has its own scripts. For example, in `apps/api/`:
-
-```bash
-pnpm dev              # Start dev server with hot-reload
-pnpm build            # Build for production
-pnpm start            # Start production server
-pnpm test             # Run all tests (unit, integration, e2e)
-pnpm test:unit        # Run unit tests only
-pnpm test:integration # Run integration tests
-pnpm test:e2e         # Run end-to-end tests
+Query context before starting:
+```python
+from grove_memory import get_context_for_task
+context = get_context_for_task("migrate from pnpm to bun")
+# Returns: similar past work, decisions, landmines
 ```
 
-## Agent Coordination with Brain Monitor
+## Philosophy
 
-This project uses `@kit/brain-monitor` for real-time validation feedback and agent coordination:
+1. **Memory over restarts** - Agents remember across sessions
+2. **XP compounds** - Each project makes your team smarter
+3. **Self-contained** - No external dependencies on global config
+4. **Evidence-based** - Stories require proof of completion (score ≥90)
+5. **Game Dev Tycoon model** - Agents level up through work
 
-```bash
-pnpm monitor:dev      # Start development server with monitoring
-pnpm monitor:errors   # Check validation errors before running tasks
-pnpm monitor:logs     # View application logs
-```
+## Origin
 
-**Agents should**:
-1. Check `_errors/` directory before running validation tasks
-2. Check `_logs/` directory before restarting servers
-3. Use `@kit/brain-monitor` CLI for validation insights
+Borged from Brain Garden Cortex (7.5GB accumulated patterns on Mac). Extracted:
+- 7 core patterns embedded in grove-steward.md
+- 5-tier task sizing framework
+- Evidence-based completion protocol
+- Agent XP tracking system
 
-## Testing Strategy
+## Related Projects
 
-- **Unit tests**: Test pure functions in isolation (packages)
-- **Integration tests**: Test module interactions (API routes + services)
-- **E2E tests**: Test complete user flows (API endpoints)
-
-All tests use Vitest with parallel execution and watch mode support.
-
-## Documentation
-
-Core documentation is organized under `/docs`:
-- `/docs/architecture/` - System architecture and design decisions
-- `/docs/guides/` - Development guides and workflows
-- `/docs/maintenance/` - Maintenance documentation and reports
-- `/docs/ai-platforms/` - AI assistant instruction files (auto-generated)
-
-**Note:** Per the documentation placement policy, only `README.md`, `CHANGELOG.md`, and `.env.example` are allowed in the root directory.
-
-## AI Assistant Rules
-
-This project uses a modular rules system for AI assistants:
-- **Source:** `.brain/rules/**/*.rules.mdc`
-- **Generated:** `docs/ai-platforms/{CLAUDE.md,AGENTS.md,GEMINI.md}`
-- **Build:** `pnpm rules:build`
-- **Watch:** `pnpm rules:watch`
-
-See `docs/ai-platforms/README.md` for details.
-
-## Project Rules & Documentation
-
-Core architectural rules are documented in `.cursor/_backup/`:
-
-- [Monorepo Structure](/.cursor/_backup/monorepo-structure-and-configuration.rules.mdc)
-- [Express Architecture](/.cursor/_backup/monorepo-node-express-architecture.rules.mdc)
-- [Functional Programming](/.cursor/_backup/node.functional-isolated-concerns.rules.mdc)
-
-## API Documentation
-
-### Health Check
-
-```
-GET /health
-```
-
-Returns server health status.
-
-### API v1 Base
-
-```
-GET /api/v1/
-```
-
-Base API endpoint. Feature-specific endpoints:
-
-- `/api/v1/calendar` - Calendar operations (to be implemented)
-- `/api/v1/tasks` - Task operations (to be implemented)
-
-Detailed API documentation will be added as features are implemented.
-
-## Contributing
-
-When contributing:
-
-1. Follow the functional programming patterns (no classes)
-2. Maintain strict TypeScript typing
-3. Write tests for all new features
-4. Update documentation
-5. Run `pnpm validate` before committing
+- **OpenClaw** - The runtime that hosts these agents
+- **Grove Pipeline** - Story execution orchestrator
+- **DomainStore** - JSON-based memory layer
+- **Neo4j on Hetzner** - Graph memory backend
 
 ## License
 
-Private project - all rights reserved.
+MIT
 
-## Applications
+---
 
-| Path | Type | Description |
-|------|------|-------------|
-| `apps/web` | web | web |
-| `apps/api` | api | api |
+**Built with ❤️ by the Brain Garden team**
+
+*Provenance: PROP-030 (Foundry Revival) - 4 stories completed, 31 decisions recorded, 12 landmines discovered*

@@ -1,0 +1,211 @@
+# PROP-030: Foundry Revival - Prove Grove Memory System
+#
+# Goal: Run structured executions through Grove that accumulate domain knowledge
+# Each story completion writes to Neo4j, next stories query for context
+
+id: foundry-revival-001
+proposal: PROP-030
+title: "Foundry Revival"
+thread_id: "1478441089357582477"  # Discord thread for updates
+description: |
+  Revive brain-garden-foundry by running Grove executions that prove
+  the memory system accumulates domain knowledge in the graph.
+  
+  Each story:
+  1. Gets context from past executions
+  2. Completes with structured output
+  3. Writes StoryExecution + Decision + Landmine nodes to Neo4j
+  4. Future stories benefit from accumulated knowledge
+
+rules:
+  max_retries: 2
+  tdd: optional  # Not all tasks need tests
+  evidence_required: true
+
+stories:
+  # Phase 1: Assessment
+  - id: S1
+    title: "Audit foundry package health"
+    depends_on: []
+    prompt_template: |
+      You are auditing the brain-garden-foundry monorepo.
+      
+      Task: Assess the health of all packages in packages/
+      
+      For each package, report:
+      - Dependencies status (outdated? security issues?)
+      - Build status (does it build?)
+      - Test status (any tests? do they pass?)
+      - Dead code indicators
+      
+      Output a health matrix with recommendations.
+      
+      {upstream_context}
+    validation:
+      files_exist:
+        - "brain-garden-foundry/docs/features/foundry-revival/health-audit.md"
+    deliverables:
+      - Health matrix for all 18 packages
+      - Priority order for updates
+
+  - id: S2
+    title: "Scan for security vulnerabilities"
+    depends_on: [S1]
+    prompt_template: |
+      You are scanning brain-garden-foundry for security issues.
+      
+      Prior context from S1 health audit:
+      {upstream_context}
+      
+      Task: Run security audit on all packages
+      
+      1. Run `pnpm audit` in root
+      2. Check each package.json for known vulnerable deps
+      3. Check for exposed secrets in code
+      4. Check .env.example for safe defaults
+      
+      Output a security report with severity ratings.
+    validation:
+      files_exist:
+        - "brain-garden-foundry/docs/features/foundry-revival/security-audit.md"
+    deliverables:
+      - Security audit report
+      - List of immediate fixes needed
+
+  # Phase 2: Agent Definitions  
+  - id: S3
+    title: "Create Grove Steward agent definition"
+    depends_on: [S1]
+    prompt_template: |
+      You are creating a self-contained Grove Steward agent definition
+      for brain-garden-foundry.
+      
+      Based on the borged cortex patterns:
+      - 5-tier task sizing
+      - Evidence-based completion
+      - Context layer selection
+      - Pattern transfer protocol
+      
+      Create .claude/agents/grove-steward.md that:
+      - Works WITHOUT global ~/.claude/ dependency
+      - Includes the 7 borged patterns inline
+      - Integrates with grove_memory.py for Neo4j writes
+      
+      {upstream_context}
+    validation:
+      files_exist:
+        - "brain-garden-foundry/.claude/agents/grove-steward.md"
+    deliverables:
+      - Self-contained agent definition
+      - Includes borged patterns
+
+  - id: S4
+    title: "Create memory structure for foundry agents"
+    depends_on: [S3]
+    prompt_template: |
+      Create the memory file structure for agents working in foundry.
+      
+      Based on dawn-workspace pattern:
+      - MEMORY.md (long-term curated memory)
+      - memory/YYYY-MM-DD.md (daily logs)
+      - memory/ directory for agent continuity
+      
+      Create:
+      - .claude/memory/ directory structure
+      - Initial MEMORY.md with foundry context
+      - AGENTS.md with memory instructions
+      
+      {upstream_context}
+    validation:
+      files_exist:
+        - "brain-garden-foundry/.claude/memory/MEMORY.md"
+        - "brain-garden-foundry/.claude/AGENTS.md"
+    deliverables:
+      - Memory structure ready for agent continuity
+
+  # Phase 3: Dependency Updates
+  - id: S5
+    title: "Update root package dependencies"
+    depends_on: [S2]
+    prompt_template: |
+      Update root package.json dependencies to latest stable versions.
+      
+      Prior security context:
+      {upstream_context}
+      
+      Updates to make:
+      - TypeScript 5.7.3 → 5.8.x
+      - Vitest 2.1.x → 3.x (if compatible)
+      - Check all @storybook packages for consistency
+      - Fix any security vulnerabilities found in S2
+      
+      Rules:
+      - Don't break backwards compatibility
+      - Run tests after each major update
+      - Document breaking changes
+      
+      {upstream_context}
+    validation:
+      commands_succeed:
+        - "cd brain-garden-foundry && pnpm install"
+    deliverables:
+      - Updated package.json
+      - Updated pnpm-lock.yaml
+      - Changelog entry for updates
+
+  - id: S6
+    title: "Audit bun migration feasibility"
+    depends_on: [S5]
+    prompt_template: |
+      Assess whether brain-garden-foundry can migrate from pnpm to bun.
+      
+      Check:
+      1. Do all packages have bun-compatible deps?
+      2. Are there native modules that block bun? (better-sqlite3?)
+      3. Is turbo compatible with bun?
+      4. What's the migration path?
+      
+      Output a migration feasibility report with:
+      - Blocking issues
+      - Workarounds
+      - Recommended approach
+      
+      {upstream_context}
+    validation:
+      files_exist:
+        - "brain-garden-foundry/docs/features/foundry-revival/bun-migration-audit.md"
+    deliverables:
+      - Feasibility assessment
+      - Migration plan if viable
+
+  # Phase 4: Prove the Memory System
+  - id: S7
+    title: "Execute Grove pipeline and verify Neo4j writes"
+    depends_on: [S3, S4, S5]
+    prompt_template: |
+      Now that foundry has:
+      - Self-contained agent definitions (S3)
+      - Memory structure (S4)
+      - Updated deps (S5)
+      
+      Verify the Grove Memory System works end-to-end:
+      
+      1. Run `grove-pipeline status` to see current state
+      2. Query Neo4j for existing StoryExecution nodes
+      3. Confirm S1-S6 completions are in the graph
+      4. Show that context is being retrieved for new stories
+      
+      Output a verification report showing:
+      - Number of StoryExecution nodes created
+      - Pattern nodes extracted
+      - Decision nodes recorded
+      - Landmine nodes discovered
+      - Example of context retrieval working
+      
+      {upstream_context}
+    validation:
+      files_exist:
+        - "brain-garden-foundry/docs/features/foundry-revival/memory-verification.md"
+    deliverables:
+      - Proof that Grove Memory System accumulates knowledge
+      - Neo4j query results showing graph growth
