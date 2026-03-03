@@ -32,34 +32,35 @@
     "format": "biome format . --check",
     "lint": "biome lint .",
     "typecheck": "tsc -b --noEmit",
-    "test": "vitest run --config ../../tooling/testing/src/unit.js",
-    "test:unit": "vitest run --config ../../tooling/testing/src/unit.js",
+    "test": "npx vitest run --config ../../tooling/testing/src/configs/vitest/unit.ts",
+    "test:unit": "npx vitest run --config ../../tooling/testing/src/configs/vitest/unit.ts",
     "test:integration": "echo 'n/a' && exit 0",
     "test:e2e": "echo 'n/a' && exit 0",
     "ci:init": "tsx src/ci/init.ts"
   },
   "dependencies": {
-    "yargs": "^17.7.2",
     "chalk": "^5.3.0",
-    "globby": "^13.2.2",
-    "tsx": "^4.7.0",
+    "express": "^4.18.2",
     "glob": "^10.3.10",
+    "globby": "^13.2.2",
     "js-yaml": "^4.1.0",
-    "express": "^4.18.2"
+    "tsx": "^4.7.0",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@kit/tsconfig": "workspace:*",
     "@kit/testing": "workspace:*",
-    "@types/yargs": "^17.0.32",
+    "@kit/tsconfig": "workspace:*",
     "@types/express": "^4.17.21",
     "@types/js-yaml": "^4.0.9",
-    "typescript": "^5.3.3",
+    "@types/yargs": "^17.0.32",
+    "jiti": "^2.0.0",
     "rimraf": "^5.0.5",
-    "jiti": "^2.0.0"
+    "typescript": "^5.3.3",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
+    "@types/node": "^22.14.1",
     "typescript": "^5.7.3",
-    "vitest": "^3.2.4",
-    "@types/node": "^22.14.1"
+    "vitest": "^3.2.4"
   }
 }

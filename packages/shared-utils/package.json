@@ -10,9 +10,9 @@
     "format": "biome format . --check",
     "lint": "biome lint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --config ../../tooling/testing/src/configs/vitest/unit.ts",
-    "test:unit": "vitest run --config ../../tooling/testing/src/configs/vitest/unit.ts",
-    "test:watch": "vitest --config ../../tooling/testing/src/configs/vitest/unit.ts"
+    "test": "npx vitest run --config ../../tooling/testing/src/configs/vitest/unit.ts",
+    "test:unit": "npx vitest run --config ../../tooling/testing/src/configs/vitest/unit.ts",
+    "test:watch": "npx vitest --config ../../tooling/testing/src/configs/vitest/unit.ts"
   },
   "exports": {
     ".": "./src/index.ts",

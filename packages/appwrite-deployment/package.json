@@ -13,9 +13,9 @@
     "brain-garden-deploy": "./src/cli.ts"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "npx vitest run",
     "test:e2e": "vitest run tests/e2e",
-    "test:watch": "vitest",
+    "test:watch": "npx vitest",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint .",
     "deploy:test": "tsx ./src/cli.ts test",

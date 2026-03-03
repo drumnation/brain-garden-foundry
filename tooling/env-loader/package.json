@@ -16,8 +16,8 @@
     "format": "biome format . --check",
     "lint": "biome lint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:unit": "vitest run",
+    "test": "npx vitest run",
+    "test:unit": "npx vitest run",
     "test:integration": "echo 'n/a' && exit 0",
     "test:e2e": "echo 'n/a' && exit 0",
     "test:e2e:browser": "echo 'n/a' && exit 0"

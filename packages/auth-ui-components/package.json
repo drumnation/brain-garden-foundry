@@ -10,10 +10,10 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "npx vitest run",
+    "test:watch": "npx vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "npx vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint .",
     "storybook": "storybook dev -p 6006",

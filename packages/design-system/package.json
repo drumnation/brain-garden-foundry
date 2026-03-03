@@ -18,8 +18,8 @@
     "format": "biome format . --check",
     "lint": "biome lint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "npx vitest run",
+    "test:watch": "npx vitest"
   },
   "dependencies": {
     "@mantine/core": "^7.15.1",
