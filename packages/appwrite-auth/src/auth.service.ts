@@ -158,10 +158,8 @@ export const makeAuthService = (deps: {
     },
 
     updateProfile: async ({name, email, password}) => {
-      let user: User;
-
       if (name !== undefined) {
-        user = (await account.updateName(name)) as User;
+        return (await account.updateName(name)) as User;
       }
 
       if (email !== undefined) {
@@ -173,12 +171,11 @@ export const makeAuthService = (deps: {
           );
         }
         validateEmail(email);
-        user = (await account.updateEmail(email, password)) as User;
+        return (await account.updateEmail(email, password)) as User;
       }
 
-      // Get updated user
-      user = (await account.get()) as User;
-      return user;
+      // No updates requested, return current user
+      return (await account.get()) as User;
     },
 
     updatePassword: async ({oldPassword, newPassword}) => {

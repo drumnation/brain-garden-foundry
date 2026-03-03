@@ -1,0 +1,95 @@
+# PROP-032: Fix Remaining Test Failures
+
+proposal: PROP-032
+id: test-fixes-001
+title: "Fix Remaining Test Failures"
+thread_id: "1478441089357582477"
+description: |
+  After PROP-031, 2 test failures remain in appwrite-auth and 1 config 
+  loading issue in env-loader. This proposal fixes all remaining test
+  failures to achieve 100% pass rate.
+
+  Context from prior executions:
+  - PROP-031/S3: Vitest standardized to 3.2.4
+  - PROP-030/vitest-fix: pnpm strict mode resolved with npx
+  - Tests: design-system 1/1 ✅, core-responsive 6/6 ✅, ui-components 2/2 ✅
+
+rules:
+  max_retries: 2
+  tdd: optional
+  evidence_required: true
+
+stories:
+  - id: S1
+    title: "Fix appwrite-auth test failures"
+    depends_on: []
+    prompt_template: |
+      You are fixing test failures in appwrite-auth package.
+
+      Context:
+      - 18/20 tests passing
+      - 2 failures in auth.service.test.ts
+      - Failures in updateProfile tests (name and email updates)
+      - Expected: mockUser object
+      - Received: undefined
+
+      Task:
+      1. Read the failing test code
+      2. Identify why updateProfile returns undefined
+      3. Fix the implementation or test
+      4. Verify all 20 tests pass
+
+      {upstream_context}
+    validation:
+      commands_succeed:
+        - "pnpm --filter @brain-garden/appwrite-auth test"
+    deliverables:
+      - All 20 tests passing in appwrite-auth
+
+  - id: S2
+    title: "Fix env-loader config loading"
+    depends_on: [S1]
+    prompt_template: |
+      You are fixing config loading in env-loader package.
+
+      Context:
+      - vitest.config.ts imports from @kit/testing
+      - Error: "Failed to resolve entry for package @kit/testing"
+      - esbuild plugin externalize-deps fails
+
+      Task:
+      1. Check @kit/testing exports in package.json
+      2. Fix import path or exports
+      3. Verify tests run successfully
+
+      Options:
+      - Add vitest directly to env-loader
+      - Fix @kit/testing exports
+      - Use inline vitest config instead
+
+      {upstream_context}
+    validation:
+      commands_succeed:
+        - "pnpm --filter @kit/env-loader test"
+    deliverables:
+      - env-loader tests passing
+
+  - id: S3
+    title: "Final verification"
+    depends_on: [S2]
+    prompt_template: |
+      You are verifying all tests pass across the entire monorepo.
+
+      Task:
+      1. Run pnpm test for all packages
+      2. Count total tests passing vs failing
+      3. Document any remaining issues
+      4. Update README if needed
+
+      {upstream_context}
+    validation:
+      commands_succeed:
+        - "pnpm test"
+    deliverables:
+      - Test report
+      - All tests passing OR documented exceptions

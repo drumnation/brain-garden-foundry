@@ -1,4 +1,9 @@
 import {defineConfig} from 'vitest/config';
-import {configs} from '@kit/testing';
 
-export default defineConfig(await configs.vitest.unit());
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
+  },
+});
