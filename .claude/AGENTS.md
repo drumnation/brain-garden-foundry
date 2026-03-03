@@ -1,118 +1,83 @@
-# AGENTS.md - For Agents Working in Foundry
+# Agent Quick Reference
 
-Welcome to Brain Garden Foundry. This file tells you what you need to know.
+This repository has 7 specialized agents. Each can be called for their expertise.
 
-## Quick Start
+## How to Call an Agent
 
-1. Read `MEMORY.md` - curated long-term memory
-2. Read today's log in `memory/YYYY-MM-DD.md` (create if needed)
-3. Check `~/.claude/agents/grove-steward.md` for your role
-4. Query context before starting work
-5. Record to memory after completion
+In Claude Code, reference an agent by their definition file:
 
-## Memory System
-
-### Where Memory Lives
-
-| Type | Location | Purpose |
-|------|----------|---------|
-| Long-term | `.claude/memory/MEMORY.md` | Curated wisdom |
-| Daily | `.claude/memory/YYYY-MM-DD.md` | Today's log |
-| Domain | `~/clawd/state/domain-stores/grove-execution/` | JSON store |
-| Graph | `bolt://100.83.33.65:7687` | Neo4j on Hetzner |
-
-### How to Query Context
-
-```python
-from grove_memory import get_context_for_task
-
-context = get_context_for_task("security vulnerabilities")
-# Returns: similar past work, decisions, landmines
+```
+"You are the architect. Read .claude/agents/architect.md and [task]"
+"You are the validator. Read .claude/agents/validator.md and [task]"
 ```
 
-### How to Record Completion
+Or spawn them as subagents:
 
 ```python
-from grove_memory import GroveMemory
-
-mem = GroveMemory()
-mem.record_story(
-    proposal="PROP-030",
-    story="SX",
-    what="Description of what was built",
-    how="Approach used",
-    decisions=["Non-obvious choice 1", "Choice 2"],
-    landmines=["Warning 1", "Assumption 2"],
-    score=95,
-    executed_by="your-agent-name",
-    domain="domain-you-learned"
+sessions_spawn(
+    task="Run security audit",
+    runtime="subagent",
+    agentId="security-scanner"
 )
 ```
 
-## Agent XP System
+## Agent Roster
 
-You gain experience when you complete stories:
+| Agent | Role | XP | Best For |
+|-------|------|----|----|
+| **architect** | System design | 3 stories [Junior] | Architecture decisions, abstractions, design patterns |
+| **validator** | Quality checks | 2 stories [Junior] | Linting, tests, build verification |
+| **grove-steward** | Orchestration | 1 story [Trainee] | Running pipelines, coordinating agents |
+| **integrator** | Merging work | 1 story [Trainee] | Resolving conflicts, combining branches |
+| **maintainer** | Cleanup | 1 story [Trainee] | Documentation, dead code removal |
+| **security-scanner** | Security | 1 story [Trainee] | Vulnerability scanning, dependency audits |
+| **researcher** | Analysis | 0 stories [Trainee] | Comparing options, decision matrices |
 
-| Level | Stories | Title |
-|-------|---------|-------|
-| 1-2 | Trainee | New agent |
-| 3-5 | Junior | Learning |
-| 6-9 | Senior | Competent |
-| 10+ | Expert | Master |
+## Example Tasks by Agent
 
-Your XP is tracked in the DomainStore. Check your stats:
+**architect:**
+- "Design a database abstraction layer"
+- "What's the best way to structure X"
+- "Create an interface for..."
 
-```python
-from grove_memory import get_agent_experience
-print(get_agent_experience("your-agent-name"))
-```
+**validator:**
+- "Run all tests and fix failures"
+- "Check if linting passes"
+- "Validate the build"
 
-## Project State
+**security-scanner:**
+- "Scan for vulnerabilities"
+- "Audit these dependencies"
+- "Is this package safe?"
 
-**Current Phase**: PROP-030 Foundry Revival
+**integrator:**
+- "Merge branch X into Y"
+- "Resolve these conflicts"
+- "Combine these two approaches"
 
-- ✅ S1: Package health audit
-- ✅ S2: Security scan (30 vulns found)
-- ✅ S3: Agent definition created
-- ⏳ S4: Memory structure (this!)
-- ⏳ S5: Dependency updates
-- ⏳ S6: Bun migration audit
-- ⏳ S7: Verify Neo4j writes
+**maintainer:**
+- "Clean up the repo"
+- "Remove dead code"
+- "Update documentation"
 
-## Key Files
+**researcher:**
+- "Compare X vs Y"
+- "What are the alternatives to..."
+- "Research best options for..."
 
-```
-.claude/
-├── agents/
-│   └── grove-steward.md    # Agent definition
-├── memory/
-│   ├── MEMORY.md           # Long-term memory
-│   └── YYYY-MM-DD.md       # Daily logs
-├── logs/                   # Execution logs
-└── plugins/                # Claude plugins
+## Agent Memory
 
-packages/                   # 18 packages
-docs/features/foundry-revival/
-├── plan.yaml              # Grove pipeline plan
-├── health-audit.md        # S1 output
-└── security-audit.md      # S2 output
-```
+Each agent:
+- Queries Neo4j for context before starting
+- Writes decisions/landmines to memory after completing
+- Gains XP per story completed
+- Levels up: Trainee → Junior → Senior → Expert
 
-## Known Issues
+## Current Graph State
 
-- **better-sqlite3** blocks bun migration (native module)
-- **Vitest** fragmented between 2.1.x and 3.2.4
-- **3 stub packages** need removal (core-crud, core-layouts, core-panels)
-- **30 vulnerabilities** in dev deps (fix in S5)
+- StoryExecutions: 10
+- Decisions: 51
+- Landmines: 24
+- Agents: 7
 
-## Communication
-
-When you complete work:
-1. Write WHAT/HOW/DECISIONS/LANDMINES
-2. Include your agent name and domain
-3. Record to memory
-4. Update daily log if significant
-
----
-
-_More details in MEMORY.md_
+Every task benefits from past learnings.
