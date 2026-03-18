@@ -1,0 +1,402 @@
+---
+description: Test-Driven Development workflow for Project with Brain Garden integration
+globs:
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "**/*.test.tsx"
+  - "packages/core-*/**/*"
+scopes:
+  - testing
+  - tdd
+  - brain-garden
+  - project
+alwaysApply: true
+---
+
+# TDD Workflow
+
+## 🎯 Core Principle
+
+**AI-assisted development benefits most from E2E and integration tests that prove features actually work.**
+
+Therefore, **E2E and Integration tests are MOST IMPORTANT** because they:
+- ✅ Prove features actually work (AI-detectable signals)
+- ✅ Prevent regressions when AI makes changes
+- ✅ Validate the entire motivation system end-to-end
+- ✅ Give confidence that "motivation metrics" are accurate
+
+**Unit tests are supplementary** - they test isolated logic but don't prove the feature delivers value.
+
+---
+
+## 📐 Test Hierarchy (Priority Order)
+
+### 1. **E2E Tests** (Highest Priority)
+**Purpose:** Prove entire user workflows work in Electron app
+
+**Test these flows:**
+```typescript
+// E2E: Motivation Dashboard displays correct metrics
+describe('Motivation Dashboard E2E', () => {
+  it('should display project quality score from database', async () => {
+    // 1. Setup: Insert test project with quality_score = 94
+    // 2. Launch Electron app
+    // 3. Navigate to project
+    // 4. Assert: Quality score 94/100 is visible
+    // 5. Assert: Motivation message "ABSOLUTELY WORTH RESUMING" appears
+  });
+
+  it('should refresh metrics when project is rescanned', async () => {
+    // Test that scanning updates UI in real-time
+  });
+});
+```
+
+**Tools:**
+- Playwright for Electron
+- Real SQLite database (test fixtures)
+- Full Electron main + renderer interaction
+
+### 2. **Integration Tests** (High Priority)
+**Purpose:** Prove adapters → Core → Database flows work
+
+**Test these integrations:**
+```typescript
+// Integration: Quality checker correctly calculates scores
+describe('Quality Checker Integration', () => {
+  it('should calculate correct quality score for project', async () => {
+    const projectPath = '/test/fixtures/cannabis-codex';
+    const qualityChecker = makeQualityChecker({ db, fs });
+
+    const score = await qualityChecker.calculateScore(projectPath);
+
+    expect(score).toBeGreaterThan(80);
+    expect(score.metrics.testCoverage).toBe(82);
+    expect(score.metrics.hasBrainGarden).toBe(true);
+  });
+});
+
+// Integration: Express API returns project data correctly
+describe('Express API Integration', () => {
+  it('GET /api/projects/:id should return full project with metrics', async () => {
+    const response = await request(app).get('/api/projects/1');
+
+    expect(response.status).toBe(200);
+    expect(response.body.qualityScore).toBeDefined();
+    expect(response.body.motivationMetrics).toBeDefined();
+  });
+});
+
+// Integration: Electron IPC returns motivation data
+describe('Electron IPC Integration', () => {
+  it('should return motivation verdict for project', async () => {
+    const result = await ipcRenderer.invoke('project:getMotivationVerdict', projectId);
+
+    expect(result.ok).toBe(true);
+    expect(result.data.verdict).toMatch(/WORTH RESUMING/);
+    expect(result.data.effortInvested).toBeDefined();
+  });
+});
+```
+
+### 3. **Unit Tests** (Supplementary)
+**Purpose:** Test isolated business logic
+
+**Only write unit tests for:**
+- Pure calculation functions
+- Complex algorithms
+- Edge cases in utilities
+
+**Example:**
+```typescript
+// Unit: Test motivation verdict calculation logic
+describe('calculateMotivationVerdict', () => {
+  it('should return "WORTH RESUMING" for high-quality projects', () => {
+    const verdict = calculateMotivationVerdict({
+      qualityScore: 94,
+      sessionCount: 47,
+      testsPassing: true,
+      docsComplete: true,
+      progressPercent: 85,
+    });
+
+    expect(verdict).toBe('ABSOLUTELY WORTH RESUMING');
+  });
+
+  it('should return "CONSIDER ARCHIVING" for abandoned low-quality projects', () => {
+    const verdict = calculateMotivationVerdict({
+      qualityScore: 23,
+      sessionCount: 2,
+      testsPassing: false,
+      docsComplete: false,
+      progressPercent: 5,
+    });
+
+    expect(verdict).toBe('CONSIDER ARCHIVING');
+  });
+});
+```
+
+---
+
+## 🔄 TDD Workflow (RED → GREEN → REFACTOR)
+
+### Step 1: RED - Write Failing E2E Test First
+```typescript
+// apps/viewer-app/__tests__/e2e/motivation-dashboard.spec.ts
+describe('Motivation Dashboard', () => {
+  it('should display "WORTH RESUMING" verdict for high-quality project', async () => {
+    // Setup test database with high-quality project
+    await seedDatabase({
+      project: {
+        name: 'cannabis-codex',
+        qualityScore: 94,
+        sessionCount: 47,
+      },
+    });
+
+    // Launch app
+    const app = await launchElectronApp();
+
+    // Navigate to project
+    await app.click('[data-testid="project-cannabis-codex"]');
+
+    // Assert verdict appears
+    const verdict = await app.locator('[data-testid="motivation-verdict"]');
+    await expect(verdict).toHaveText(/ABSOLUTELY WORTH RESUMING/);
+  });
+});
+```
+
+**Run test:** `npm run test:e2e`
+**Expected:** ❌ FAIL (feature doesn't exist yet)
+
+### Step 2: RED - Write Failing Integration Test
+```typescript
+// packages/core-motivation/src/motivation.service.test.ts
+describe('MotivationService', () => {
+  it('should calculate verdict from project metrics', async () => {
+    const mockRepo = {
+      getProjectMetrics: async () => ({
+        qualityScore: 94,
+        sessionCount: 47,
+        testsPassing: 247,
+        docsScore: 94,
+        progressPercent: 85,
+      }),
+    };
+
+    const service = makeMotivationService({ motivationRepo: mockRepo });
+    const verdict = await service.getVerdict('cannabis-codex');
+
+    expect(verdict.decision).toBe('ABSOLUTELY WORTH RESUMING');
+    expect(verdict.reasoning).toContain('85% to v1.0');
+  });
+});
+```
+
+**Run test:** `npm run test:integration`
+**Expected:** ❌ FAIL (service doesn't exist yet)
+
+### Step 3: GREEN - Implement Core Logic
+```typescript
+// packages/core-motivation/src/motivation.service.ts
+export const makeMotivationService = (deps: {
+  motivationRepo: ReturnType<typeof makeMotivationRepo>;
+}) => ({
+  getVerdict: async (projectId: string) => {
+    const metrics = await deps.motivationRepo.getProjectMetrics(projectId);
+
+    // Business logic: Calculate verdict
+    if (metrics.qualityScore >= 80 && metrics.progressPercent >= 70) {
+      return {
+        decision: 'ABSOLUTELY WORTH RESUMING',
+        reasoning: `You're ${metrics.progressPercent}% to v1.0 release`,
+        metrics,
+      };
+    }
+
+    // ... other conditions
+  },
+});
+```
+
+**Run test:** `npm run test:integration`
+**Expected:** ✅ PASS (integration test passes)
+
+### Step 4: GREEN - Wire Adapters
+```typescript
+// apps/electron-main/src/modules/motivation/motivation.controller.ts
+export const makeGetMotivationVerdictIpc =
+  (motivationService: ReturnType<typeof makeMotivationService>) =>
+  async (_event: IpcMainInvokeEvent, projectId: string) => {
+    const verdict = await motivationService.getVerdict(projectId);
+    return verdict;
+  };
+
+// apps/viewer-app/src/features/MotivationDashboard/MotivationDashboard.tsx
+export const MotivationDashboard = ({ projectId }) => {
+  const { data: verdict } = useQuery({
+    queryKey: ['motivation', projectId],
+    queryFn: () => window.electronAPI.getMotivationVerdict(projectId),
+  });
+
+  return (
+    <div>
+      <h2 data-testid="motivation-verdict">{verdict.decision}</h2>
+      <p>{verdict.reasoning}</p>
+    </div>
+  );
+};
+```
+
+**Run test:** `npm run test:e2e`
+**Expected:** ✅ PASS (E2E test passes - feature works end-to-end!)
+
+### Step 5: REFACTOR - Clean Up
+- Extract repeated logic
+- Improve naming
+- Add error handling
+- Optimize queries
+
+**All tests still pass after refactoring** ✅
+
+---
+
+## 🧠 Brain Garden Integration
+
+### Continuous Validation
+Project uses Brain Garden's `brain-monitor` for continuous validation:
+
+```bash
+# Start brain monitor (watches for issues)
+pnpm brain:watch
+
+# Validate entire codebase
+pnpm brain:validate
+
+# View validation errors
+pnpm monitor:errors
+```
+
+**Brain Monitor checks:**
+- ✅ All tests pass before commits
+- ✅ No TypeScript errors
+- ✅ No ESLint warnings
+- ✅ Build succeeds
+- ✅ E2E tests pass in CI
+
+### Test Coverage Requirements
+- **E2E Tests:** Cover all motivation features
+- **Integration Tests:** Cover all Core → Database flows
+- **Unit Tests:** Cover complex calculations only
+
+**No Coverage % Target** - Focus on testing what matters (features that deliver motivation).
+
+---
+
+## 🚨 Mandatory Rules
+
+### Rule 1: Test-First for All Features
+**Before writing ANY feature code:**
+1. Write failing E2E test
+2. Write failing integration test
+3. Implement Core logic
+4. Wire adapters
+5. All tests pass
+
+**No exceptions.** This is Project's discipline.
+
+### Rule 2: E2E Tests Prove Motivation Features
+Every motivation feature must have an E2E test:
+- "Display quality score" → E2E test that verifies score appears in UI
+- "Calculate motivation verdict" → E2E test that verifies verdict appears
+- "Show accomplishment feed" → E2E test that verifies feed loads
+
+**If there's no E2E test, the feature doesn't exist.**
+
+### Rule 3: Integration Tests Prove Hexagonal Architecture
+Every Core service must have integration tests:
+- Core service with real repository
+- Real database (test fixtures)
+- Real file system access (if needed)
+
+**This proves the architecture works.**
+
+### Rule 4: Todo Tracking for Test Work
+Use the todo system to track test work:
+```typescript
+todoManager.createSessionTodo({
+  content: 'Write E2E test for motivation dashboard',
+  activeForm: 'Writing E2E test for motivation dashboard',
+});
+
+// Mark complete with learnings
+todoManager.completeSessionTodo(todoId, {
+  what: 'E2E test for motivation verdict display',
+  how: 'Used Playwright to test Electron app',
+  learnings: ['Playwright can test Electron main + renderer together'],
+});
+```
+
+---
+
+## 🎯 Project Test Priorities
+
+### Must Test (E2E + Integration):
+1. ✅ Quality score calculation and display
+2. ✅ Motivation verdict generation
+3. ✅ Project scanning and enrichment
+4. ✅ Todo tracking workflows
+5. ✅ Screenshot capture and display
+6. ✅ Accomplishment feed
+7. ✅ Health monitoring
+
+### Should Test (Integration):
+8. Database queries (repositories)
+9. IPC communication (Electron)
+10. API endpoints (Express)
+
+### Can Test (Unit):
+11. Complex calculations (if pure functions)
+12. Edge cases in utilities
+
+---
+
+## 💡 Test Structure
+
+```
+apps/viewer-app/
+├── __tests__/
+│   └── e2e/
+│       ├── motivation-dashboard.spec.ts
+│       ├── project-viewer.spec.ts
+│       └── quality-score.spec.ts
+
+packages/core-motivation/
+├── src/
+│   ├── motivation.service.ts
+│   ├── motivation.service.test.ts    # Integration
+│   ├── motivation.repo.ts
+│   └── motivation.repo.test.ts        # Integration
+
+packages/core-quality/
+├── src/
+│   ├── quality.service.ts
+│   ├── quality.service.test.ts        # Integration
+│   └── calculations.test.ts           # Unit (pure functions)
+```
+
+---
+
+## 🔗 Related Rules
+
+- `monorepo-node-electron-express-hexagonal-architecture.rules.mdc` - TDD workflow for adapters
+- `brain-monitor-validation.rules.mdc` - Continuous validation
+- `project-motivation-system.rules.mdc` - Motivation metrics being tested
+
+---
+
+**Remember:** Tests prove features work. Without E2E tests proving motivation metrics display correctly, the Project's core mission fails.
+
+**Test-first. Always.**
