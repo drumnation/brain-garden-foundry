@@ -100,8 +100,8 @@ export async function createPackage(config: PackageConfig) {
     description: '',
     scripts: {
       clean: 'git clean -xdf .turbo node_modules',
-      format: 'prettier --check "**/*.{ts,tsx}"',
-      lint: 'eslint .',
+      format: 'biome format --write .',
+      lint: 'biome check .',
       typecheck: 'tsc --noEmit',
       test: 'vitest run --config ../../tooling/testing/src/configs/vitest/unit.ts',
       'test:unit': 'vitest run --config ../../tooling/testing/src/configs/vitest/unit.ts',
@@ -119,8 +119,7 @@ export async function createPackage(config: PackageConfig) {
             '.': './src/index.ts',
             './types': './src/types/index.ts',
           } as const),
-    eslintConfig: getEslintConfig(config.workspaceFolder, config.includeUIDeps),
-    prettier: '@kit/prettier-config',
+    type: 'module',
     typesVersions: {
       '*': {
         '*': ['src/*'],
@@ -128,8 +127,6 @@ export async function createPackage(config: PackageConfig) {
     },
     dependencies: {},
     devDependencies: {
-      '@kit/eslint-config': 'workspace:*',
-      '@kit/prettier-config': 'workspace:*',
       '@kit/testing': 'workspace:*',
       '@kit/tsconfig': 'workspace:*',
     },
@@ -277,25 +274,23 @@ declare module 'styled-components' {
       'workspace:*';
   }
 
-  // Update package.json with correct eslint config
-  packageJson.eslintConfig = getEslintConfig(
-    config.workspaceFolder,
-    config.includeUIDeps,
-  );
-
   // Format generated files
   const execaFn = await getExeca();
 
-  // First install dependencies
+  // Install dependencies
   await execaFn('pnpm', ['install'], {
     cwd: process.cwd(),
     stdio: 'inherit',
   });
 
-  // Then run eslint after dependencies are installed
-  await execaFn('pnpm', ['eslint', '--fix', '.'], {
-    cwd: path.join(process.cwd(), packageDir),
-  });
+  // Format with biome
+  try {
+    await execaFn('pnpm', ['biome', 'format', '--write', '.'], {
+      cwd: path.join(process.cwd(), packageDir),
+    });
+  } catch {
+    // Biome format is best-effort, don't fail generation
+  }
 
   console.log(
     `✅ Package ${config.name} created successfully in ${config.workspaceFolder}!`,
