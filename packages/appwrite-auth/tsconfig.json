@@ -1,5 +1,0 @@
-{
-  "extends": "@kit/tsconfig/react",
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "coverage"]
-}
