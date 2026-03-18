@@ -1,5 +1,0 @@
----
-description: When creating a proxy request to the content manager server (cm)
-globs: services/cm/**/*
----
-Never use "Bearer {token}" format. CM API does not take that format. It just takes token.

@@ -1,12 +1,11 @@
 ---
-description: Electron + Express.js hexagonal architecture with functional DI patterns and modular structure
+description: Express.js hexagonal architecture with functional DI patterns and modular structure
 globs:
   - "apps/\*\*/\*"
   - "packages/\*\*/\*"
 scopes:
   - monorepo
   - backend
-  - electron
   - express
   - node
   - functional-di
@@ -16,12 +15,12 @@ alwaysApply: true
 
 # **Cursor Agent Rule: Modular Core/Adapter Monorepo Architecture**
 
-**Objective:** Maintain a highly modular, decoupled, and testable TypeScript monorepo. All platform-agnostic business logic ("Core") **must** be extracted into `packages/*`. All platform-specific entry points ("Adapters," e.g., `apps/api-server`, `apps/electron-main`) **must** be thin wrappers that consume the Core.
+**Objective:** Maintain a highly modular, decoupled, and testable TypeScript monorepo. All platform-agnostic business logic ("Core") **must** be extracted into `packages/*`. All platform-specific entry points ("Adapters," e.g., `apps/api-server`) **must** be thin wrappers that consume the Core.
 
 **Core Principle:** This architecture is a form of  Hexagonal (Ports & Adapters) Architecture.
 
-* **The "Core" (`packages/core-*`):** This is your application's "engine." It contains all business logic, services, repositories, and domain types. It has **zero knowledge** of the outside world (i.e., no imports from `express` or `electron`).
-* **The "Adapters" (`apps/*`):** These are the "delivery mechanisms." They are thin wrappers that translate platform-specific I/O (HTTP requests, Electron IPC calls) into method calls on the Core. They are responsible for DI, composition, and error translation.
+* **The "Core" (`packages/core-*`):** This is your application's "engine." It contains all business logic, services, repositories, and domain types. It has **zero knowledge** of the outside world (i.e., no imports from `express` or any other platform-specific library).
+* **The "Adapters" (`apps/*`):** These are the "delivery mechanisms." They are thin wrappers that translate platform-specific I/O (HTTP requests, CLI commands, etc.) into method calls on the Core. They are responsible for DI, composition, and error translation.
 
 ## **1. Monorepo & Project Structure**
 
@@ -33,21 +32,17 @@ alwaysApply: true
     ├─ pnpm-workspace.yaml
     ├─ tsconfig.base.json  # Base TS config with path aliases
     ├─ apps/
-    │   ├─ api-server/     # Express API Adapter
-    │   ├─ electron-main/  # Electron Main Process Adapter
-    │   └─ renderer/       # Electron Frontend (Client) Adapter
+    │   └─ api-server/     # Express API Adapter
     │
     └─ packages/
         ├─ core-feature-users/ # Core: "Users" Bounded Context
-        ├─ core-feature-posts/ # Core: "Posts" BoundedContext
-        ├─ core-db/            # Core: Shared DB client/schema
-        ├─ electron-preload/   # Adapter: Electron preload script
-        └─ ipc-contract/       # Adapter: Shared types for Electron IPC
+        ├─ core-feature-posts/ # Core: "Posts" Bounded Context
+        └─ core-db/            # Core: Shared DB client/schema
     ```
 
 * **Package Decision:**
   * If code is platform-agnostic (business logic, data access, utilities), it **must** go in a `packages/core-*` library.
-  * If code is platform-specific (HTTP routes, IPC handlers, window management), it **must** go in an `apps/*` application.
+  * If code is platform-specific (HTTP routes, middleware, etc.), it **must** go in an `apps/*` application.
 
 ### **2. `packages/core-*` Rules (The "Core" Engine)**
 
@@ -62,7 +57,7 @@ alwaysApply: true
   * `util.ts`: Pure, domain-specific helper functions.
   * `test.ts`: Unit/integration tests for the corresponding files.
 
-* **Firewall Rule:** Files within `packages/core-*` **must not** import from any file in `apps/*`. They also **must not** import `express`, `electron`, or any other platform-specific library.
+* **Firewall Rule:** Files within `packages/core-*` **must not** import from any file in `apps/*`. They also **must not** import `express` or any other platform-specific library.
 
 * **Dependency Injection:** All services and repos **must** be *pure factory functions* that receive their dependencies.
 
@@ -101,11 +96,11 @@ alwaysApply: true
 
 * **Structure:**
     `apps/api-server/src/`
-    `├─ modules/<feature>/<feature>.controller.ts`
-    `├─ infra/http/`
-    `│   ├─ server.ts`
-    `│   └─ routes.ts`
-    `└─ main.ts` (Composition Root)
+    `-- modules/<feature>/<feature>.controller.ts`
+    `-- infra/http/`
+    `   |-- server.ts`
+    `   +-- routes.ts`
+    `+-- main.ts` (Composition Root)
 * **Controller (`<feature>.controller.ts`):** This is a "Translator" from HTTP to the Core Service. It **must not** contain business logic.
 
     ```ts
@@ -122,50 +117,12 @@ alwaysApply: true
       };
     ```
 
-#### **3.2 `apps/electron-main` (Electron Adapter)**
-
-* **Structure:**
-    `apps/electron-main/src/`
-    `├─ modules/<feature>/<feature>.controller.ts`
-    `├─ infra/electron/`
-    `│   ├─ ipc.ts`
-    `│   └─ windows.ts`
-    `└─ main.ts` (Composition Root)
-* **Controller (`<feature>.controller.ts`):** This is a "Translator" from IPC to the *exact same* Core Service. It **must not** contain business logic.
-
-    ```ts
-    // Translates (event, args) to a service call
-    export const makeGetUsersIpc =
-      (userService: ReturnType<typeof makeUserService>) =>
-      async (_event: IpcMainInvokeEvent) => {
-        // NOTE: No try/catch needed if using the error wrapper (Section 5)
-        const users = await userService.getAllUsers();
-        return users;
-      };
-    ```
-
-#### **3.3 `packages/electron-preload` (Secure Bridge Adapter)**
-
-* Its sole purpose is to be the `contextBridge` API. It defines the API contract for the `renderer`.
-
-    ```ts
-    // packages/electron-preload/src/index.ts
-    import { contextBridge, ipcRenderer } from 'electron';
-    import { IpcContract } from '@pkg/ipc-contract'; // Shared types
-
-    const api: IpcContract = {
-      getUsers: () => ipcRenderer.invoke('users:get'),
-    };
-
-    contextBridge.exposeInMainWorld('electronAPI', api);
-    ```
-
 ### **4. Size & Complexity Limits (Enforced via Linting)**
 
 * **Max File Length:** 500 lines (`eslint: max-lines-per-file`).
 * **Max Function Length:** 75 lines (`eslint: max-lines-per-function`).
-* **Cyclomatic Complexity:** ≤ 10 (`eslint: complexity`).
-* **Nesting Depth:** ≤ 4 (`eslint: max-depth`).
+* **Cyclomatic Complexity:** <= 10 (`eslint: complexity`).
+* **Nesting Depth:** <= 4 (`eslint: max-depth`).
 * **Action:** If limits are exceeded, refactor immediately by extracting logic into smaller, focused functions.
 
 ### **5. Error Handling**
@@ -173,29 +130,6 @@ alwaysApply: true
 * **Core (`packages/core-*`):** Services/Repos **should** throw custom, structured errors (e.g., `NotFoundError`, `ValidationError`) defined in a shared utility.
 * **Adapters (`apps/*`):** Adapters **must** catch these errors and translate them into platform-specific responses.
   * **`apps/api-server`:** Use a single, global error handling middleware in `infra/http/server.ts` that catches errors, logs them, and sends a standardized JSON error response (e.g., `res.status(404).json({ message: 'Not Found' })`).
-  * **`apps/electron-main`:** Use a shared `handleIpc` wrapper in `infra/electron/ipc.ts` that wraps *every* registered handler.
-
-      ```ts
-        // infra/electron/ipc.ts
-        export const handleIpc = (handler) => async (event, ...args) => {
-          try {
-            const data = await handler(event, ...args);
-            return { ok: true, data };
-          } catch (error) {
-            log.error('IPC Error:', error); // Structured logging
-            return {
-              ok: false,
-              error: { message: error.message, name: error.name },
-            };
-          }
-        };
-
-        // ...in your ipc registration
-        ipcMain.handle(
-          'users:get',
-          handleIpc(wiredControllers.userController.getUsersHandler),
-        );
-        ```
 
 ### **6. Path Aliases & Imports**
 
@@ -207,10 +141,8 @@ alwaysApply: true
         "baseUrl": ".",
         "paths": {
           "@app/api-server/*": ["apps/api-server/src/*"],
-          "@app/electron-main/*": ["apps/electron-main/src/*"],
           "@pkg/core-users/*": ["packages/core-feature-users/src/*"],
-          "@pkg/core-db/*": ["packages/core-db/src/*"],
-          "@pkg/ipc-contract": ["packages/ipc-contract/src/index.ts"]
+          "@pkg/core-db/*": ["packages/core-db/src/*"]
         }
       }
     }
@@ -227,31 +159,16 @@ This workflow is **mandatory** for new features to ensure decoupling.
 * **Step 1: Define the Contract.**
 
   * In `packages/core-feature-posts/src/post.types.ts`, define the `Post` type.
-  * In `packages/ipc-contract/src/index.ts`, add `getPost: (id: string) => Promise<{ ok: true, data: Post } | { ok: false, error: any }>` to the contract.
 
-* **Step 2: Write Failing Adapter Tests (The "Outside-In").**
+* **Step 2: Write Failing Adapter Test (The "Outside-In").**
 
-  * **Test 1 (Express):** In `apps/api-server`, write an integration test using `supertest`.
+  * **Test (Express):** In `apps/api-server`, write an integration test using `supertest`.
 
       ```ts
         it('should return 404 for a missing post', async () => {
-          // Wire up a test server with a *mock* postService
-          const mockService = { getPostById: async ()_ => { throw new NotFoundError(); } };
+          const mockService = { getPostById: async () => { throw new NotFoundError(); } };
           const app = createTestServer({ postService: mockService });
           await request(app).get('/api/posts/123').expect(404);
-        });
-        ```
-
-  * **Test 2 (Electron):** In `apps/electron-main`, write a unit test for the controller.
-
-      ```ts
-        it('should return a not-found error object', async () => {
-          // Wire up the controller with a *mock* postService
-          const mockService = { getPostById: async ()_ => { throw new NotFoundError(); } };
-          const controller = makeGetPostIpc(mockService);
-          const result = await handleIpc(controller)(null, '123'); // Call wrapped handler
-          expect(result.ok).toBe(false);
-          expect(result.error.name).toBe('NotFoundError');
         });
         ```
 
@@ -273,9 +190,9 @@ This workflow is **mandatory** for new features to ensure decoupling.
 
 * **Step 5: Pass the Adapter Tests.**
 
-  * Implement the thin controllers in `api-server` and `electron-main`.
-  * Wire the *real* `makePostService` (from **Step 4**) into the DI container for both `api-server` and `electron-main`.
-  * The tests from **Step 2** should now pass, proving the *entire* stack works for *both* platforms.
+  * Implement the thin controllers in `api-server`.
+  * Wire the *real* `makePostService` (from **Step 4**) into the DI container.
+  * The tests from **Step 2** should now pass, proving the *entire* stack works.
 
 ### **8. Duplication & Orphan Prevention**
 

@@ -1,4 +1,4 @@
-# Gemini Instructions - Monorepo Root
+# Cline Instructions - Monorepo Root
 
 This file is auto-generated from `.cursor/rules/`.
 
@@ -6,13 +6,7 @@ This file is auto-generated from `.cursor/rules/`.
 
 ---
 
-## Rule
-
-**Description:** Documentation strategy and hierarchy for the monorepo
-
-**File Patterns:** docs/**/*, **/README.md, **/CHANGELOG.md
-
-**Content:**
+## Documentation strategy and hierarchy for the monorepo
 
 # Monorepo Documentation Strategy
 
@@ -208,15 +202,7 @@ When searching for relevant documentation:
 - [ ] Updated index files
 - [ ] Last updated timestamp is current
 
----
-
-## Rule
-
-**Description:** Express.js hexagonal architecture with functional DI patterns and modular structure
-
-**File Patterns:** apps/\*\*/\*, packages/\*\*/\*
-
-**Content:**
+## Express.js hexagonal architecture with functional DI patterns and modular structure
 
 # **Cursor Agent Rule: Modular Core/Adapter Monorepo Architecture**
 
@@ -413,15 +399,7 @@ This workflow is **mandatory** for new features to ensure decoupling.
 * **Templates:** The templates **must** create the standard file structure (`<feature>.service.ts`, `<feature>.repo.ts`, `<feature>.service.test.ts`, etc.) and their corresponding test files.
 * **PR Enforcement:** Pull requests adding new features manually (without using the generator) **should** be rejected.
 
----
-
-## Rule
-
-**Description:** Core monorepo structure, ESM-only, no-build libraries, shared config, agent coordination
-
-**File Patterns:** **/*
-
-**Content:**
+## Core monorepo structure, ESM-only, no-build libraries, shared config, agent coordination
 
 # Monorepo Structure and Configuration (v4)
 
@@ -791,6 +769,4 @@ See `node.functional-isolated-concerns.rules.mdc` for:
 - Building HTTP API? → Use Express Architecture
 - Building script/CLI/worker? → Use Functional Isolated Concerns
 - Both in same app? → Express for HTTP layer, Functional for utilities
-
----
 
