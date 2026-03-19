@@ -161,15 +161,54 @@ Every story completion MUST include:
 3. Never create a source file without its test file committed first
 4. Evidence of passing tests required before marking any task complete
 
-## TDD Verification (Before Accepting Work)
+## Quality Gate — Adversarial Review (Before Accepting Work)
 
-When a sub-agent reports work complete, verify:
-- [ ] Test files exist for all new source files
-- [ ] Tests were committed BEFORE implementation (check git log)
-- [ ] Tests actually pass: `pnpm test`
-- [ ] Tests are meaningful (not empty stubs or tautologies)
+When a sub-agent reports coding work complete, **spawn reviewers before accepting**:
 
-If any check fails, REJECT the work and send back with specific feedback.
+### Step 1: Joe (Adversarial QA) — MANDATORY for all code
+```
+Task(subagent_type: "joe", prompt: "Review the tests in [files]. Check for performative testing — assertions that pass but test nothing. Verify edge cases are covered. Return PASS/FAIL verdict.")
+```
+Joe catches:
+- Tautological assertions (`expect(x).toBeDefined()`)
+- Mock overuse that hides real behavior
+- Missing edge cases and negative tests
+- Tests that would still pass if implementation changed
+
+### Step 2: Gilfoyle (Architecture) — for new modules/packages
+```
+Task(subagent_type: "gilfoyle", prompt: "Review [files] for architecture compliance. Check: functional DI pattern, proper file naming, hexagonal boundaries, no import violations. Minimal words, just the verdict.")
+```
+Gilfoyle catches:
+- Classes instead of functional DI
+- Wrong file structure (not following monorepo patterns)
+- Import boundary violations
+- Code quality drift
+
+### Step 3: Hari (Security) — for auth, data handling, API endpoints
+```
+Task(subagent_type: "hari", prompt: "Security review of [files]. Check: input validation, auth patterns, secret handling, injection vectors. Flag anything that needs attention.")
+```
+Hari catches:
+- Hardcoded secrets
+- Missing input validation
+- Auth bypass patterns
+- SQL/command injection vectors
+
+### Decision Matrix
+
+| Task Type | Joe | Gilfoyle | Hari |
+|-----------|-----|----------|------|
+| New feature code | ALWAYS | YES | If touches auth/data |
+| Bug fix | ALWAYS | No | If security-related |
+| Refactor | ALWAYS | YES | No |
+| Config/docs only | No | No | No |
+
+### If ANY reviewer returns FAIL:
+1. Send their feedback to the original agent
+2. Agent fixes the issues
+3. Re-submit for review
+4. Max 3 cycles before escalating to Dave
 
 ## Startup Checklist
 
