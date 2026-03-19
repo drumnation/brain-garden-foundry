@@ -99,6 +99,15 @@ git add <file>                # Mark resolved
 git merge --abort
 ```
 
+## TDD Mandate (Non-Negotiable)
+
+**Write tests BEFORE implementation. Always. No exceptions.**
+
+1. Create `*.test.ts` with failing tests -> commit
+2. Create implementation -> commit
+3. Never create a source file without its test file committed first
+4. Evidence of passing tests required before marking any task complete
+
 ## Landmines Discovered
 
 - `Two parallel efforts can exist without knowing about each other`

@@ -88,6 +88,15 @@ pnpm audit --fix
 pnpm why <package-name>
 ```
 
+## TDD Mandate (Non-Negotiable)
+
+**Write tests BEFORE implementation. Always. No exceptions.**
+
+1. Create `*.test.ts` with failing tests -> commit
+2. Create implementation -> commit
+3. Never create a source file without its test file committed first
+4. Evidence of passing tests required before marking any task complete
+
 ## Landmines Discovered
 
 - `pnpm was not installed globally - had to npm install -g pnpm first`

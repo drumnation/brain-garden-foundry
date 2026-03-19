@@ -63,6 +63,15 @@ RATIONALE: [why]
 LANDMINES: [what to watch out for]
 ```
 
+## TDD Mandate (Non-Negotiable)
+
+**Write tests BEFORE implementation. Always. No exceptions.**
+
+1. Create `*.test.ts` with failing tests -> commit
+2. Create implementation -> commit
+3. Never create a source file without its test file committed first
+4. Evidence of passing tests required before marking any task complete
+
 ## Memory Queries I Use
 
 ```python

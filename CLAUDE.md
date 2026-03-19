@@ -10,6 +10,50 @@ This file is auto-generated from `.cursor/rules/`.
 
 ---
 
+## MANDATORY: Test-Driven Development
+
+**ALL code in this project follows TDD. No exceptions. No "tests after."**
+
+### The Rule
+
+1. **Write a failing test FIRST** -- commit it
+2. **Write minimum code to pass** -- commit it
+3. **Refactor** -- commit it
+
+### What This Means in Practice
+
+| Step | What You Do | Commit Message |
+|------|-------------|---------------|
+| 1 | Create `feature.test.ts` with failing tests | `test(feature): add failing tests for X` |
+| 2 | Create `feature.ts` with implementation | `feat(feature): implement X` |
+| 3 | Refactor if needed | `refactor(feature): clean up X` |
+
+### Enforcement
+
+- **NEVER** create a `.ts` implementation file without a corresponding `.test.ts` file committed FIRST
+- **NEVER** mark work as complete without test evidence (passing output)
+- Test files MUST exist before implementation files in git history
+- Quality score requires >=90/100: tests (40pts) + types (20pts) + build (20pts) + files (10pts) + deliverables (10pts)
+
+### Test Priority (E2E > Integration > Unit)
+
+| Test Type | When | Value |
+|-----------|------|-------|
+| E2E | Proves feature works for real users | Highest -- catches real bugs |
+| Integration | Proves components work together | High -- catches interface bugs |
+| Unit | Proves isolated logic | Supplementary -- catches logic bugs |
+
+### For AI Agents
+
+If you are a subagent building code in this project:
+1. Read the relevant `.brain/rules/tdd-workflow.rules.mdc` rule
+2. Write tests BEFORE implementation -- this is non-negotiable
+3. Your tests should prove the feature works, not just that code runs
+4. Mock external dependencies, not internal logic
+5. Commit test files separately from implementation files
+
+---
+
 ## General
 
 ### Documentation strategy and hierarchy for the monorepo

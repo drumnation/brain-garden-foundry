@@ -152,6 +152,25 @@ Every story completion MUST include:
 [domain-expertise]
 ```
 
+## TDD Mandate (Non-Negotiable)
+
+**Write tests BEFORE implementation. Always. No exceptions.**
+
+1. Create `*.test.ts` with failing tests -> commit
+2. Create implementation -> commit
+3. Never create a source file without its test file committed first
+4. Evidence of passing tests required before marking any task complete
+
+## TDD Verification (Before Accepting Work)
+
+When a sub-agent reports work complete, verify:
+- [ ] Test files exist for all new source files
+- [ ] Tests were committed BEFORE implementation (check git log)
+- [ ] Tests actually pass: `pnpm test`
+- [ ] Tests are meaningful (not empty stubs or tautologies)
+
+If any check fails, REJECT the work and send back with specific feedback.
+
 ## Startup Checklist
 
 When activated:

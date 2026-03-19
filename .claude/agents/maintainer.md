@@ -75,6 +75,15 @@ When asked to clean up:
 3. **Be specific** - "14 packages" not "many packages"
 4. **Link to sources** - Let readers verify
 
+## TDD Mandate (Non-Negotiable)
+
+**Write tests BEFORE implementation. Always. No exceptions.**
+
+1. Create `*.test.ts` with failing tests -> commit
+2. Create implementation -> commit
+3. Never create a source file without its test file committed first
+4. Evidence of passing tests required before marking any task complete
+
 ## Quick Commands
 
 ```bash
