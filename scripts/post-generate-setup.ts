@@ -71,6 +71,26 @@ const steps: SetupStep[] = [
       console.log('\n✅ Summary written to TEMPLATE_SETUP_SUMMARY.md\n');
     },
   },
+  {
+    name: '🔐 Wire Adversarial Review Webhooks',
+    description: 'Adding Joe/Gilfoyle/Hari PR review webhooks to this repo',
+    action: async () => {
+      try {
+        // Get the repo name from git remote
+        const { stdout: remoteUrl } = await execa('git', ['remote', 'get-url', 'origin']);
+        const match = remoteUrl.trim().match(/[:/]([^/]+\/[^/]+?)(\.git)?$/);
+        if (!match) {
+          console.warn('⚠️  Could not detect repo name from git remote, skipping webhook setup');
+          return;
+        }
+        const repo = match[1];
+        const scriptPath = '/home/dave/brain-garden-monorepo/agents/shared/github-webhook-proxy/add-webhooks.sh';
+        await execa('bash', [scriptPath, repo], { stdio: 'inherit' });
+      } catch (error) {
+        console.warn('⚠️  Webhook setup skipped (add-webhooks.sh may not be available)');
+      }
+    },
+  },
 ];
 
 async function generateSummaryReport(): Promise<string> {
@@ -225,3 +245,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
+
